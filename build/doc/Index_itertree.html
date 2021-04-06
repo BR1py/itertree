@@ -1,0 +1,1534 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Welcome to itertree python package &mdash; itertree 0.1.1 Beta documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="#" class="icon icon-home" alt="Documentation Home"> itertree
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Welcome to itertree python package</a><ul>
+<li><a class="reference internal" href="#status-and-compatibility-information">Status and compatibility information</a></li>
+<li><a class="reference internal" href="#feature-overview">Feature Overview</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#getting-started-first-steps">Getting started, first steps</a><ul>
+<li><a class="reference internal" href="#installation-and-dependencies">Installation and dependencies</a></li>
+<li><a class="reference internal" href="#the-very-first-steps">The very first steps</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-itertree-api-reference">The itertree API - Reference</a><ul>
+<li><a class="reference internal" href="#construction-of-an-itertree">Construction of an itertree</a></li>
+<li><a class="reference internal" href="#item-access">item access</a></li>
+<li><a class="reference internal" href="#itree-other-structure-related-commands">iTree other structure related commands</a></li>
+<li><a class="reference internal" href="#itree-compare-items">iTree compare items</a></li>
+<li><a class="reference internal" href="#itree-properties">iTree properties</a></li>
+<li><a class="reference internal" href="#itree-data-related-methods">iTree data related methods</a></li>
+<li><a class="reference internal" href="#itree-iterators-and-queries">iTree iterators and queries</a></li>
+<li><a class="reference internal" href="#itree-formatted-output">iTree formatted output</a></li>
+<li><a class="reference internal" href="#itree-file-storage">iTree file storage</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#some-background-informations-regarding-itertree">Some background informations regarding itertree</a></li>
+<li><a class="reference internal" href="#usage-examples">Usage examples</a></li>
+<li><a class="reference internal" href="#comparison-with-other-packages">Comparison with other packages</a><ul>
+<li><a class="reference internal" href="#itree-vs-dict-collections-ordereddict">iTree vs. dict / collections.OrderedDict</a></li>
+<li><a class="reference internal" href="#itree-vs-list-collections-deque">iTree vs. list / collections.deque</a></li>
+<li><a class="reference internal" href="#itree-vs-xml-elementree">iTree vs. xml ElemenTree</a></li>
+<li><a class="reference internal" href="#itree-vs-sorted-dict">iTree vs. sorted_dict</a></li>
+<li><a class="reference internal" href="#itree-vs-anytree">iTree vs. anytree</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</div>
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">itertree</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Welcome to itertree python package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/Index_itertree.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="welcome-to-itertree-python-package">
+<h1>Welcome to itertree python package<a class="headerlink" href="#welcome-to-itertree-python-package" title="Permalink to this headline">¶</a></h1>
+<p>Do you like to store data some how in a tree like structure? Do you need good performance, a reach feature set and the possibility to store your data permanently in files?</p>
+<p>Give itertree package a try!</p>
+<p>The main class for construction of the itertrees is the iTree class. The class allows the construction of trees like this:</p>
+<div class="line-block">
+<div class="line">iTree(‘root’,data=’xyz’)</div>
+<div class="line">└──iTree(‘subitem1’,data=’abc’)</div>
+<div class="line-block">
+<div class="line">└──iTree(‘subsubitem1’,data={‘a’:’b’,’b’:’c’})</div>
+</div>
+<div class="line">└──iTree(‘subitem2’,data={1:2})</div>
+<div class="line">└──iTree(‘subitem2’,data={2:3})</div>
+</div>
+<p>Every node in the itertree (iTree object) stores the related sub-structure (iTree-children) additinal the related node data can be stored in the internal data structure.</p>
+<p>The itertree solution can be compared with nested dicts or lists. Other packages that targeting in the in the same direction are anytree, xml.ElemetTree, sorted_containers. In detail the feature-set and functional focus of iTree is a bit different. An overview of the advantage and disadvantages related to the other packages is given in the chapter Package Comparision.</p>
+<div class="section" id="status-and-compatibility-information">
+<h2>Status and compatibility information<a class="headerlink" href="#status-and-compatibility-information" title="Permalink to this headline">¶</a></h2>
+<p>The original implementation is done in python 3.5 and it is tested under python 3.5 and 3.9. It should work in all python 3 environments.</p>
+<p>The actual development status is Beta. The planned featureset is implemented. Work effort goes in the moment in testing, bugfixing and the creation of the documentation.</p>
+</div>
+<div class="section" id="feature-overview">
+<h2>Feature Overview<a class="headerlink" href="#feature-overview" title="Permalink to this headline">¶</a></h2>
+<p>The main features of the itertree can be summarized in:</p>
+<ul class="simple">
+<li><p>trees can be structured in different levels (nested trees: parent-children-sub-children-….)</p></li>
+<li><p>tags can be strings or any hashable objects</p></li>
+<li><p>tags must not be unique (same tags are enumerated and collect in a tag-family)</p></li>
+<li><p>keeps the order of the added children</p></li>
+<li><p>the data is stored in a protected data structure where data models can be used to evaluate the given data values</p></li>
+<li><p>a iTree can be linked into a itertree file (that is loaded and integrated in the itertree structure)</p></li>
+<li><p>standard export/import to JSON (incl. numpy and OrderedDict data serialisation)</p></li>
+<li><p>designed for performance (as good as it can be for a pure python implementation)</p></li>
+<li><p>it’s a pure python package (should be therefore usable in all embedded environments)</p></li>
+</ul>
+<p>Here is very simple example of itertree usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="go">&gt;&gt;&gt;from itertree import *</span>
+<span class="go">&gt;&gt;&gt;root=iTree(&#39;root&#39;,data={&#39;mykey&#39;:0})</span>
+<span class="go">&gt;&gt;&gt;root+=iTree(&#39;sub&#39;,data={&#39;mykey&#39;:1})</span>
+<span class="go">&gt;&gt;&gt;root+=iTree(&#39;sub&#39;,data={&#39;mykey&#39;:2})</span>
+<span class="go">&gt;&gt;&gt;root+=iTree(&#39;sub&#39;,data={&#39;mykey&#39;:3})</span>
+<span class="go">&gt;&gt;&gt;root.append(iTree(&#39;sub&#39;,data={&#39;mykey&#39;:4}))</span>
+<span class="go">&gt;&gt;&gt;root.render()</span>
+<span class="go">iTree(&#39;root&#39;, data=&quot;{&#39;mykey&#39;: 0}&quot;)</span>
+<span class="go"> └──iTree(&#39;sub&#39;, data=&quot;{&#39;mykey&#39;: 1}&quot;)</span>
+<span class="go"> └──iTree(&#39;sub&#39;, data=&quot;{&#39;mykey&#39;: 2}&quot;)</span>
+<span class="go"> └──iTree(&#39;sub&#39;, data=&quot;{&#39;mykey&#39;: 3}&quot;)</span>
+<span class="go"> └──iTree(&#39;sub&#39;, data=&quot;{&#39;mykey&#39;: 4}&quot;)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="getting-started-first-steps">
+<h1>Getting started, first steps<a class="headerlink" href="#getting-started-first-steps" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="installation-and-dependencies">
+<h2>Installation and dependencies<a class="headerlink" href="#installation-and-dependencies" title="Permalink to this headline">¶</a></h2>
+<p>The package does not have any dependencies, but we highly recommend the to install the blist package:
+<a class="reference external" href="https://pypi.org/project/blist/">https://pypi.org/project/blist/</a> ;Docu: <a class="reference external" href="http://stutzbachenterprises.com/blist/">http://stutzbachenterprises.com/blist/</a></p>
+<p>This will speedup the iTree performance in huge trees especially for inserting and lefthandside operations (in case the package is not found normal list will be used instead).</p>
+<p>To install the itertree package just run the command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">itertree</span>
+</pre></div>
+</div>
+<p>The structure of folder and files related to this package looks like this:</p>
+<ul>
+<li><p>itertree (main folder)</p>
+<blockquote>
+<div><ul>
+<li><p>__init__.py</p></li>
+<li><p>itree_main.py</p></li>
+<li><p>itree_helpers.py</p></li>
+<li><p>itree_data.py</p></li>
+<li><p>itree_serialize.py</p></li>
+<li><p>examples</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>itree_performance.py</p></li>
+<li><p>itree_profiling.py</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div>
+<div class="section" id="the-very-first-steps">
+<h2>The very first steps<a class="headerlink" href="#the-very-first-steps" title="Permalink to this headline">¶</a></h2>
+<p>All important classes of the package are puplished by the __init__.py file so that the functionality of itertree can be reached by simply importing:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="go">&gt;&gt;&gt;from itertree import *</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This line is needed if you want to rerun the given examples on this pages.</p>
+</div>
+<p>The datarees are build by adding iTree-objects to a iTree-parent-object. This means we do not have an external tree generator.</p>
+<p>We start now building a itertree with the recommended method for adding items. Just use the += operator (__iadd__()) which adds the righthandside item to the lefthandside item.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="o">=</span><span class="n">iTree</span><span class="p">(</span><span class="s1">&#39;root&#39;</span><span class="p">)</span> <span class="c1"># first we create a root element</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="o">+=</span><span class="n">iTree</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s1">&#39;child&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># add a child via += operator</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="o">+=</span><span class="n">iTree</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">data</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># add next child (tag is tuple, a hashable object)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="o">+=</span><span class="n">iTree</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="s1">&#39;child2&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="c1"># add next child</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="o">.</span><span class="n">render</span><span class="p">()</span> <span class="c1"># show the current tree</span>
+<span class="go">iTree(&#39;root&#39;)</span>
+<span class="go"> └──iTree(&#39;child&#39;, data=0)</span>
+<span class="go"> └──iTree((1, 2, 3), data=1)</span>
+<span class="go"> └──iTree(&#39;child2&#39;, data=2)</span>
+</pre></div>
+</div>
+<p>Each iTree-object must have a tag. For tags you can use any type of object that is hashable except integers and iTreeTagIdx objects (These objects are used for index access and they are therefore not allowed as tags).</p>
+<p>Different than the keys in dictionairies the given tags must not be unique:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="go">&gt;&gt;&gt;root+=iTree(tag=&#39;child&#39;, data=3)</span>
+<span class="go">&gt;&gt;&gt;root+=iTree(tag=&#39;child&#39;, data=4)</span>
+<span class="go">&gt;&gt;&gt;root.render()</span>
+<span class="go">iTree(&#39;root&#39;)</span>
+<span class="go"> └──iTree(&#39;child&#39;, data=0)</span>
+<span class="go"> └──iTree((1, 2, 3), data=1)</span>
+<span class="go"> └──iTree(&#39;child2&#39;, data=2)</span>
+<span class="go"> └──iTree(&#39;child&#39;, data=3)</span>
+<span class="go"> └──iTree(&#39;child&#39;, data=4)</span>
+</pre></div>
+</div>
+<p>In the iTree object equal tags are enumerated in a tag_family and they can be reached with the helper object TagIdx.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="go">&gt;&gt;&gt;print(root[TagIdx(&#39;child&#39;,1)])</span>
+<span class="go">iTree(tag=&#39;child&#39;, data=3)</span>
+</pre></div>
+</div>
+<p>To add subitems we adress the child item by index and then add the sub-item.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">root</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="go">iTree(&quot;&#39;child2&#39;&quot;, data=2)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+=</span><span class="n">iTree</span><span class="p">(</span><span class="s1">&#39;subchild&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+<span class="go">iTree(&quot;&#39;subchild&#39;&quot;)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The addressing via index and via TagIdx objects are the quickest ways to reach an item in the itertree.</p>
+</div>
+<p>After the tree is generated we can iterate over the tree:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">=</span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">iter_children</span><span class="p">()]</span> <span class="c1"># iter over the children and put result in list</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="go">[iTree(&quot;&#39;child&#39;&quot;, data=0, subtree=[iTree(&quot;&#39;subchild&#39;&quot;)]), iTree(&quot;(1, 2, 3)&quot;, data=1), iTree(&quot;&#39;child2&#39;&quot;, data=2), iTree(&quot;&#39;child&#39;&quot;, data=3), iTree(&quot;&#39;child&#39;&quot;, data=4)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">=</span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">iter_all</span><span class="p">()]</span> <span class="c1"># iter over all items and put them into a list</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="go">[iTree(&quot;&#39;child&#39;&quot;, data=0, subtree=[iTree(&quot;&#39;subchild&#39;&quot;)]), iTree(&quot;&#39;subchild&#39;&quot;), iTree(&quot;(1, 2, 3)&quot;, data=1), iTree(&quot;&#39;child2&#39;&quot;, data=2), iTree(&quot;&#39;child&#39;&quot;, data=3), iTree(&quot;&#39;child&#39;&quot;, data=4)]</span>
+</pre></div>
+</div>
+<p>The iterators and find functions of itertree can use item_filters to search for specific properties.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="go">&gt;&gt;&gt;result=root.find_all([&#39;**&#39;],item_filter=root.create_data_value_filter(2)) # &#39;**&#39; is a wildcard for any item; result is an iterator</span>
+<span class="go">&gt;&gt;&gt;print(list(result))</span>
+<span class="go">[iTree(tag=&#39;child&#39;,data=2)]</span>
+</pre></div>
+</div>
+<p>The data handling can be done over set and get functions, if no specific key is given the (“__NOKEY__”) element will be addressed. This is very helpful in case you want to store just one data object in the iTree-object.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="o">=</span><span class="n">iTree</span><span class="p">(</span><span class="s1">&#39;root&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;mykey&#39;</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="c1"># the (&quot;__NOKEY__&quot;) data item is untouched by the last operation</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mykey&#39;</span><span class="p">)</span>
+<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">item</span><span class="o">=</span><span class="n">iTree</span><span class="p">(</span><span class="s1">&#39;root2&#39;</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;B&#39;</span><span class="p">:</span><span class="s1">&#39;b&#39;</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">item</span><span class="o">.</span><span class="n">data</span>
+<span class="go">&quot;{&#39;A&#39;: &#39;a&#39;, &#39;B&#39;: &#39;b&#39;}&quot;</span>
+</pre></div>
+</div>
+<p>At least the itertree can be stored and reconstructed from a file. We can also link an item to a specific item in a file.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="go">&gt;&gt;&gt;root.dump(&#39;dt.dtz&#39;) # dtz is the recommended file ending for the zipped dataset file</span>
+<span class="go">&gt;&gt;&gt;root2=root.load(&#39;dt.dtz&#39;) # for loading a itertree any available iTree object can be used</span>
+<span class="go">&gt;&gt;&gt;print(root2==root)</span>
+<span class="go">True</span>
+<span class="go">&gt;&gt;&gt;root+=iTree(&#39;link&#39;,link=iTLink(dt.dtz&#39;,iTreeTagIdx(child&#39;,0))) # The node item will integrate the children of the linked item.</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="the-itertree-api-reference">
+<h1>The itertree API - Reference<a class="headerlink" href="#the-itertree-api-reference" title="Permalink to this headline">¶</a></h1>
+<p>To understand the full functionality of itertree the user should have a look on the related examples which can be found in the example folder of itertree.</p>
+<p>In this chapter we try to dive in the functions of itertree in a clear structured way. The user might look in the class description of the modules too. But the huge number of methods in the iTree class might be very confusing. And we hope this chapter orders the things in a much better way.</p>
+<div class="section" id="construction-of-an-itertree">
+<h2>Construction of an itertree<a class="headerlink" href="#construction-of-an-itertree" title="Permalink to this headline">¶</a></h2>
+<p>The first step in the construction of a itertree is to instance the <span class="xref std std-ref">itertree iTree class</span>.</p>
+<dl class="py class">
+<dt id="itertree.iTree">
+<em class="property">class </em><code class="sig-prename descclassname">itertree.</code><code class="sig-name descname">iTree</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tag</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">link</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">is_temp</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">subtree</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the main class related to iTrees.</p>
+<p>We give here a short functional summary:</p>
+<p>This object is the parent of a sub-tree (children, sub-children, etc.). The iTree object itself can also be a
+child of a parent iTree object. If this is not the case the iTree object is the root of the tree.</p>
+<p>A iTree object can only be integrated in one tree (one parent only)!</p>
+<p>Each iTree object contains a tag. In case your tags are stings it’s recommended to use tag strings without
+wildcards “*”,”?” and without the standard separators “/” and “#”. If you use these characters you might get
+confusing results in find, filter and match operations.</p>
+<p>In general we allow all hashable objects to be used as a tag in the iTree objects (only search operation might be
+limited in this case).
+But we have two exceptions: We do not allow integers and TagIdx objects as tags because those objects used for
+direct item access.</p>
+<p>Different than in dictionaries it is allowed to put multiple times the same tag inside the iTree. The items with
+the same tag are placed and ordered (enumerated) in the related tag-family. They can be reached via TagIdx
+objects by giving the tag, index pair (tag_idx).</p>
+<p>Linked iTree objects will behave different. They have a read only structure (children) and they contain
+the children (tree) of the linked iTree.
+The “local” attributes like tag, data, … can be set independent from the linked item (local properties).
+To change the tree structure of such an object you must manipulated the source object and reload the link.</p>
+<p>Additionally a iTree object can contain:</p>
+<ul class="simple">
+<li><p>data - a iTData object to store any kind of python objects</p></li>
+<li><p>couple - you can couple the object to another one by giving a pointer</p></li>
+<li><p>is_temporary - you can mark it as temporary. Those iTree items behave like normal ones. But they will not be
+considered during encoding for storage, etc.</p></li>
+</ul>
+<p>There are different ways to access the children and sub-children in the tree of a iTree object.</p>
+<p>The standard access for single items is via itree_obj[] (__getitem__()) call.</p>
+<p>More complex access is available via find() and findall() methods. Have a look in the documentation
+related to each method.</p>
+<p>The delivery of access related operations in the iTree objects is for unique targets an
+iTree object and for multi target operations an iterator over the matching items. We don’t deliver
+something like a list.</p>
+<p>If really needed an iterator can be easily converted into a list by list() method but this may take a long time
+for huge iterators. The iterator should only be used in the final step of the operation. It’s recommended to have
+a look into itertools for better usage of the delivered iterators.</p>
+<p>The design of the object is made to have best possible performance even that it is pure python.
+For more details you may run the performance tests in the test section (But you might have to install
+additional packages run the comparisons and to get the full picture.)</p>
+<p>The function related to iterations iter; iter_children and find_all can be used with an item_filter. By this
+mechanism you can create queries regarding any property in an iTree.</p>
+<p>To initialize the class the following parameters are available</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tag</strong> – tag string or hashable object used for the iTree identification</p></li>
+<li><p><strong>data</strong> – data dict or item to be stored in the node</p></li>
+<li><p><strong>link</strong> – in case the node should be linked to another (external file/key) a iTLink() object can be given</p></li>
+<li><p><strong>is_temp</strong> – If the iTree is marked as temporary the iTree will not be stored during dump into a file</p></li>
+<li><p><strong>subtree</strong> – <p>The subtree is a iterable structure that contains sub-items (iTree objects) that should be                     the children of this iTree.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>subtree: In case the given iTree objects have already a parent an implicit copy will
+be made.</p>
+</div>
+</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="itertree.iTree.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tag</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">link</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">is_temp</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">subtree</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+</dd></dl>
+
+<p>Instance the iTree object:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="go">&gt;&gt;&gt;item1=iTree(&#39;item1&#39;) # itertree item with the tag &#39;item1&#39;</span>
+<span class="go">&gt;&gt;&gt;item2=iTree(&#39;item2&#39;, data={&#39;mykey&#39;:1}) # instance a iTree-object with data content (defined as a dict)</span>
+<span class="go">&gt;&gt;&gt;item3=iTree(&#39;temp_item&#39;, is_temp=True) # instance a temporary iTree-object</span>
+<span class="go">&gt;&gt;&gt;item4=iTree(&#39;link_item&#39;, data={&#39;mykey&#39;:2}, is_temp=True, link=DiTLink(dt.dtz&#39;,iTreeTagIdx(child&#39;,0)) # instance a iTree-object containing a link</span>
+</pre></div>
+</div>
+<p>iTree objects can be marked as temporary. One can filter for this property and in the dump into a file temporary iTrees will be ignored.</p>
+<p>In case a link is set the iTree object will integrate the childs of the linked iTree-objects as it’s own childs into the tree. The iTree object can have own properties like temporary or own data. But it cannot contain own children. Operations that try to manipulate the children structure will fail in this case.</p>
+<p>To add or manipulate the children of an item we have several possibilities. The following direct operations are recommended for structural manipulations in the tree:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="go">&gt;&gt;&gt;root=iTree(&#39;root&#39;)</span>
+<span class="go">&gt;&gt;&gt;root+=iTree(&#39;child&#39;) # append a child</span>
+<span class="go">&gt;&gt;&gt;root[0]=iTree(&#39;newchild&#39;) # replace the child with index 0</span>
+<span class="go">&gt;&gt;&gt;del root[iTreeTagIdx(&#39;newchild&#39;,0)] # deletes the child with matching iTreeTagIdx</span>
+</pre></div>
+</div>
+<p>Additionally a huge set of methods is available for structural manipulations related to the children of a item.</p>
+<dl class="py method">
+<dt id="itertree.iTree.append">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">append</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append the given iTree object to the tree (new last child)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Except</dt>
+<dd class="field-odd"><p>raise TypeError in case iTree object has already a parent</p>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><p><strong>item</strong> – iTree object to be appended</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.appendleft">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">appendleft</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.appendleft"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.appendleft" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append the given iTree object to the left of the the tree (new first child)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Except</dt>
+<dd class="field-odd"><p>raise TypeError in case iTree object has already a parent</p>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><p><strong>item</strong> – iTree object to be appended</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.itree_main.iTree.extend">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">extend</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">extend_items</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.extend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_main.iTree.extend" title="Permalink to this definition">¶</a></dt>
+<dd><p>We extend the iTree with given items (multi append)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Note</dt>
+<dd class="field-odd"><p>In case the extend items have already a parent an implicit copy will be made. We do this because
+we might get an iTree-object as extend_items parameter and then the children will have automatically a
+parent even that the parent object might be a temporary one.</p>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><p><strong>extend_items</strong> – iterable object that contains iTree objects as items</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.itree_main.iTree.extendleft">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">extendleft</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">extend_items</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.extendleft"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_main.iTree.extendleft" title="Permalink to this definition">¶</a></dt>
+<dd><p>We extend the iTree with given items in the beginning (multi appendleft)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Note</dt>
+<dd class="field-odd"><p>In case the extend items have already a parent an implicit copy will be made. We do this because
+we might get an iTree-object as extend_items parameter and then the children will have automatically a
+parent even that the parent object might be a temporary one.</p>
+</dd>
+<dt class="field-even">Note</dt>
+<dd class="field-even"><p>The extendleft() operation is a lot slower then the normal extend operation</p>
+</dd>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>extend_items</strong> – iterable object that contains iTree objects as items</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.itree_main.iTree.insert">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">insert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">insert_key</span></em>, <em class="sig-param"><span class="n">item</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.insert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_main.iTree.insert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert an item before a specific position</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>insert_key</strong> – position key (integer index or TagIdx)</p></li>
+<li><p><strong>value</strong> – item that should be inserted in the tree (new child)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.itree_main.iTree.move">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">move</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">insert_key</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_main.iTree.move" title="Permalink to this definition">¶</a></dt>
+<dd><p>move the item in another position</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>insert_key</strong> – item will be insert before this key</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.itree_main.iTree.rename">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">rename</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_tag</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.rename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_main.iTree.rename" title="Permalink to this definition">¶</a></dt>
+<dd><p>give the item a new tag</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_tag</strong> – new tag object string or hashable object</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.itree_main.iTree.pop">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">pop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">- 1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.pop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_main.iTree.pop" title="Permalink to this definition">¶</a></dt>
+<dd><p>pop the item out of the tree, if no key is given the last item will be popped out</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> – specific identification key for an item (integer index, TagIdx)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>popped out item (parent will be set to None)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.itree_main.iTree.popleft">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">popleft</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.popleft"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_main.iTree.popleft" title="Permalink to this definition">¶</a></dt>
+<dd><p>pop the first item out of the tree</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>popped out item (parent will be set to None)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.clear">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>deletes all children
+and data!
+flags stay unchanged!
+:return: None</p>
+</dd></dl>
+
+<p>The addition of iTrees is possible the result contains always the properties of the first added item and the children of the second added item are appended by creating a copy.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">=</span><span class="n">iTree</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;mykey&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">},</span><span class="n">subtree</span><span class="o">=</span><span class="p">[</span><span class="n">iTree</span><span class="p">(</span><span class="s1">&#39;a1&#39;</span><span class="p">),</span><span class="n">iTree</span><span class="p">(</span><span class="s1">&#39;a2&#39;</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">=</span><span class="n">iTree</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="n">subtree</span><span class="o">=</span><span class="p">[</span><span class="n">iTree</span><span class="p">(</span><span class="s1">&#39;b1&#39;</span><span class="p">),</span><span class="n">iTree</span><span class="p">(</span><span class="s1">&#39;b2&#39;</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">=</span><span class="n">a</span><span class="o">+</span><span class="n">b</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span>
+<span class="go">iTree(&quot;&#39;a&#39;&quot;, data=&quot;{&#39;mykey&#39;: 1}&quot;, subtree=[iTree(&quot;&#39;a1&#39;&quot;), iTree(&quot;&#39;a2&#39;&quot;), iTree(&quot;&#39;b1&#39;&quot;), iTree(&quot;&#39;b2&#39;&quot;)])</span>
+</pre></div>
+</div>
+<p>Multiplication of a iTree is possible too the result is a list of iTree copies of the original one.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">itree_list</span><span class="o">=</span><span class="n">iTree</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">1000</span> <span class="c1"># creates a list of 1000 copies of the original iTree</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">root</span><span class="o">=</span><span class="n">iTree</span><span class="p">(</span><span class="s1">&#39;root&#39;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">root</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">itree_list</span><span class="p">)</span> <span class="c1"># we can extend an existing iTree with the list (add 1000 identical children)</span>
+<span class="kc">True</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="item-access">
+<h2>item access<a class="headerlink" href="#item-access" title="Permalink to this headline">¶</a></h2>
+<p>The items in the iTree can be accessed via __getitem__() method:</p>
+<dl class="py method">
+<dt id="itertree.iTree.__getitem__">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">__getitem__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.__getitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.__getitem__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main getter for items</p>
+<p>If given key targets to only one item we will deliver an iTree. If no matching item is found an IndexError
+or KeyError exception will be raised.</p>
+<p>If the given key targets to multiple items (tag family, slice, itearble of single target keys) and iterator
+will be delivered.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> – single target: index, TagIdx or tuple (tag, index) (not recommended)
+multi target: TagIdx_s or an iterable (like list) of these keys or a slice</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>iTree item or iterator (multi target)</p>
+</dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="o">=</span><span class="n">iTree</span><span class="p">(</span><span class="s1">&#39;root&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="o">+=</span><span class="n">iTree</span><span class="p">(</span><span class="s1">&#39;child&#39;</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="o">+=</span><span class="n">iTree</span><span class="p">(</span><span class="s1">&#39;child&#39;</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="o">+=</span><span class="n">iTree</span><span class="p">(</span><span class="s1">&#39;child&#39;</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="o">+=</span><span class="n">iTree</span><span class="p">(</span><span class="s1">&#39;child&#39;</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="o">+=</span><span class="n">iTree</span><span class="p">(</span><span class="s1">&#39;child&#39;</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># index access</span>
+<span class="go">iTree(&quot;&#39;child&#39;&quot;, data=1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="p">[</span><span class="n">TagIdx</span><span class="p">(</span><span class="s1">&#39;child&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">)]</span> <span class="c1"># TagIdx access (index targets the index in the tag family!)</span>
+<span class="go">iTree(&quot;&#39;child&#39;&quot;, data=1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="p">[</span><span class="n">TagIdx</span><span class="p">(</span><span class="s1">&#39;child&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span> <span class="c1"># TagIdx access with negative index</span>
+<span class="go">iTree(&quot;&#39;child&#39;&quot;, data=4)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="p">[</span><span class="n">TagIdx</span><span class="p">(</span><span class="s1">&#39;child&#39;</span><span class="p">,[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">])]</span> <span class="c1"># TagIdx give index list -&gt; result is an iterator!</span>
+<span class="go">&lt;list_iterator object at 0x0000029E12F69B00&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">root</span><span class="p">[</span><span class="n">TagIdx</span><span class="p">(</span><span class="s1">&#39;child&#39;</span><span class="p">,[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">])])</span> <span class="c1"># make ietartor content visible by casting into a list</span>
+<span class="go">[iTree(&quot;&#39;child&#39;&quot;, data=0), iTree(&quot;&#39;child&#39;&quot;, data=2)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">root</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">]])</span> <span class="c1"># index list access (absolute indexes)</span>
+<span class="go">[iTree(&quot;&#39;child&#39;&quot;, data=0), iTree(&quot;&#39;child&#39;&quot;, data=2)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">root</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span> <span class="c1"># slices are allowed too</span>
+<span class="go">[iTree(&quot;&#39;child&#39;&quot;, data=1), iTree(&quot;&#39;child&#39;&quot;, data=2)]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<p>The TagIdx class is used to address items that contains the same tag. The second argument of the TagIdx is the index that the item has in the related tag-family. But we can also give multiple indexes or a slice. As the given example shows is the result of not unique targets always an iterator object.</p>
+</div>
+<div class="section" id="itree-other-structure-related-commands">
+<h2>iTree other structure related commands<a class="headerlink" href="#itree-other-structure-related-commands" title="Permalink to this headline">¶</a></h2>
+<dl class="py method">
+<dt id="itertree.iTree.__setitem__">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">__setitem__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.__setitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.__setitem__" title="Permalink to this definition">¶</a></dt>
+<dd><p>put the item in the iTree for (re)setting a child</p>
+<p>HINT: A iTree child can only be child of one iTree (one parent only)
+HINT2: Linked items cannot be changed change the linked item and reload the tree!</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – single identifier for the item can be integer index or TagIdx</p></li>
+<li><p><strong>value</strong> – iTree object that should be child of called iTree</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.__delitem__">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">__delitem__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.__delitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.__delitem__" title="Permalink to this definition">¶</a></dt>
+<dd><p>delete an item in the tree
+:param key: key targeting the item to be deleted</p>
+<blockquote>
+<div><p>single target: iTree object (remove), index, TagIdx or tuple (tag, index) (not recommended)
+multi target: TagIdx_s or an iterable (like list) of these keys or a slice</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id0">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
+<dd><p>deletes all children
+and data!
+flags stay unchanged!
+:return: None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.copy">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>create a copy of this item
+:param copy_data: Type of copy</p>
+<blockquote>
+<div><p>COPY_OFF - keep the data uncopied
+COPY_NORMAL - (default) copy the data too
+COPY_DEEP - do a deepcopy()</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.reverse">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">reverse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.reverse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.reverse" title="Permalink to this definition">¶</a></dt>
+<dd><p>L.reverse() – reverse <em>IN PLACE</em></p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.rotate">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">rotate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.rotate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.rotate" title="Permalink to this definition">¶</a></dt>
+<dd><p>rotate the whole iTree n times
+(rotate means move last element to first position, …)
+:param n:
+:return:</p>
+</dd></dl>
+
+</div>
+<div class="section" id="itree-compare-items">
+<h2>iTree compare items<a class="headerlink" href="#itree-compare-items" title="Permalink to this headline">¶</a></h2>
+<dl class="py method">
+<dt id="itertree.iTree.__eq__">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">__eq__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.__eq__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.__eq__" title="Permalink to this definition">¶</a></dt>
+<dd><p>A iTree object is always unique we test therefore just for matching object IDs
+This is needed for quick index findings!
+..node:: To check if properties content is equal use equal() instead
+:param other: iTree object to compare with
+:return:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.equal">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">equal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.equal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.equal" title="Permalink to this definition">¶</a></dt>
+<dd><p>compares if the data content of another item matches with this item
+:param other: other iTree
+:param check_coupled: check the couple object too? (Default False)
+:return: boolean match result (True match/False no match)</p>
+</dd></dl>
+
+<p>Because the __eq__() method (== opertor) is internally used for same item object findings we really compare here based on the python object id. Therefore for the comparison of two non identical objects the equal() method should be used.</p>
+<dl class="py method">
+<dt id="itertree.iTree.__contains__">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">__contains__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.__contains__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.__contains__" title="Permalink to this definition">¶</a></dt>
+<dd><p>checks if an iTree object is part of the iTree
+:param item: iTree object we searching for
+:return:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.__hash__">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">__hash__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.__hash__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.__hash__" title="Permalink to this definition">¶</a></dt>
+<dd><p>The hash operation is available but not a quick operation!
+..node::: We do here not consider, parent and coupled item
+:return: integer hash</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.__len__">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">__len__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.__len__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.__len__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return len(self).</p>
+</dd></dl>
+
+<p>Based on the iTree length the comparison operators &lt;; &lt;=; &gt;; &gt;= are available too.</p>
+<dl class="py method">
+<dt id="itertree.iTree.count">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">count</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.count"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.count" title="Permalink to this definition">¶</a></dt>
+<dd><p>count the number of children that match to the given filter
+::Note: The operation is not very quick on huge iTrees and complicate filters!
+:param item_filter:
+:return: integer number of children matching to the filter</p>
+</dd></dl>
+
+</div>
+<div class="section" id="itree-properties">
+<h2>iTree properties<a class="headerlink" href="#itree-properties" title="Permalink to this headline">¶</a></h2>
+<p>As we will see later on some properties of the iTree object can be modified by teh related methods.
+Warning:: The user should NEVER modify any of the given properties directly. Especially the not discussed private properties (marked with the beginning underline). Direct modifications will normally lead into inconsistencies of the iTree object!</p>
+<p>The iTree object contains the following general properties:</p>
+<dl class="py method">
+<dt id="itertree.iTree.root">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">root</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#itertree.iTree.root" title="Permalink to this definition">¶</a></dt>
+<dd><p>property delivers the root item of the tree</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>iTree root item</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.is_root">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">is_root</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#itertree.iTree.is_root" title="Permalink to this definition">¶</a></dt>
+<dd><p>is this item a root item (no parent)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True/False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.parent">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">parent</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#itertree.iTree.parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>property contains the parent item</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>iTree parent object (or None in case no parent exists)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.pre_item">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">pre_item</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#itertree.iTree.pre_item" title="Permalink to this definition">¶</a></dt>
+<dd><p>delivers the pre item (predecessor) of this object
+:return: iTree predecessor or None (no match)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.post_item">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">post_item</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#itertree.iTree.post_item" title="Permalink to this definition">¶</a></dt>
+<dd><p>delivers the post item (successor)
+:return: iTree successor or None (no match)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.depth">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">depth</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#itertree.iTree.depth" title="Permalink to this definition">¶</a></dt>
+<dd><p>delivers the distance (number of levels) to the root element of the tree</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>integer</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Item identification properties:</p>
+<dl class="py method">
+<dt id="itertree.iTree.idx">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">idx</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#itertree.iTree.idx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Index of this object in the iTree
+:return: integer index</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.tag_idx">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">tag_idx</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#itertree.iTree.tag_idx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the TagIdx object related to this object
+(contains the tag and the index of the object in the tag-family)
+:return: TagIdx</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.idx_path">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">idx_path</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#itertree.iTree.idx_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>delivers the a list of indexes from the root to this item</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of index integers (here we do not deliver an iterator)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.tag_idx_path">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">tag_idx_path</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#itertree.iTree.tag_idx_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>delivers the a list of TagIdx objects from the root to this item</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of TagIdx (here we do not deliver an iterator)</p>
+</dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="o">=</span><span class="n">iTree</span><span class="p">(</span><span class="s1">&#39;root&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="o">+=</span><span class="n">iTree</span><span class="p">(</span><span class="s1">&#39;child&#39;</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="o">+=</span><span class="n">iTree</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;tuple_child0&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="o">+=</span><span class="n">iTree</span><span class="p">(</span><span class="s1">&#39;child&#39;</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="o">+=</span><span class="n">iTree</span><span class="p">(</span><span class="s1">&#39;child&#39;</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="o">+=</span><span class="n">iTree</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;tuple_child1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+=</span><span class="n">iTree</span><span class="p">(</span><span class="s1">&#39;subchild&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+<span class="go">iTree(&#39;root&#39;)</span>
+<span class="go"> └──iTree(&#39;child&#39;, data=0)</span>
+<span class="go">    └──iTree(&#39;subchild&#39;)</span>
+<span class="go"> └──iTree((1, 2), data=&#39;tuple_child0&#39;)</span>
+<span class="go"> └──iTree(&#39;child&#39;, data=1)</span>
+<span class="go"> └──iTree(&#39;child&#39;, data=2)</span>
+<span class="go"> └──iTree((1, 2), data=&#39;tuple_child1&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">root</span>
+<span class="go">iTree(&quot;&#39;root&#39;&quot;, subtree=[iTree(&quot;&#39;child&#39;&quot;, data=0, subtree=[iTree(&quot;&#39;subchild&#39;&quot;)]), iTree(&quot;(1, 2)&quot;, data=&#39;tuple_child0&#39;), iTree(&quot;&#39;child&#39;&quot;, data=1), iTree(&quot;&#39;child&#39;&quot;, data=2), iTree(&quot;(1, 2)&quot;, data=&#39;tuple_child1&#39;)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">idx</span>
+<span class="go">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tag_idx</span>
+<span class="go">TagIdx(&#39;subchild&#39;, 0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">idx_path</span>
+<span class="go">[0, 0]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tag_idx_path</span>
+<span class="go">[TagIdx(&#39;child&#39;, 0), TagIdx(&#39;subchild&#39;, 0)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">tag_idx</span>
+<span class="go">TagIdx((1, 2), 0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">tag_idx</span>
+<span class="go">TagIdx((1, 2), 1)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<p>As shown in the last example hashable objects can be used as tags for the itertree items to be stored in the iTree object. Even for those kind of tag objects it is possible to store multiple items with the same tag. In the example the enumartion inside the tag family can be seen in the index enumeration in the TagIdx object.</p>
+<p>Beside those structural properties the iTree objects contains some more properties that might be modified by the related methods.</p>
+<dl class="py method">
+<dt id="itertree.iTree.is_temporary">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">is_temporary</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#itertree.iTree.is_temporary" title="Permalink to this definition">¶</a></dt>
+<dd><p>The iTree object can be marked as temporary (this means it will not be stored in a file if exported)
+This properties checks if the item is temporary
+:return: True/False</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.set_temporary">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">set_temporary</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.set_temporary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.set_temporary" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.unset_temporary">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">unset_temporary</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.unset_temporary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.unset_temporary" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.coupled_obj">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">coupled_obj</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#itertree.iTree.coupled_obj" title="Permalink to this definition">¶</a></dt>
+<dd><p>The iTree object can be couple with another python object. The pointer to the object is stored and can be
+reached via this property. (E.g. this can be helpful when connecting the iTree with a visual grafical element
+(treelist item) in a GUI)
+:return:</p>
+</dd></dl>
+
+<p>Diffrent then the data the coupled_obj is just a pointer to another python object. By this you might couple the iTree to a graphical user interface object e.g. an item in a hypertreelist or it can be used to couple the itree object to an item in a mapping dictionary. The property couple_obj is not managed by the iTree object it’s just a place to stroe the informations. for file exports or string exports this information will not be stored.</p>
+</div>
+<div class="section" id="itree-data-related-methods">
+<h2>iTree data related methods<a class="headerlink" href="#itree-data-related-methods" title="Permalink to this headline">¶</a></h2>
+<dl class="py method">
+<dt id="itertree.iTree.data">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#itertree.iTree.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>delivers the internal data structure object
+HINT: It’s more for debugging proposes, it’s no recommended to maipulate the data via this object use the
+get(),set(), etc. instead
+:return:</p>
+</dd></dl>
+
+<p>The data property should never be modified directly (like all other properties too. This will lead into inconstiéncies of the iTree object.</p>
+<p>Use the related methods instead. Those methods are linked to the related methods in the internal iTData object.</p>
+<dl class="py method">
+<dt id="itertree.iTree.get">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">get</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#itertree.iTree.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>get function for a data attribute</p>
+<p>In case the standard iTData object is used we have:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> – key under which the data is stored, in case no key is given the “__NOKEY__” item will be returned</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>data attribute object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.set">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">set</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#itertree.iTree.set" title="Permalink to this definition">¶</a></dt>
+<dd><p>set function for a data-attribute</p>
+<p>In case the standard iTData object is used we have:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – give key under which the data will be stored, in case data is None the first key parameter is taken
+as data object and it is stored in the “__NOKEY__” item</p></li>
+<li><p><strong>value</strong> – data value the object that should be stored in the data structure of this iTree</p></li>
+</ul>
+</dd>
+</dl>
+<p>:return  None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.pop_data">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">pop_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#itertree.iTree.pop_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>data related pop (will delete the given key
+:return:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.check">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">check</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#itertree.iTree.check" title="Permalink to this definition">¶</a></dt>
+<dd><p>check if the given data-item can be stored under the given key. The check make only sense in case there is
+a iTreeDataModel or matching object is already stored under the key</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – data value the object that should be checked</p></li>
+<li><p><strong>key</strong> – give key under which contains the DataModel, in case key is None the “__NOKEY__” item will be used</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>tuple (True/False,’check details’)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>The iTData objects contains a special functionality so that the user can store easy any related data objects into the iTree internal iTData object. If set() function is used with out giving a key the object will be stored in the (__NOKEY__) item. For more complex data the user can combine the data with a key and it is stored in the internal dict like structure.</p>
+</div>
+<div class="section" id="itree-iterators-and-queries">
+<h2>iTree iterators and queries<a class="headerlink" href="#itree-iterators-and-queries" title="Permalink to this headline">¶</a></h2>
+<p>The standard iterator for iTrees delivers all chidlren beside this we have same special iterators that contain filter possibilities.</p>
+<dl class="py method">
+<dt id="itertree.iTree.__iter__">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">__iter__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.__iter__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.__iter__" title="Permalink to this definition">¶</a></dt>
+<dd><p>standard iterator over all items in the iTree
+:param item_filter: ALL = default
+:return:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.iter_children">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">iter_children</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.iter_children"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.iter_children" title="Permalink to this definition">¶</a></dt>
+<dd><p>main iterator in children level
+:param item_filter: the items can be filtered by giving a filter constants or giving a filter method
+:return: iterator</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.iter_all">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">iter_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.iter_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.iter_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>main iterator for whole tree runs in top-&gt; down order</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>item_filter</strong> – filter for filter the items you can give a filter constant or
+a method for filtering (should return True/False)</p></li>
+<li><p><strong>match</strong> – match pattern a iTMatch object</p></li>
+</ul>
+</dd>
+</dl>
+<dl>
+<dt>top_down: True -  we start from parent to children</dt><dd><blockquote>
+<div><p>parent; child1; subchild1_1; subchild1_2; child2; subchild2_1</p>
+</div></blockquote>
+<dl class="simple">
+<dt>False - we start from children to parent</dt><dd><p>subchild1_1; subchild1_2; child1; subchild2_1;  child2; parent</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>iterator</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.iter_tag_idxs">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">iter_tag_idxs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.iter_tag_idxs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.iter_tag_idxs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.index">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">index</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>The index method allows to search for the index of the item in a parent object
+This is especially useful if you must use a item_filter. The delivered index is delivered relative
+to the given item filter!</p>
+<p>For the item index of the item in the unfiltered tree (ALL) it’s recommended
+to use the idx property instead: (parent.index(item,ALL) == item.idx)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>item</strong> – item index should be delivered for</p></li>
+<li><p><strong>item_filter</strong> – filter integer; method can not handle filter methods yet!</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>index integer of the item relative to the given filter</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Beside the classical ietartors we have the more query related find methods:</p>
+<dl class="py method">
+<dt id="itertree.iTree.find">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">find</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.find"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.find" title="Permalink to this definition">¶</a></dt>
+<dd><p>The find function targets over multiple levels of the datatree, it returns single items only! This means in
+case the key_path targets to multiple items the default_return will be given. If the key_path targets to a
+family with only one item inside  or the item_filter extracts only one item in a family
+the item will be given back as result. For multiple result utilize the find_all() method (which is slower).
+HINT: The method will deliver a default_return when ever in the whole key_path a match is not unique.</p>
+<blockquote>
+<div><p>This means iteration is stopped here and even that a deeper iteration with the defined filtering might
+deliver at least a unique result. To ensure to find this deeper results you must utilize the slower
+find_all() method.</p>
+</div></blockquote>
+<p>The key_path parameter given is normally a list. This can be a list of keys or TagIdx objects. The function
+will search for the first item in the first level, fo next item in the next level and so on…</p>
+<p>Absolut and relative key_paths:</p>
+<p>If the first item is the separator (default: ‘/’) the find search is like an absolute path and we start at the
+root of the datatree. For compatibility reasons with find_all we accept  a leading “./”
+(or to be exact: “.%s”#str_path_separator) as absolute path indicator.
+If the first item is different, the key_path is relative and we start from the actual
+item and search the children and sub-children.</p>
+<p>Single string key_path:
+If the user searches for string type tags he can use a string with a separator (default: ‘/’) in between the
+tags (Those key_paths will be implicit translated in a list). An index separator (default = ‘#’) in between
+the tag and the index can also be used in this case. If the argument is already a list the single keys will not
+be parsed regarding the str_path_separator.</p>
+<dl class="simple">
+<dt>HINT: If datatree contains tags with characters that used for separators or the all match ‘*’ character</dt><dd><p>the find() result might contain that tagged item instead of the expected separated or wildcard match.</p>
+</dd>
+</dl>
+<p>HINT: Quickest find operations can be performed by giving a list containing index integers or TagIdx objects</p>
+<p>The parameters in detail:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key_path</strong> – <p>single key or list of keys
+identification path for the item/items to be searched.
+Possible keys:
+integer - behaves like normal __getitem__() -&gt; itree_item[key]
+TagIdx- behaves like normal __getitem__() -&gt; itree_item[key]
+iTreeTagSlice - select a tag sliced group of sub-elements
+iTMatch - search pattern can be used too, but keep in mind it must deliver a unique result!
+Slice - a slice of indexes (like a special index list)
+string - will be parsed by the separators, special string ‘<a href="#id1"><span class="problematic" id="id2">*</span></a>” is as interpreted as any match
+iterable list/tuple/deque,… -</p>
+<blockquote>
+<div><p>run over single items</p>
+</div></blockquote>
+</p></li>
+<li><p><strong>item_filter</strong> – filters the item content regarding NORMAL, TEMPORARY and LINKED flag or a given
+filtering method</p></li>
+<li><p><strong>default_return</strong> – object will be return in case of no match (default = None)</p></li>
+<li><p><strong>path_separator</strong> – separator character in case of strings for the search levels (default: “/”)</p></li>
+<li><p><strong>index_separator</strong> – separator character for given tag indexes (default: “#”)</p></li>
+<li><p><strong>_initial</strong> – Internal flag that should protect against cyclic constructs</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>iTree single item</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>For filter creation we have some helper methods in the iTree object:</p>
+<dl class="py method">
+<dt id="itertree.iTree.create_data_key_filter">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">create_data_key_filter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.create_data_key_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.create_data_key_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>create a item_filter method regarding a specific data key
+:param item_filter: pre filtering method or integer with filter constant
+:param data_key: key that should be filtered out - if no key is given the no key item will be filtered
+:return: specific item filter method</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.create_data_value_filter">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">create_data_value_filter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.create_data_value_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.create_data_value_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>create a item_filter method searching for a specific data content
+:param item_filter: pre filtering method or integer with filter constant
+:param data_value: data content the method will search for
+:return: specific item filter method</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.create_data_item_filter">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">create_data_item_filter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.create_data_item_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.create_data_item_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method creates a item_filter method that searches for specific data item (key, value pair)
+:param item_filter: pre filtering method or integer with filter constant
+:param data_key: key that should be filtered out - if no key is given the no key item will be filtered
+:param data_value: data content the method will search for
+:return: specific item filter method</p>
+</dd></dl>
+
+<p>In each iTree object the user can store data objects. For this the data items are stored in the internal iTData class. It is possible to store just one data item or you can store multiple items by giving key/item pairs to the set function.</p>
+</div>
+<div class="section" id="itree-formatted-output">
+<h2>iTree formatted output<a class="headerlink" href="#itree-formatted-output" title="Permalink to this headline">¶</a></h2>
+<dl class="py method">
+<dt id="itertree.iTree.__repr__">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">__repr__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.__repr__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.__repr__" title="Permalink to this definition">¶</a></dt>
+<dd><p>create representation string from which the object can be reconstructed via eval (might not work in case of
+data that do not have a working repr method)
+:return: represenation string</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.renders">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">renders</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.renders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.renders" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.render">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">render</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.render"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.render" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="itree-file-storage">
+<h2>iTree file storage<a class="headerlink" href="#itree-file-storage" title="Permalink to this headline">¶</a></h2>
+<dl class="py method">
+<dt id="itertree.iTree.dump">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">dump</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.dump"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.dump" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.dumps">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">dumps</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.dumps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.dumps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.load">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">load</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>create an iTree object by loading from a file</p>
+<p>If not overloaded or reinitialized the iTree Standard Serializer will be used. In this case we expect a
+matching JSON representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_path</strong> – file path to the file that contains the iTree information</p></li>
+<li><p><strong>check_hash</strong> – True the hash of the file will be checked and the loading will be stopped if it doesn’t match
+False - do not check the iTree hash</p></li>
+<li><p><strong>load_links</strong> – True - linked iTree objects will be loaded</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>iTree object loaded from file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.iTree.loads">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">loads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.loads"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>create an iTree object by loading from a string</p>
+<p>If not overloaded or reinitialized the iTree Standard Serializer will be used. In this case we expect a
+matching JSON representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_str</strong> – source string that contains the iTree information</p></li>
+<li><p><strong>check_hash</strong> – True the hash of the file will be checked and the loading will be stopped if it doesn’t match
+False - do not check the iTree hash</p></li>
+<li><p><strong>load_links</strong> – True - linked iTree objects will be loaded</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>iTree object loaded from file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>The file storage methods and the rendering methods are initialized by:</p>
+<dl class="py method">
+<dt id="itertree.iTree.init_serializer">
+<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">init_serializer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.init_serializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.init_serializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method sets the exchange environment that should be used. If you leave the parameters as default,
+the standard objects will be used.</p>
+<dl class="simple">
+<dt>HINT: The method logic is called only one time the first time serializing is needed.</dt><dd><p>For standard serializer post import must be done against common python rules
+because pre import will lead into cyclic importing</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>force</strong> – False (Default) - do not reload in case we have already loaded the items</p></li>
+<li><p><strong>exporter</strong> – exporter object for file export of iTree (dump, dumps)</p></li>
+<li><p><strong>importer</strong> – importer object in ces a file import is done (load, loads)</p></li>
+<li><p><strong>serializer</strong> – Object serializer (especially needed for data objects!)</p></li>
+<li><p><strong>renderer</strong> – A renderer for pretty print output of the iTree object</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This method is implizit executed and set to the default serializing functions of itertree. The user might load his own functionalities explicit by using this method or he might overload the iTree class and the init_serializer() method with his own functionality.</p>
+</div>
+</div>
+<div class="section" id="some-background-informations-regarding-itertree">
+<h1>Some background informations regarding itertree<a class="headerlink" href="#some-background-informations-regarding-itertree" title="Permalink to this headline">¶</a></h1>
+<p>The itertree package is originaly developed to be used in an internal test-system configuration and measurement environment. In this environment we must handle a huge number of parameters and attributes which are configured via a Graphical user Interface. The connection of the data and the GUI is realized via the coupled_obj function we have in iTree.</p>
+<p>To find the best solution we made a lot of testing (check of the already available packages and we checked other implementation alternatives (like sorted or ordered dicts) but we came to the conclusion that it makes sense to develop an own, new package to match all our requirements.</p>
+<p>Based on the tests we made the architecture is finally done on a list based implementation with a parallel managed dict that contains the TagIdx based information like tag-families and the related indexes. To speed up large lists we recommend to use blist package. When the itree package is imported we test if the package is available.</p>
+<p>To speed up the instanciating process some information is only generated later on and only in case it is really needed.</p>
+<p>When profiling the different core methods the time consumption can be seen in more detail:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">100000</span>    <span class="mf">0.220</span>    <span class="mf">0.000</span>    <span class="mf">0.473</span>    <span class="mf">0.000</span> <span class="n">itree_main</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">100</span><span class="p">(</span><span class="fm">__init__</span><span class="p">)</span>
+<span class="mi">100000</span>    <span class="mf">0.053</span>    <span class="mf">0.000</span>    <span class="mf">0.076</span>    <span class="mf">0.000</span> <span class="n">itree_main</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">266</span><span class="p">(</span><span class="fm">__getitem__</span><span class="p">)</span>
+<span class="mi">100000</span>    <span class="mf">0.080</span>    <span class="mf">0.000</span>    <span class="mf">0.110</span>    <span class="mf">0.000</span> <span class="n">itree_main</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">318</span><span class="p">(</span><span class="fm">__delitem__</span><span class="p">)</span>
+<span class="mi">100000</span>    <span class="mf">0.178</span>    <span class="mf">0.000</span>    <span class="mf">0.186</span>    <span class="mf">0.000</span> <span class="n">itree_main</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">436</span><span class="p">(</span><span class="fm">__iadd__</span><span class="p">)</span>
+<span class="mi">100000</span>    <span class="mf">0.223</span>    <span class="mf">0.000</span>    <span class="mf">1.379</span>    <span class="mf">0.000</span> <span class="n">itree_main</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">866</span><span class="p">(</span><span class="n">copy</span><span class="p">)</span>
+<span class="mi">100002</span>    <span class="mf">0.234</span>    <span class="mf">0.000</span>    <span class="mf">0.263</span>    <span class="mf">0.000</span> <span class="n">itree_main</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">995</span><span class="p">(</span><span class="n">extend</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>During this profiling run we see that copy() is the most costly operation, next is __init__().</p>
+<p>We do not use much caching in iTree objects only the index values iTree.idx and the tag related index are cached for quicker finding of the item in the list.</p>
+</div>
+<div class="section" id="usage-examples">
+<h1>Usage examples<a class="headerlink" href="#usage-examples" title="Permalink to this headline">¶</a></h1>
+<p>In the example section you can find two example files itree_usage_example.py and itree_data_examples.py which explain how itertree package might be used.</p>
+<p>In the file itree_usage_example.py a larger iTree is build ans manipulated and it is shown how the items in the tree can be reached. The example is in our opinion self explaining and we do not any more hints here.</p>
+<p>In itree_data_examples.py we focus a bit on possible data models that might be used in iTree. We do not use any external packages in the examples but we recommend portion package for range definitions and also the Pydantic package might be a good option to define very powerful data models.</p>
+<p>About the data models one can say that the data model can be used with the focus of checking and formatting of the stored data:
+* check data type
+* check value range (give intervals, limits)
+* do we have an array of the data type and what is max length
+* for strings we can use matches or regex checks of values
+* for formatting think about numerical values (integer dec/hex/bin representation) or float number of digits to round to
+* We can also define more abstract datatypes like keylists or enumerated keys.</p>
+<p>In the file you can see some examples of how this data models can be defiend and used.</p>
+</div>
+<div class="section" id="comparison-with-other-packages">
+<h1>Comparison with other packages<a class="headerlink" href="#comparison-with-other-packages" title="Permalink to this headline">¶</a></h1>
+<p>Each package is develop with a specific focus and therefore a comparison is always a bit misleading. Finally the comparison remarks you find in this chapter are no not at all a judgement of the other packages. Especially the performance tests can also be misleading be cause we may have utilized the other packages in the wrong way.</p>
+<p>In this comparison chapter we will compare iTree with the standard types like dict and lists. Additionally we have a look on xml.ElementTree, sorted_dict (from sorted containers) and the anytree package.</p>
+<p>In the design paradigms of the itertree package can be summarized by the following topics. They will be highlighted and compared:</p>
+<ol class="arabic simple">
+<li><p>We can add any type of tag in the iTree as long as it is hashable and we can add the same tag multiple times in the iTree. Some of the comparable package support only stringtype tags (like anytree or xml.ElementTree). Other allow only unique tags like the keys in dicts (using same key will overwrite the already existing tag in this case).</p></li>
+<li><p>In iTree the item access via index and tag (or TagIdx) is possible. As you will see in the performance tests later many of the other packages are focus on one type of access and the second type is then much slower. In my opinion they are defined to have a specific access type in mind. (E.g. it’s quite clear that index access on huge dicts or key access in huge list will be very slow). But even the search mechanisms in specialized packages are still very slow in my opinion.</p></li>
+<li><p>The access of multiple items via index list is possible my_itree[[1,4,5,6,9]] will deliver the indexed items in an iterator (The access via indexlist is in most packages not supported).</p></li>
+<li><p>The results when running filter queries in iTree will be delivered very quick because we delivering always iterators. But this might make the coding from the point of usage sometimes a bit complicate because if you need index access to a specific element you must have to cast the iterator in a list (by (list(my_iterator)) or use itertools.is_slice() operation. It’s always recommended to addresse the target items via the available iTree methods (find(), find_all() or even iTree[]) directly. You can also use the item_filter and matches to reach your results as good as possible.</p></li>
+<li><p>We can link multiple source files into one iTree object. Most of the packages do not support links and even the load and storage into files is not automatically supported (Users can always create serializers but this can be sometimes very difficult considering all datatypes stored in a tree). iTree delivers the possibility to store several datatypes into a JSON file and we allow to link subparts of a tree into diffrent files. So that you combine your trees from different file sources.</p></li>
+<li><p>At least the data in the iTree objects can be combined with a data model that checks if the give data values matching with the ones expected by the data model. This means jmuch more then just a check of datatype one can also define ranges or intervals to which the given values must match. This functionality makes iTree objects very attractive for the storage of certain configuration data.</p></li>
+</ol>
+<p>To summarize the iTree functions are focused on this given topics. The package is not focused on sorting values. For future extension the group building (e.g. building iTree intersections, etc.) might be realized by delivering the related group interators.</p>
+<p>Under examples you can find the “itree_perfomance.py” file which contains a short performance test regarding other comparable packages. The following results are create with blist package installed and utilized by iTree. I didn’t created a commmandline interface please feel free to adapt the first line regarding the tree size and the number of repetitions. The measured times are always relative to one iteration but it’s a summary of the given number of operations.</p>
+<p>Running the test on a tree with 5000 items delivers the following result on my PC under python 3.5.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="go">&gt;&gt;&gt;python iter_performance.py</span>
+<span class="go">We run for treesizes: 5000 with 4 repetitions</span>
+<span class="go">Exectime time itertree build (with insert): 0.026015675</span>
+<span class="go">Exectime time itertree build: 0.024330450000000003</span>
+<span class="go">Exectime time itertree build: with subtree list comprehension: 0.020939399999999997</span>
+<span class="go">Exectime time itertree tag access: 0.0059641</span>
+<span class="go">Exectime time itertree tag index access: 0.009975650000000003</span>
+<span class="go">Exectime time itertree index access: 0.002971674999999993</span>
+<span class="go">Exectime time itertree save to file: 0.06322012500000002</span>
+<span class="go">Exectime time itertree load from file: 0.049249350000000025</span>
+<span class="go">-- Standard classes -----------------------------------</span>
+<span class="go">Exectime time dict build: 0.0012350749999999744</span>
+<span class="go">Exectime time dict key access: 0.0009292250000000057</span>
+<span class="go">Exectime time dict index access: 0.28833085</span>
+<span class="go">Exectime time list build (via comprehension): 0.0007910749999999744</span>
+<span class="go">Exectime time list build (via append): 0.0010759750000000068</span>
+<span class="go">Exectime time list build (via insert): 0.004880924999999925</span>
+<span class="go">Exectime time list index access: 0.00018914999999997129</span>
+<span class="go">Exectime time list key access: 0.19022565000000002</span>
+<span class="go">Exectime time OrderedDict build: 0.0017937999999999565</span>
+<span class="go">Exectime time OrderedDict key access: 0.00098937500000007</span>
+<span class="go">Exectime time deque build (append): 0.0014920750000000371</span>
+<span class="go">Exectime time deque build (insert): 0.0017849250000000483</span>
+<span class="go">Exectime time deque index access: 0.00027615000000003054</span>
+<span class="go">-- SortedDict ---------------------------------</span>
+<span class="go">Exectime time SortedDict build: 0.052125974999999936</span>
+<span class="go">Exectime time SortedDict key access: 0.0020535250000000005</span>
+<span class="go">Exectime time SortedDict index access: 0.015410475000000035</span>
+<span class="go">-- xml ElementTree ---------------------------------</span>
+<span class="go">Exectime time xml ElementTree build: 0.002996099999999946</span>
+<span class="go">Exectime time xml ElementTree key access: 0.2468151249999999</span>
+<span class="go">Exectime time xml ElementTree index access: 0.00019949999999990808</span>
+<span class="go">-- anytree ---------------------------------</span>
+<span class="go">Exectime time Anytree build: 0.6590694500000001</span>
+<span class="go">Exectime time Anytree key access (no cache): 28.046290425000002</span>
+<span class="go">Exectime time Anytree index access: 0.09262174999999928</span>
+</pre></div>
+</div>
+<p>I have following comments on the findings:</p>
+<ol class="arabic simple">
+<li><p>iTree objects behave ~ 20 times slower then the build in objects like dict, lists, etc. Reason is mainly that iTree is a pure python package which does not has the the speed advantage of an underlaying C-Layer. Anyway a 20 times slower execution is really not an issue if you consider the wide range of functionalities found in iTree objects.</p></li>
+<li><p>For untypical access of dict per idx or list per key the buildin objects perform ~ 100 times slower then iTree.</p></li>
+<li><p>The other tree like packages are on par or slower then iTree (in some cases incredible slower). An exception is the package xml-ElementTree which incredible fast in case of index access (quicker then buildin lists).</p></li>
+</ol>
+<p>On a large tree of 500000 we have the following findings:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="go">&gt;&gt;&gt;python iter_performance.py</span>
+<span class="go">We run for treesizes: 500000 with 4 repetitions</span>
+<span class="go">Exectime time itertree build (with insert): 2.6232671499999998</span>
+<span class="go">Exectime time itertree build: 2.7199797</span>
+<span class="go">Exectime time itertree build: with subtree list comprehension: 2.31382715</span>
+<span class="go">Exectime time itertree tag access: 0.6250698000000003</span>
+<span class="go">Exectime time itertree tag index access: 1.0864297</span>
+<span class="go">Exectime time itertree index access: 0.286127350000001</span>
+<span class="go">Exectime time itertree save to file: 6.571910975</span>
+<span class="go">Exectime time itertree load from file: 5.457168599999999</span>
+<span class="go">-- Standard classes -----------------------------------</span>
+<span class="go">Exectime time dict build: 0.20076107499999907</span>
+<span class="go">Exectime time dict key access: 0.14599812499999842</span>
+<span class="go">Exectime time dict index access: skipped incredible slow</span>
+<span class="go">Exectime time list build (via comprehension): 0.10968072500000048</span>
+<span class="go">Exectime time list build (via append): 0.12277327499999657</span>
+<span class="go">Exectime time list build (via insert): 48.27888635</span>
+<span class="go">Exectime time list index access: 0.021388675000011403</span>
+<span class="go">Exectime time list key access: Skipped incredible slow</span>
+<span class="go">Exectime time OrderedDict build: 0.30613169999999457</span>
+<span class="go">Exectime time OrderedDict key access: 0.14227942499999813</span>
+<span class="go">Exectime time deque build (append): 0.17697375000000193</span>
+<span class="go">Exectime time deque build (insert): 0.20823397499999885</span>
+<span class="go">Exectime time deque index access: 7.319813974999988</span>
+<span class="go">-- SortedDict ---------------------------------</span>
+<span class="go">Exectime time SortedDict build: 5.629920824999999</span>
+<span class="go">Exectime time SortedDict key access: 0.18590682500000355</span>
+<span class="go">Exectime time SortedDict index access: 1.7704129499999937</span>
+<span class="go">-- xml ElementTree ---------------------------------</span>
+<span class="go">Exectime time xml ElementTree build: 0.487862475</span>
+<span class="go">xml ElementTree key access skipped -&gt; too slow</span>
+<span class="go">Exectime time xml ElementTree index access: 0.02187282500000265</span>
+<span class="go">-- anytree ---------------------------------</span>
+<span class="go">Exectime time Anytree build: 0.6846071249999994</span>
+<span class="go">Anytree key access skipped -&gt; incredible slow</span>
+<span class="go">Exectime time Anytree index access: not working</span>
+</pre></div>
+</div>
+<p>Some of the steps are skipped because bad performance (some functions need hours).</p>
+<p>Maybe I made something wrong but I did not get the anytree package working for bigger treesizes (only building worked but access did not work).</p>
+<p>Insertion of elements in lists is very slow. This might only be a minor cornercase because filling a list might always be done by append() or even better with a list comprehension. The iTree insertion mechanism (based on blist) works much quicker and is nearly on the speed of append(). But we also recommend list comprehension mechanism for quickest filling of itertrees too. The mayor time in filling an iTree goes into the instanciation and if need copy() of the list items.</p>
+<div class="section" id="itree-vs-dict-collections-ordereddict">
+<h2>iTree vs. dict / collections.OrderedDict<a class="headerlink" href="#itree-vs-dict-collections-ordereddict" title="Permalink to this headline">¶</a></h2>
+<p>For the base functionality storing data paired with hashable objects as keys in a data structure where one can find the data by giving the key or iterate over the items the dict is 20 times quicker then iTree. But we have a lot of limitations. We cannot store one and the same hashable object (key) multiple times in the dict (item will always be overwritten). You can build nested dicts by putting sub dicts into dict keys. But the access to this nested structure is very limited no deep iterations are available out of the boy. Also search queries must be programmed above the dict structure. The normal dict does not support ordered storage only the OerderedDict axtension does this. At least we do not have acces to the order by index we always must create an iterator that can be misused for index access. Summary for the limited functional target the dict is a more effective way to store data then the iTree. But the overall functionality of iTree in all highlighted directions is much bigger then in dicts.</p>
+</div>
+<div class="section" id="itree-vs-list-collections-deque">
+<h2>iTree vs. list / collections.deque<a class="headerlink" href="#itree-vs-list-collections-deque" title="Permalink to this headline">¶</a></h2>
+<p>For lists and nested list we can found the same pros and cons we had for dicts in the last chapter except that the access in list is focused on index and not keywise access. We can say that index access in iTrees is also the most performent way to access items (quicker then tag or TagIdx based access). Insert operations in lists can be also very slow. For huge trees we recommend to install blist package which outperformnce lists in a lot of circumstances. Beside the the tag based access itree objects can also be reached via index lists (not available in lists). Deque objects behave in general as lists. We can quicker insert elements (linklist extension is easy) but get an items index() works much slower as in normal lists.</p>
+</div>
+<div class="section" id="itree-vs-xml-elementree">
+<h2>iTree vs. xml ElemenTree<a class="headerlink" href="#itree-vs-xml-elementree" title="Permalink to this headline">¶</a></h2>
+<p>The xml ElementTree package goes very much in the same direction as the iTree package. The performance regarding any list related action is very good and much better then iTree can deliver (C-Layer). But the handling of ElemntTrees is totally different. Trees are normally build by external factory functions an internal build interface is available too (list like behavior). The same tag can be stored multiple times in an ElemenTree. As the naming tells the package is mainly build to provide all xml related data structures and fucntionalities. And the storage and loading into/from files is widely support. By the way serializing of none string objects in the tree must be managed and organized by the user. The data is stored under string tags one cannot use any hashable object here. Even the string usage is limited to the xml nameing convention (e.g. no spaces are allowed). For queries in the tree one can use the xpath syntax. iTree has comparible functionalities. Beside the index access iTree is quicker the ElemenTree especially when searching for specific tags. Serialization and storage is more efficeant then in ElemenTree. But iTree does not have all the xml powered higher level functionalities like schemata, etc. which are support by ElemenTree, this is no not at all the target of iTree.</p>
+</div>
+<div class="section" id="itree-vs-sorted-dict">
+<h2>iTree vs. sorted_dict<a class="headerlink" href="#itree-vs-sorted-dict" title="Permalink to this headline">¶</a></h2>
+<p>The sorted_dict package from sorted_contains might be used for the same proposes iTree is build for. But the architecture for realization is a bit different. Sorted_dict supports key and index based access. But one cannot store same key multiple times (behavior is here the same as in normal dicts). The iTree object has not the target of sorting items in different ways. Furthermore iTree tries to relize filtered access to the items by keeping the original order. In one first approach the author tried to realize the iTree functionalities with an underlying sorted_dict. But the performance of the approach was worse and we changed the strategy.
+iTree does not yet support the grouping function supported by sorted-dicts. But building intersections, etc. of two or more iTrees might be supported in an upcoming version of iTree. The performance of sorted-dicts regarding the design paradigms of iTree is less good. Especially the instanciation of sorted-dict objects of a huge number is 2 times slower than for iTree objects.</p>
+</div>
+<div class="section" id="itree-vs-anytree">
+<h2>iTree vs. anytree<a class="headerlink" href="#itree-vs-anytree" title="Permalink to this headline">¶</a></h2>
+<p>The anytree packages gains mostly in the same direction as itertree. You can find nearly comparable serialization possibiliies. The rendering found in iTree is a simple “copy” of what you can get in anytree. As in iTree objects you can combine children of same name with a parent in anytree too. But you can only use string based tags. The way you can navigate in the tree is in anytree a bit more extended compared to iTree object. Before the itertree package was developed we thought anytree is the solution to go for and there is no need for a package like itertree. But the results of the anytree package tests we did where very ambigous. We found a very rich featureset but in some cases a very poor performance. But the real blocker is that the access to the children property on large trees (&gt;10000 items) is not working at all (or we do something wrong).</p>
+<p>At least we came to the conclusion that anytree seems not match to our requirements for tree structured storage and access. From description it should match, but in practice the package did not work for us as expected.</p>
+<div class="toctree-wrapper compound">
+</div>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2021
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
