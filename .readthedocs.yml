@@ -16,6 +16,6 @@ formats:
 python:
    version: 3.5
    install:
-   - method: pip
-     path itertree
+   - requirements: docs/requirments.txt
+     
      
