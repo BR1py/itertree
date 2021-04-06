@@ -16,6 +16,11 @@ formats:
 python:
    version: 3.5
    install:
-   - requirements: docs/requirments.txt
-     
-     
+   - requirements: docs/requirements.txt
+    - method: pip
+      path: .
+      extra_requirements:
+        - docs
+    - method: setuptools
+      path: another/package
+  system_packages: true
