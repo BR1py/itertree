@@ -26,7 +26,6 @@ print(__file__)
 sys.path.insert(0, os.path.abspath('../../src'))
 sys.path.insert(0, os.path.abspath('../../src/itertree'))
 #print(os.path.exists(os.path.abspath('../../src')))
-from itertree import *
 
 # -- General configuration ------------------------------------------------
 
