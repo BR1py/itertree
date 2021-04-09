@@ -28,244 +28,59 @@ OR=1
 
 PRE_ALLOC_SIZE = 300
 
-class iTMagicList():
-    '''
-    This object should increase th performance on huge lists by allocating the memory in blocks
-    and using numpy
-    '''
-    __slots__ = ('_length','_items2','_is_list')
-
-    
-    def __init__(self, def_list=None):
-        self._is_list = True
-        if def_list is not None:
-            self._length = len(def_list)
-            if self._length > PRE_ALLOC_SIZE:
-                self._items2 = np.array(def_list, dtype=np_object)
-                self.pre_alloc_list()
-            else:
-                self._items2 =list(def_list)
-        else:
-            self._length = 0
-            self._items2 = []
-
-    def pre_alloc_list(self,length=None):
-        if length is None:
-            length=PRE_ALLOC_SIZE
-        else:
-            length=length+PRE_ALLOC_SIZE
-        self._items2 = np.hstack([self._items2[:self._length], np.empty(length, dtype=np_object)])
-        self._is_list = False
-
-    def _valid_idx_except(self,idx):
-        t = type(idx)
-        if t is int:
-            if idx >= self._length or idx < -self._length:
-                return IndexError('Given index is out of range')
-            return idx
-        elif t is slice:
-            self._valid_idx_except(idx.start)
-            if idx.stop is not None:
-                self._valid_idx_except(idx.stop)
-            return idx
-        else: # index list
-            try:
-                if len(idx)>PRE_ALLOC_SIZE:
-                    idx=np.array(idx)
-                    if len(np.where(idx >= self._length | idx < -self._length)[0])>0:
-                        return IndexError('Given index is out of range')
-                    return idx
-            except AttributeError:
-                pass
-            return [self._valid_idx_except(i) for i in idx]
-
-    def __getitem__(self, key):
-        if self._is_list:
-            if type(key) in {int,slice}:
-                self._valid_idx_except(key)
-                return self._items2[key]
-            return [self.___getitem__(k) or None for k in key]
-        else:
-            self._valid_idx_except(key)
-            return self._items2[key]
-
-    def __setitem__(self, key, item):
-        if key < 0:
-            key = self._length - key
-        try:
-            self._items2[key] = item
-            if key>=self._length:
-                self._length += 1
-        except IndexError:
-            self.pre_alloc_list()
-            self._items2[key] = item
-            if key>=self._length:
-                self._length += 1
-
-    def __delitem__(self, key):
-        key=self._valid_idx_except(key)
-        if self._is_list:
-            if type(key) is int:
-                del self._items2[key]
-                self._length-=1
-            else:
-                self._length-=len((self._items2.__delete__(k) for k in key))
-        else:
-            if type(key) is int:
-                key = [key]
-            self._items2 = np.delete(self._items2, key)
-            self._length-=len(key)
-            if len(self._items2)-self._length>PRE_ALLOC_SIZE:
-                #free mem
-                self._items2=self._items2[:self._length]
-
-    def __len__(self):
-        return self._length
-
-    def __contains__(self,other):
-        return other in self._items2
-
-    def __iter__(self):
-        return iter(self._items2)
-
-    @property
-    def delta(self):
-        return len(self._items2)-self._length
-
-    def remove(self, item):
-        if self._is_list:
-            self._items2.remove(item)
-            self._length-=1
-        else:
-            i = np.where(self._items2 == item)[0]
-            if len(i) > 0:
-                self._items2 = np.delete(self._items2, i)
-                self._length-=len(i)
-                if self.delta>PRE_ALLOC_SIZE:
-                    #free mem
-                    self._items2=self._items2[:self._length]
-
-    def insert(self,key,item):
-        '''
-        the insert operation  is by far th eslowest operation and should be avoided
-        :param key: insert position
-        :param item: item to be inserted
-        :return: True
-        '''
-        self._valid_idx_except(key)
-        if key<0:
-            key=self._length-key
-        if key>self._length:
-            # we append
-            try:
-                self._items2[self._length] = item
-                self._length += 1
-            except IndexError:
-                self.pre_alloc_list()
-                self._items2[self._length] = item
-                self._length += 1
-        else:
-            if self._is_list:
-                self._items2.insert(key,item)
-                self._length += 1
-            else:
-                #self._items[(key+1):(self._length+1)]=self._items[key:self._length]
-                #self._items[key]=item
-                l=len(self._items2)
-                self._items2=np.insert(self._items2,key,item)
-                self._length += (len(self._items2)-l)
-
-    def append(self, item):
-        if not self._is_list:
-            if self._length>=len(self._items2):
-                self.pre_alloc_list()
-            self._items2[self._length] = item
-            self._length += 1
-        else:
-            if self._length>=PRE_ALLOC_SIZE:
-                self.pre_alloc_list()
-                self._items2[self._length] = item
-                self._length += 1
-            else:
-                self._items2.append(item)
-                self._length +=1
-        # positive return needed for list comprehensions
-        return True
-
-    def extend(self, items):
-        try:
-            size=len(items)
-            delta=self.delta
-            if delta<=size:
-                self.pre_alloc_list((size-delta))
-        except AttributeError:
-            # we might have an iterator therefore we cannot pre allocate!
-            size=None
-        if self._is_list:
-            self._items2.extend(items)
-            if len(self._items2)>PRE_ALLOC_SIZE:
-                self._items2=np.array(self._items2,dtype=np_object)
-        else:
-            if size is None:
-                self._items2=np.insert(self._items2,self._depth,items)
-            else:
-                self._items2[np.arange(self._depth,(self._depth+size))]=items
-        # positive return needed for list comprehensions
-        return True
-
-    def pop(self,key=None):
-        if key is None:
-            key=self._length-1
-        else:
-            self._valid_idx_except(key)
-        if self._is_list:
-            if type(key) is int:
-                item = self._items2[key]
-                del self._items2[key]
-                self._length-=1
-            else:
-                item=[self._items2.pop(k) for k in key]
-                self._length -=len(item)
-        else:
-            item = self._items2[key]
-            self._items2 = np.delete(self._items2, key)
-            self._length-=len(item)
-            if self.delta > PRE_ALLOC_SIZE:
-                # free mem
-                self._items2 = self._items2[:self._length]
-        return item
-
-    def __repr__(self):
-        return str(list(self._items2[:self._length]))
 
 class iTLink(object):
     '''
     Definition of a link to an element in another DataTree
     '''
-    __slots__ = ("_ref_path", "_ref_key",'_loaded')
+    __slots__ = ("_file_path", "_key_path",'_loaded','_link_data','_link_tag')
 
-    def __init__(self, ref_path, ref_key, ref_first=False):
-        self._ref_path = ref_path
-        self._ref_key = ref_key
+    def __init__(self, file_path, key_path=None):
+        self._file_path = file_path
+        self._key_path = key_path
         self._loaded = None
+        self._link_tag=None
+        self._link_data=None
 
     @property
     def loaded(self):
         return self._loaded
 
     @property
-    def is_iTreeLink(self):
+    def is_loaded(self):
+        return self._loaded is not None
+
+    @property
+    def file_path(self):
+        return self._file_path
+
+    @property
+    def key_path(self):
+        return self._key_path
+
+    @property
+    def is_iTLink(self):
         return True
 
-    def set_loaded(self):
+    @property
+    def link_tag(self):
+        return self._link_tag
+
+    @property
+    def link_data(self):
+        return self._link_data
+
+    def set_loaded(self,tag=None,data=None):
         self._loaded=time.time()
+        self._link_tag=tag
+        self._link_data=data
 
     def dict_repr(self):
-        return {'ref_path':self._ref_path,'ref_key':self._ref_key}
+        return {'path':self._file_path,'key':self._key_path}
 
     def __repr__(self):
-        return 'iTreeLink(ref_path=%s, ref_key=%s)' % (
-        repr(self._ref_path), repr(self._ref_key), )
+        return 'iTreeLink(file_path=%s, key_path=%s)' % (
+        repr(self._file_path), repr(self._key_path), )
 
 
 class iTMatch(object):
@@ -281,7 +96,7 @@ class iTMatch(object):
         self._check = self._analyse(pattern)
 
     @property
-    def is_iTreeMatch(self):
+    def is_iTMatch(self):
         return True
 
     def _analyse(self, pattern):
@@ -366,9 +181,8 @@ class iTMatch(object):
             return False
         tag = item._tag
         result=not self._op
-        check=fnmatch.fnmatch
         for pattern in patterns:
-            stop, result = self._op_logic(result, check(tag, pattern))
+            stop, result = self._op_logic(result, self._generic_fnmatch(tag, pattern))
             if stop:
                 return result
         return result
@@ -387,6 +201,7 @@ class iTMatch(object):
                     return False
             return True
 
+
     def _check_sub(self, item, item_filter=None, patterns=None):
         if patterns is None:
             return False
@@ -396,6 +211,11 @@ class iTMatch(object):
             if stop:
                 return result
         return result
+
+    def _generic_fnmatch(self,value,pattern):
+        if type(value) not in {str,bytes}:
+            return False
+        return fnmatch.fnmatch(value,pattern)
 
     def check(self, item, item_filter=ALL):
         if type(item_filter) is int:

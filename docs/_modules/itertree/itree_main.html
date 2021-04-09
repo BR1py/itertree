@@ -244,6 +244,7 @@
 <span class="sd">                                          be made.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
+
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s1">&#39;_tag&#39;</span><span class="p">,</span> <span class="s1">&#39;_parent&#39;</span><span class="p">,</span> <span class="s1">&#39;_map&#39;</span><span class="p">,</span> <span class="s1">&#39;_flags&#39;</span><span class="p">,</span> <span class="s1">&#39;_coupled&#39;</span><span class="p">,</span> <span class="s1">&#39;_link&#39;</span><span class="p">,</span> <span class="s1">&#39;_data&#39;</span><span class="p">,</span> <span class="s1">&#39;_cache&#39;</span><span class="p">,</span> <span class="s1">&#39;_def_serializer&#39;</span><span class="p">)</span>
         <span class="c1">#&#39;_length&#39;,&#39;_items&#39;,&#39;_is_list&#39;)</span>
@@ -294,6 +295,9 @@
 
 <span class="sd">        :return  None</span>
 <span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_parent</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="n">parent</span><span class="o">.</span><span class="n">is_linked</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span><span class="s1">&#39;Linked item cannot be manipulated&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">set</span>
 
     <span class="nd">@property</span>
@@ -307,6 +311,7 @@
 
 <span class="sd">        :return: data attribute object</span>
 <span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_parent</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">get</span>
 
     <span class="nd">@property</span>
@@ -320,6 +325,9 @@
 
 <span class="sd">        :return: tuple (True/False,&#39;check details&#39;)</span>
 <span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_parent</span>
+        <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">parent</span><span class="o">.</span><span class="n">is_linked</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span><span class="s1">&#39;Linked item cannot be manipulated&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">check</span>
 
     <span class="nd">@property</span>
@@ -328,7 +336,15 @@
 <span class="sd">        data related pop (will delete the given key</span>
 <span class="sd">        :return:</span>
 <span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_parent</span>
+        <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">parent</span><span class="o">.</span><span class="n">_is_linked</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span><span class="s1">&#39;Linked item cannot be manipulated&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">pop</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+
 
 <div class="viewcode-block" id="iTree.init_serializer"><a class="viewcode-back" href="../../itertree.html#itertree.iTree.init_serializer">[docs]</a>    <span class="k">def</span> <span class="nf">init_serializer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exporter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">importer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">serializer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">renderer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -375,7 +391,7 @@
 <span class="sd">        :return: value</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flags</span> <span class="o">&amp;</span> <span class="n">LINKED</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span><span class="s1">&#39;In linked iTrees we cannot change any items&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span><span class="s1">&#39;In linked iTrees we cannot change the structure&#39;</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">_parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
@@ -413,7 +429,7 @@
                 <span class="n">m</span><span class="p">[</span><span class="n">v_tag</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="n">value</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">value</span></div>
 
-<div class="viewcode-block" id="iTree.__getitem__"><a class="viewcode-back" href="../../Index_itertree.html#itertree.iTree.__getitem__">[docs]</a>    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<div class="viewcode-block" id="iTree.__getitem__"><a class="viewcode-back" href="../../Index_itertree.html#itertree.iTree.__getitem__">[docs]</a>    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span><span class="n">str_index_separator</span><span class="o">=</span><span class="s1">&#39;#&#39;</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Main getter for items</span>
 
@@ -427,7 +443,7 @@
 <span class="sd">                  with the tag in the tree!!!</span>
 
 <span class="sd">        :param key: single target: index, TagIdx or tuple (tag, index) (not recommended)</span>
-<span class="sd">                    multi target: TagIdx_s or an iterable (like list) of these keys or a slice</span>
+<span class="sd">                    multi target: TagIdx_s; iMatch; slice or an iterable (like list) of these keys</span>
 <span class="sd">        :return: iTree item or iterator (multi target)</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">t</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
@@ -448,17 +464,23 @@
         <span class="k">elif</span> <span class="n">t</span> <span class="ow">is</span> <span class="nb">slice</span><span class="p">:</span>
             <span class="c1"># return an iterator over the slice</span>
             <span class="k">return</span> <span class="n">itertools</span><span class="o">.</span><span class="n">islice</span><span class="p">(</span><span class="nb">super</span><span class="p">(</span><span class="n">iTree</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">(),</span> <span class="n">key</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">key</span><span class="o">.</span><span class="n">stop</span><span class="p">,</span> <span class="n">key</span><span class="o">.</span><span class="n">step</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">t</span> <span class="ow">is</span> <span class="n">iTMatch</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="n">key</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">item</span><span class="p">),</span><span class="nb">super</span><span class="p">(</span><span class="n">iTree</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">())</span>
         <span class="k">elif</span> <span class="n">t</span> <span class="ow">is</span> <span class="nb">list</span> <span class="ow">or</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s1">&#39;__next__&#39;</span><span class="p">):</span>
             <span class="c1"># list or iterator HINT: We expect that the items are valid items like integer index or TagIdx items</span>
             <span class="c1"># -&gt; return an iterator</span>
             <span class="k">return</span> <span class="nb">iter</span><span class="p">([</span><span class="bp">self</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">key</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
+
             <span class="c1"># here we expect a tag only and we deliver the related iterator</span>
             <span class="n">m</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_map</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="c1"># we return a family iterator here</span>
                 <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
             <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="c1"># less quick not recommended options:</span>
+                <span class="k">if</span> <span class="n">t</span> <span class="ow">is</span> <span class="nb">str</span> <span class="ow">and</span> <span class="n">str_index_separator</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">TagIdx</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="n">tag_separator</span><span class="o">=</span><span class="n">str_index_separator</span><span class="p">)]</span>
                 <span class="k">if</span> <span class="n">t</span> <span class="ow">is</span> <span class="nb">tuple</span><span class="p">:</span>
                     <span class="c1"># we recheck here for tuples (tag,index)</span>
                     <span class="c1"># but it&#39;s recommended to use TagIdx objects instead</span>
@@ -473,6 +495,8 @@
 <span class="sd">                    multi target: TagIdx_s or an iterable (like list) of these keys or a slice</span>
 <span class="sd">        :return:</span>
 <span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flags</span> <span class="o">&amp;</span> <span class="n">LINKED</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span><span class="s1">&#39;In linked iTrees we cannot change the structure&#39;</span><span class="p">)</span>
         <span class="n">t</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="n">m</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_map</span>
         <span class="k">if</span> <span class="n">t</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
@@ -486,7 +510,7 @@
             <span class="k">return</span> <span class="n">del_item</span>
         <span class="k">elif</span> <span class="n">t</span> <span class="ow">is</span> <span class="n">TagIdx</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">is_single</span><span class="p">:</span>
-                <span class="n">family</span> <span class="o">=</span> <span class="n">mp</span><span class="p">[</span><span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+                <span class="n">family</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
                 <span class="n">del_item</span> <span class="o">=</span> <span class="n">family</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">family</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="k">del</span> <span class="n">m</span><span class="p">[</span><span class="n">del_item</span><span class="o">.</span><span class="n">_tag</span><span class="p">]</span>
@@ -574,6 +598,8 @@
 <span class="sd">        :param other: iTree object that should be added</span>
 <span class="sd">        :return: New iTree object containing copies of all children</span>
 <span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flags</span> <span class="o">&amp;</span> <span class="n">LINKED</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span><span class="s1">&#39;In linked iTrees we cannot change the structure&#39;</span><span class="p">)</span>
         <span class="n">items</span><span class="o">=</span><span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">super</span><span class="p">(</span><span class="n">iTree</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">()]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">other</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="s1">&#39;_parent&#39;</span><span class="p">):</span>
@@ -589,6 +615,8 @@
 <span class="sd">        :param other: iTree object that should be added</span>
 <span class="sd">        :return: None</span>
 <span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flags</span> <span class="o">&amp;</span> <span class="n">LINKED</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span><span class="s1">&#39;In linked iTrees we cannot change the structure&#39;</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">_parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">RecursionError</span><span class="p">(</span><span class="s1">&#39;Given item has already a parent iTree!&#39;</span><span class="p">)</span>
@@ -704,7 +732,7 @@
             <span class="n">repr_str</span> <span class="o">=</span> <span class="n">repr_str</span> <span class="o">+</span> <span class="s1">&#39;, link=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_link</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flags</span> <span class="o">&amp;</span> <span class="n">TEMPORARY</span><span class="p">:</span>
             <span class="n">repr_str</span> <span class="o">=</span> <span class="n">repr_str</span> <span class="o">+</span> <span class="s1">&#39;, is_temp=True&#39;</span>
-        <span class="k">if</span> <span class="nb">super</span><span class="p">(</span><span class="n">iTree</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">super</span><span class="p">(</span><span class="n">iTree</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flags</span><span class="o">&amp;</span><span class="n">LINKED</span><span class="p">:</span>
             <span class="n">subtree</span><span class="o">=</span><span class="nb">super</span><span class="p">(</span><span class="n">iTree</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">subtree</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;b&#39;</span><span class="p">:</span>
                 <span class="c1"># we shorten blist from definition</span>
@@ -765,7 +793,7 @@
 <span class="sd">        Are the sub items of this item linked ones?</span>
 <span class="sd">        :return: True/False</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flags</span> <span class="o">&amp;</span> <span class="n">LINKED</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flags</span><span class="o">&amp;</span><span class="n">LINKED</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">is_link_loaded</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -773,10 +801,10 @@
 <span class="sd">        For linked iTree objects we deliver here the state of loading the links</span>
 <span class="sd">        :return: True/False</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flags</span> <span class="o">&amp;</span> <span class="n">LINKED</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flags</span><span class="o">&amp;</span><span class="n">LINKED</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_link</span><span class="o">.</span><span class="n">link_loaded</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_link</span><span class="o">.</span><span class="n">is_loaded</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">parent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -958,23 +986,20 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coupled</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        delivers the internal data structure object</span>
-<span class="sd">        HINT: It&#39;s more for debugging proposes, it&#39;s no recommended to maipulate the data via this object use the</span>
-<span class="sd">        get(),set(), etc. instead</span>
-<span class="sd">        :return:</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
 
     <span class="c1"># set properties</span>
 
 <div class="viewcode-block" id="iTree.set_temporary"><a class="viewcode-back" href="../../itertree.html#itertree.iTree.set_temporary">[docs]</a>    <span class="k">def</span> <span class="nf">set_temporary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_parent</span>
+        <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">parent</span><span class="o">.</span><span class="n">_is_linked</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span><span class="s1">&#39;Linked item cannot be manipulated&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flags</span> <span class="o">&amp;</span> <span class="n">TEMPORARY</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_flags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flags</span> <span class="o">|</span> <span class="n">TEMPORARY</span>  <span class="c1">#</span></div>
 
 <div class="viewcode-block" id="iTree.unset_temporary"><a class="viewcode-back" href="../../itertree.html#itertree.iTree.unset_temporary">[docs]</a>    <span class="k">def</span> <span class="nf">unset_temporary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_parent</span>
+        <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">parent</span><span class="o">.</span><span class="n">_is_linked</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span><span class="s1">&#39;Linked item cannot be manipulated&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flags</span> <span class="o">&amp;</span> <span class="n">TEMPORARY</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_flags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flags</span> <span class="o">&amp;</span> <span class="o">~</span> <span class="n">TEMPORARY</span></div>
 
@@ -1016,21 +1041,17 @@
 <div class="viewcode-block" id="iTree.copy"><a class="viewcode-back" href="../../itertree.html#itertree.iTree.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">copy_data</span><span class="o">=</span><span class="n">COPY_NORMAL</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        create a copy of this item</span>
+
+<span class="sd">        The function is used internally in extend operations too. And we can see (profiler) that</span>
+<span class="sd">        improvements in this method might have big impact.</span>
+
 <span class="sd">        :param copy_data: Type of copy</span>
 <span class="sd">                          COPY_OFF - keep the data uncopied</span>
 <span class="sd">                          COPY_NORMAL - (default) copy the data too</span>
 <span class="sd">                          COPY_DEEP - do a deepcopy()</span>
 <span class="sd">        :return:</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-
-        <span class="k">if</span> <span class="n">copy_data</span> <span class="o">==</span> <span class="n">COPY_OFF</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
-        <span class="k">elif</span> <span class="n">copy_data</span> <span class="o">==</span> <span class="n">COPY_NORMAL</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">copy_data</span> <span class="o">==</span> <span class="n">COPY_DEEP</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Unknown copy_data parameter value </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">copy_data</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">copy_data</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_linked</span><span class="p">:</span>
             <span class="n">new</span> <span class="o">=</span> <span class="n">iTree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tag</span><span class="p">,</span>
                         <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
@@ -1043,7 +1064,7 @@
             <span class="n">new</span> <span class="o">=</span> <span class="n">iTree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tag</span><span class="p">,</span>
                         <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
                         <span class="n">is_temp</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_flags</span> <span class="o">&amp;</span> <span class="n">T</span><span class="p">),</span>
-                        <span class="n">subtree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">iter_children</span><span class="p">()</span>
+                        <span class="n">subtree</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">iter_children</span><span class="p">()</span> <span class="c1"># here we create a recursion!</span>
                         <span class="p">)</span>
         <span class="k">return</span> <span class="n">new</span></div>
 
@@ -1086,6 +1107,8 @@
 <span class="sd">        :param value: item that should be inserted in the tree (new child)</span>
 <span class="sd">        :return: None</span>
 <span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flags</span> <span class="o">&amp;</span> <span class="n">LINKED</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span><span class="s1">&#39;In linked iTrees we cannot change the structure&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">iTree</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;In iTree only children of type iTree can be integrated&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1154,6 +1177,8 @@
 <span class="sd">        :return: None</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="c1"># collect for operation</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flags</span> <span class="o">&amp;</span> <span class="n">LINKED</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span><span class="s1">&#39;In linked iTrees we cannot change the structure&#39;</span><span class="p">)</span>
         <span class="n">sl</span><span class="o">=</span><span class="nb">super</span><span class="p">(</span><span class="n">iTree</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
         <span class="n">m</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_map</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">extend_items</span><span class="p">:</span>
@@ -1166,10 +1191,9 @@
             <span class="n">tag</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">tag</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">family</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="n">tag</span><span class="p">]</span>
-                <span class="n">l</span> <span class="o">=</span> <span class="n">family</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span>
+                <span class="n">cache</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">l</span> <span class="o">=</span> <span class="n">family</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">l</span> <span class="o">==</span> <span class="n">BLIST_SWITCH</span><span class="p">:</span>
                     <span class="n">m</span><span class="p">[</span><span class="n">tag</span><span class="p">]</span> <span class="o">=</span> <span class="n">family</span> <span class="o">=</span> <span class="n">blist</span><span class="p">(</span><span class="n">family</span><span class="p">)</span>
-                <span class="n">cache</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">l</span>
                 <span class="n">family</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
                 <span class="n">cache</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
@@ -1191,6 +1215,8 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="c1"># start_idx=len(extend_items)-1</span>
         <span class="c1"># collect for operation</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flags</span> <span class="o">&amp;</span> <span class="n">LINKED</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span><span class="s1">&#39;In linked iTrees we cannot change the structure&#39;</span><span class="p">)</span>
         <span class="n">sl</span><span class="o">=</span><span class="nb">super</span><span class="p">(</span><span class="n">iTree</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
         <span class="n">m</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_map</span>
         <span class="n">l</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">extend_items</span><span class="p">)</span>
@@ -1271,6 +1297,8 @@
 
 <span class="sd">        :return: None</span>
 <span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flags</span> <span class="o">&amp;</span> <span class="n">LINKED</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span><span class="s1">&#39;In linked iTrees we cannot change the structure&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">new_tag</span><span class="p">)</span> <span class="ow">in</span> <span class="p">{</span><span class="nb">int</span><span class="p">,</span> <span class="n">TagIdx</span><span class="p">}:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Given tag cannot be used in iTree wrong type (int or TagIdx)&#39;</span><span class="p">)</span>
         <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span>
@@ -1294,6 +1322,8 @@
             <span class="n">new_family</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="iTree.reverse"><a class="viewcode-back" href="../../itertree.html#itertree.iTree.reverse">[docs]</a>    <span class="k">def</span> <span class="nf">reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flags</span> <span class="o">&amp;</span> <span class="n">LINKED</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span><span class="s1">&#39;In linked iTrees we cannot change the structure&#39;</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">iTree</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">item</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span></div>
@@ -1305,6 +1335,8 @@
 <span class="sd">        :param n:</span>
 <span class="sd">        :return:</span>
 <span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flags</span> <span class="o">&amp;</span> <span class="n">LINKED</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">PermissionError</span><span class="p">(</span><span class="s1">&#39;In linked iTrees we cannot change the structure&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
                 <span class="n">rot_item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
@@ -1316,46 +1348,53 @@
 
     <span class="c1"># iterators</span>
 
-<div class="viewcode-block" id="iTree.iter_all"><a class="viewcode-back" href="../../itertree.html#itertree.iTree.iter_all">[docs]</a>    <span class="k">def</span> <span class="nf">iter_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_filter</span><span class="o">=</span><span class="n">ALL</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">top_down</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="iTree.iter_all"><a class="viewcode-back" href="../../itertree.html#itertree.iTree.iter_all">[docs]</a>    <span class="k">def</span> <span class="nf">iter_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_filter</span><span class="o">=</span><span class="n">ALL</span><span class="p">,</span> <span class="n">top_down</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">filter_or</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        main iterator for whole tree runs in top-&gt; down order</span>
 
 <span class="sd">        :param item_filter: filter for filter the items you can give a filter constant or</span>
 <span class="sd">                            a method for filtering (should return True/False)</span>
 <span class="sd">        :param match: match pattern a iTMatch object</span>
-<span class="sd">        top_down: True -  we start from parent to children</span>
+<span class="sd">        :param top_down: True -  we start from parent to children</span>
 <span class="sd">                          parent; child1; subchild1_1; subchild1_2; child2; subchild2_1</span>
-<span class="sd">                  False - we start from children to parent</span>
+<span class="sd">                         False - we start from children to parent</span>
 <span class="sd">                          subchild1_1; subchild1_2; child1; subchild2_1;  child2; parent</span>
-
+<span class="sd">        :param filter_or: True - we combine the filtering with or this means even if we have no match in the higher</span>
+<span class="sd">                                 levels of the tree we will go deepere to find matches</span>
+<span class="sd">                          False - filters are combined with and which means children will only be parsed in</span>
+<span class="sd">                                  case the parent matches also to the filter condition</span>
 <span class="sd">        :return: iterator</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">top_down</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_children</span><span class="p">(</span><span class="n">item_filter</span><span class="o">=</span><span class="n">item_filter</span><span class="p">):</span>
-                    <span class="k">yield</span> <span class="n">item</span>
-                    <span class="k">for</span> <span class="n">subitem</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">iter_all</span><span class="p">(</span><span class="n">item_filter</span><span class="o">=</span><span class="n">item_filter</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">item_filter</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">item_filter</span>
+            <span class="n">item_filter</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="p">((</span><span class="n">item</span><span class="o">.</span><span class="n">_flags</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">top_down</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">filter_or</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_children</span><span class="p">(</span><span class="n">item_filter</span><span class="o">=</span><span class="n">ALL</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">item_filter</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+                        <span class="k">yield</span> <span class="n">item</span>
+                    <span class="k">for</span> <span class="n">subitem</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">iter_all</span><span class="p">(</span><span class="n">item_filter</span><span class="o">=</span><span class="n">item_filter</span><span class="p">,</span> <span class="n">top_down</span><span class="o">=</span><span class="n">top_down</span><span class="p">,</span> <span class="n">filter_or</span><span class="o">=</span><span class="n">filter_or</span><span class="p">):</span>
                         <span class="k">yield</span> <span class="n">subitem</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_children</span><span class="p">(</span><span class="n">item_filter</span><span class="o">=</span><span class="n">item_filter</span><span class="p">):</span>
-                    <span class="k">for</span> <span class="n">subitem</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">iter_all</span><span class="p">(</span><span class="n">item_filter</span><span class="o">=</span><span class="n">item_filter</span><span class="p">):</span>
-                        <span class="k">yield</span> <span class="n">subitem</span>
                     <span class="k">yield</span> <span class="n">item</span>
+                    <span class="k">for</span> <span class="n">subitem</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">iter_all</span><span class="p">(</span><span class="n">item_filter</span><span class="o">=</span><span class="n">item_filter</span><span class="p">,</span><span class="n">top_down</span><span class="o">=</span><span class="n">top_down</span><span class="p">,</span><span class="n">filter_or</span><span class="o">=</span><span class="n">filter_or</span><span class="p">):</span>
+                        <span class="k">yield</span> <span class="n">subitem</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">match</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">iTMatch</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Given search is not of type iTreeSearch&#39;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">top_down</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_children</span><span class="p">(</span><span class="n">item_filter</span><span class="o">=</span><span class="n">item_filter</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="n">match</span><span class="p">):</span>
-                    <span class="k">yield</span> <span class="n">item</span>
-                    <span class="k">for</span> <span class="n">subitem</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">item_filter</span><span class="o">=</span><span class="n">item_filter</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="n">match</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">filter_or</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_children</span><span class="p">(</span><span class="n">item_filter</span><span class="o">=</span><span class="n">ALL</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">subitem</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">iter_all</span><span class="p">(</span><span class="n">item_filter</span><span class="o">=</span><span class="n">item_filter</span><span class="p">,</span> <span class="n">top_down</span><span class="o">=</span><span class="n">top_down</span><span class="p">,</span> <span class="n">filter_or</span><span class="o">=</span><span class="n">filter_or</span><span class="p">):</span>
                         <span class="k">yield</span> <span class="n">subitem</span>
+                    <span class="k">if</span> <span class="n">item_filter</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+                        <span class="k">yield</span> <span class="n">item</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_children</span><span class="p">(</span><span class="n">item_filter</span><span class="o">=</span><span class="n">item_filter</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="n">match</span><span class="p">):</span>
-                    <span class="k">for</span> <span class="n">subitem</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="n">item_filter</span><span class="o">=</span><span class="n">item_filter</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="n">match</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_children</span><span class="p">(</span><span class="n">item_filter</span><span class="o">=</span><span class="n">item_filter</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">subitem</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">iter_all</span><span class="p">(</span><span class="n">item_filter</span><span class="o">=</span><span class="n">item_filter</span><span class="p">,</span><span class="n">top_down</span><span class="o">=</span><span class="n">top_down</span><span class="p">,</span><span class="n">filter_or</span><span class="o">=</span><span class="n">filter_or</span><span class="p">):</span>
                         <span class="k">yield</span> <span class="n">subitem</span>
                     <span class="k">yield</span> <span class="n">item</span></div>
 
-<div class="viewcode-block" id="iTree.iter_children"><a class="viewcode-back" href="../../itertree.html#itertree.iTree.iter_children">[docs]</a>    <span class="k">def</span> <span class="nf">iter_children</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_filter</span><span class="o">=</span><span class="n">ALL</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="iTree.iter_children"><a class="viewcode-back" href="../../itertree.html#itertree.iTree.iter_children">[docs]</a>    <span class="k">def</span> <span class="nf">iter_children</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_filter</span><span class="o">=</span><span class="n">ALL</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        main iterator in children level</span>
 <span class="sd">        :param item_filter: the items can be filtered by giving a filter constants or giving a filter method</span>
@@ -1364,17 +1403,11 @@
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">item_filter</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
             <span class="n">i</span> <span class="o">=</span> <span class="n">item_filter</span>
             <span class="n">item_filter</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="p">((</span><span class="n">item</span><span class="o">.</span><span class="n">_flags</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="n">item_filter</span><span class="p">,</span> <span class="nb">super</span><span class="p">(</span><span class="n">iTree</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">())</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">match</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">iTMatch</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Given search is not of type iTreeSearch&#39;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">_flags</span> <span class="o">&amp;</span> <span class="n">item_filter</span> <span class="ow">and</span> <span class="n">match</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">item_filter</span><span class="p">),</span>
-                          <span class="nb">super</span><span class="p">(</span><span class="n">iTree</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">())</span></div>
+        <span class="k">return</span> <span class="nb">filter</span><span class="p">(</span><span class="n">item_filter</span><span class="p">,</span> <span class="nb">super</span><span class="p">(</span><span class="n">iTree</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="iTree.iter_tag_idxs"><a class="viewcode-back" href="../../itertree.html#itertree.iTree.iter_tag_idxs">[docs]</a>    <span class="k">def</span> <span class="nf">iter_tag_idxs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_filter</span><span class="o">=</span><span class="n">ALL</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">top_down</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="iTree.iter_tag_idxs"><a class="viewcode-back" href="../../itertree.html#itertree.iTree.iter_tag_idxs">[docs]</a>    <span class="k">def</span> <span class="nf">iter_tag_idxs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_filter</span><span class="o">=</span><span class="n">ALL</span><span class="p">,</span> <span class="n">top_down</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="n">tag_cnts</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="n">item_filter</span><span class="o">=</span><span class="n">item_filter</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="n">match</span><span class="p">,</span> <span class="n">top_down</span><span class="o">=</span><span class="n">top_down</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="n">item_filter</span><span class="o">=</span><span class="n">item_filter</span><span class="p">,</span> <span class="n">top_down</span><span class="o">=</span><span class="n">top_down</span><span class="p">):</span>
             <span class="n">tag</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">_tag</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">cnt</span> <span class="o">=</span> <span class="n">tag_cnts</span><span class="p">[</span><span class="n">tag</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
@@ -1384,7 +1417,7 @@
                 <span class="n">tag_cnts</span><span class="p">[</span><span class="n">tag</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="k">yield</span> <span class="n">TagIdx</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="iTree.find_all"><a class="viewcode-back" href="../../itertree.html#itertree.iTree.find_all">[docs]</a>    <span class="k">def</span> <span class="nf">find_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key_path</span><span class="p">,</span> <span class="n">item_filter</span><span class="o">=</span><span class="n">ALL</span><span class="p">,</span> <span class="n">str_path_separator</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">str_index_separator</span><span class="o">=</span><span class="s1">&#39;#&#39;</span><span class="p">,</span> <span class="n">force_list</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<div class="viewcode-block" id="iTree.find_all"><a class="viewcode-back" href="../../itertree.html#itertree.iTree.find_all">[docs]</a>    <span class="k">def</span> <span class="nf">find_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key_path</span><span class="p">,</span> <span class="n">item_filter</span><span class="o">=</span><span class="n">ALL</span><span class="p">,</span> <span class="n">str_path_separator</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">str_index_separator</span><span class="o">=</span><span class="s1">&#39;#&#39;</span><span class="p">,</span>
                  <span class="n">_initial</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        The find_all function targets over multiple levels of the datatree, it returns a list or iterator of the</span>
@@ -1425,7 +1458,10 @@
 <span class="sd">                    Slice - a slice of indexes (like a special index list)</span>
 <span class="sd">                    string - will be parsed by the separators</span>
 <span class="sd">                    iterable list/tuple/deque,... -</span>
-<span class="sd">                             run over single items</span>
+<span class="sd">                             run over single keys if sub_key is again an iterable it will be taken as an index list</span>
+<span class="sd">                             (e.g. [1,2,3] - will go deeper in the tree 1. item; 2. subitem; 3. subsubitem</span>
+<span class="sd">                             but [[1,2,3]] - will stay in the first level and deliver 1. item; 2. item; 3. item)</span>
+
 <span class="sd">        :param item_filter: filters the item content regarding NORMAL, TEMPORARY and LINKED flag or a given</span>
 <span class="sd">                            filtering method</span>
 <span class="sd">        :param default_return: object will be return in case of no match (default = None)</span>
@@ -1442,85 +1478,46 @@
             <span class="c1"># create a filter method</span>
             <span class="n">i</span> <span class="o">=</span> <span class="n">item_filter</span>
             <span class="n">item_filter</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="p">((</span><span class="n">item</span><span class="o">.</span><span class="n">_flags</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+
         <span class="n">t</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">key_path</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">t</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="c1"># empty key?</span>
             <span class="n">l</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">key_path</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">l</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="c1"># empty string</span>
                 <span class="k">return</span> <span class="p">[]</span>
+            <span class="c1"># is string matching to a tag?</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">items</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">key_path</span><span class="p">,</span><span class="n">str_index_separator</span><span class="o">=</span><span class="n">str_index_separator</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__build_find_all_result</span><span class="p">(</span><span class="n">items</span><span class="p">,</span>
+                                             <span class="n">item_filter</span><span class="o">=</span><span class="n">item_filter</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span><span class="ne">IndexError</span><span class="p">,</span><span class="ne">ValueError</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="c1"># we check some other quick exceptions:</span>
             <span class="k">if</span> <span class="n">key_path</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;*&#39;</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">_initial</span> <span class="ow">and</span> <span class="n">force_list</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iter_children</span><span class="p">(</span><span class="n">item_filter</span><span class="o">=</span><span class="n">item_filter</span><span class="p">))</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_children</span><span class="p">(</span><span class="n">item_filter</span><span class="o">=</span><span class="n">item_filter</span><span class="p">)</span>
-            <span class="n">from_root</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">if</span> <span class="n">key_path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">str_path_separator</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">_initial</span><span class="p">:</span>
-                    <span class="n">from_root</span> <span class="o">=</span> <span class="kc">True</span>
-                    <span class="n">key_path</span> <span class="o">=</span> <span class="n">key_path</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
-                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">key_path</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="n">item_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">):</span>
-                            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">]</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="k">return</span> <span class="p">[]</span>
-            <span class="n">key_path</span> <span class="o">=</span> <span class="n">key_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">str_path_separator</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">key_path</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="c1"># we will not go deeper we have just to search in the children</span>
-                <span class="n">tmp</span> <span class="o">=</span> <span class="n">key_path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">str_index_separator</span><span class="p">)</span>
-                <span class="n">idx</span> <span class="o">=</span> <span class="kc">None</span>
-                <span class="n">tag</span> <span class="o">=</span> <span class="n">tmp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-                    <span class="n">idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">tmp</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-                <span class="n">key</span> <span class="o">=</span> <span class="n">TagIdx</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">from_root</span><span class="p">:</span>
-                        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">_initial</span> <span class="ow">and</span> <span class="n">force_list</span><span class="p">:</span>
-                        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__build_find_all_result</span><span class="p">(</span><span class="n">item</span><span class="p">,</span>
-                                                                 <span class="n">item_filter</span><span class="o">=</span><span class="n">item_filter</span><span class="p">))</span>
-                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__build_find_all_result</span><span class="p">(</span><span class="n">item</span><span class="p">,</span>
-                                                        <span class="n">item_filter</span><span class="o">=</span><span class="n">item_filter</span><span class="p">)</span>
-                <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">):</span>
-                    <span class="k">return</span> <span class="p">[]</span>
-            <span class="k">if</span> <span class="n">from_root</span><span class="p">:</span>
-                <span class="n">key_path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">str_path_separator</span><span class="p">)</span>
-            <span class="n">t</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">key_path</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">t</span> <span class="ow">is</span> <span class="nb">tuple</span><span class="p">:</span>
-            <span class="c1"># exception for tuples -&gt; TagIdx given as tuple?</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">key_path</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="c1"># valid tag?</span>
-                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map</span><span class="p">[</span><span class="n">key_path</span><span class="p">]</span>
-                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                    <span class="n">key_path</span> <span class="o">=</span> <span class="n">TagIdx</span><span class="p">(</span><span class="n">key_path</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">key_path</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-                    <span class="n">t</span> <span class="o">=</span> <span class="n">TagIdx</span>
-        <span class="k">if</span> <span class="n">t</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__find_single_item</span><span class="p">(</span><span class="n">key_path</span><span class="p">,</span> <span class="n">item_filter</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">t</span> <span class="ow">is</span> <span class="n">TagIdx</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">key_path</span><span class="o">.</span><span class="n">is_single</span><span class="p">:</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__find_single_item</span><span class="p">(</span><span class="n">key_path</span><span class="p">,</span> <span class="n">item_filter</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">_initial</span> <span class="ow">and</span> <span class="n">force_list</span><span class="p">:</span>
-                <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__find_tag_slice</span><span class="p">(</span><span class="n">key_path</span><span class="p">,</span> <span class="n">item_filter</span><span class="p">))</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__find_tag_slice</span><span class="p">(</span><span class="n">key_path</span><span class="p">,</span> <span class="n">item_filter</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">t</span> <span class="ow">is</span> <span class="n">iTMatch</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">_initial</span> <span class="ow">and</span> <span class="n">force_list</span><span class="p">:</span>
-                <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__find_match</span><span class="p">(</span><span class="n">key_path</span><span class="p">,</span> <span class="n">item_filter</span><span class="p">))</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__find_match</span><span class="p">(</span><span class="n">key_path</span><span class="p">,</span> <span class="n">item_filter</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">t</span> <span class="ow">is</span> <span class="nb">slice</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">_initial</span> <span class="ow">and</span> <span class="n">force_list</span><span class="p">:</span>
-                <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__find_slice</span><span class="p">(</span><span class="n">key_path</span><span class="p">,</span> <span class="n">item_filter</span><span class="p">))</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__find_slice</span><span class="p">(</span><span class="n">key_path</span><span class="p">,</span> <span class="n">item_filter</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">t</span> <span class="ow">is</span> <span class="nb">set</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">_initial</span> <span class="ow">and</span> <span class="n">force_list</span><span class="p">:</span>
-                <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__find_set</span><span class="p">(</span><span class="n">key_path</span><span class="p">,</span> <span class="n">item_filter</span><span class="p">))</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__find_set</span><span class="p">(</span><span class="n">key_path</span><span class="p">,</span> <span class="n">item_filter</span><span class="p">)</span>
-        <span class="c1"># If we reach this point we must have an iterable object!</span>
+            <span class="k">if</span> <span class="n">key_path</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;**&#39;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_all</span><span class="p">(</span><span class="n">item_filter</span><span class="o">=</span><span class="n">item_filter</span><span class="p">)</span>
+            <span class="c1"># now we split based on separator</span>
+            <span class="n">key_list</span> <span class="o">=</span> <span class="n">key_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">str_path_separator</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">key_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="c1"># we must ensure we start from the root</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="n">key_list</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span><span class="n">item_filter</span><span class="p">,</span> <span class="n">str_path_separator</span><span class="p">,</span> <span class="n">str_index_separator</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="n">key_list</span><span class="p">,</span> <span class="n">item_filter</span><span class="p">,</span> <span class="n">str_path_separator</span><span class="p">,</span> <span class="n">str_index_separator</span><span class="p">)</span>
+        <span class="c1"># first we check we have a valid tag:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">_initial</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">t</span> <span class="ow">in</span> <span class="p">{</span><span class="nb">int</span><span class="p">,</span><span class="nb">str</span><span class="p">,</span><span class="n">TagIdx</span><span class="p">,</span><span class="n">iTMatch</span><span class="p">,</span><span class="nb">slice</span><span class="p">}):</span>
+            <span class="c1"># if not _initial we are in deeper level of the iterator and we interpret here as an index list!</span>
+            <span class="n">items</span><span class="o">=</span><span class="bp">self</span><span class="p">[</span><span class="n">key_path</span><span class="p">]</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__build_find_all_result</span><span class="p">(</span><span class="n">items</span><span class="p">,</span>
+                                         <span class="n">item_filter</span><span class="o">=</span><span class="n">item_filter</span><span class="p">)</span>
+        <span class="c1"># If we reach this point we expect an iterable object as key_path</span>
+        <span class="c1"># that iterates deeper into the tree</span>
         <span class="n">key</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># will be overwritten anyway</span>
         <span class="n">new_key_path</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">sub_iter</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">key_path</span><span class="p">)</span>
         <span class="n">post_item</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">post_post_item</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">set_initial</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">key</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">sub_iter</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
@@ -1533,6 +1530,7 @@
                 <span class="n">post_post_item</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">sub_iter</span><span class="p">)</span>
                 <span class="c1"># create a new iterator that contains the post items and the original iterator</span>
                 <span class="n">new_key_path</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">([</span><span class="n">post_item</span><span class="p">,</span> <span class="n">post_post_item</span><span class="p">],</span> <span class="n">sub_iter</span><span class="p">)</span>
+                <span class="n">set_initial</span><span class="o">=</span><span class="kc">True</span>
             <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
                 <span class="c1"># there is only one item left in iterator we will give the item directly</span>
                 <span class="c1"># as key to the next level find()</span>
@@ -1543,41 +1541,34 @@
             <span class="k">if</span> <span class="n">new_key_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># this is not possible we catch this already but we keep the code to complete the condition</span>
                 <span class="k">if</span> <span class="n">item_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">):</span>
-                    <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">]</span>
+                    <span class="k">return</span> <span class="nb">iter</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">])</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">return</span> <span class="p">[]</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">_initial</span><span class="p">:</span>
                 <span class="c1"># cyclic construct we have to break!</span>
                 <span class="k">return</span> <span class="p">[]</span>
-            <span class="c1"># absolute key_path: start the search from the root:</span>
-            <span class="k">if</span> <span class="n">_initial</span> <span class="ow">and</span> <span class="n">force_list</span><span class="p">:</span>
-                <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="n">new_key_path</span><span class="p">,</span>
-                                               <span class="n">item_filter</span><span class="p">,</span>
-                                               <span class="n">str_path_separator</span><span class="p">,</span>
-                                               <span class="n">str_index_separator</span><span class="p">,</span> <span class="n">_initial</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
-
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="n">new_key_path</span><span class="p">,</span>
                                       <span class="n">item_filter</span><span class="p">,</span>
                                       <span class="n">str_path_separator</span><span class="p">,</span>
-                                      <span class="n">str_index_separator</span><span class="p">,</span> <span class="n">_initial</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">item_filter</span><span class="p">,</span>
+                                      <span class="n">str_index_separator</span><span class="p">,</span> <span class="n">_initial</span><span class="o">=</span><span class="n">set_initial</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">key</span><span class="o">==</span><span class="s1">&#39;*&#39;</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">iter_children</span><span class="p">(</span><span class="n">item_filter</span><span class="o">=</span><span class="n">item_filter</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">key</span><span class="o">==</span><span class="s1">&#39;**&#39;</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_all</span><span class="p">(</span><span class="n">item_filter</span><span class="o">=</span><span class="n">item_filter</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">item_filter</span><span class="p">,</span>
                                <span class="n">str_path_separator</span><span class="p">,</span>
                                <span class="n">str_index_separator</span><span class="p">,</span> <span class="n">_initial</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="c1"># result can only be a single item</span>
         <span class="k">if</span> <span class="n">new_key_path</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">result</span> <span class="o">==</span> <span class="p">[]:</span>
             <span class="c1"># we will not go deeper</span>
-            <span class="k">if</span> <span class="n">_initial</span> <span class="ow">and</span> <span class="n">force_list</span><span class="p">:</span>
-                <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">result</span>
         <span class="c1"># iter into the next level</span>
         <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="n">new_key_path</span><span class="p">,</span>
                                  <span class="n">item_filter</span><span class="p">,</span>
                                  <span class="n">str_path_separator</span><span class="p">,</span>
                                  <span class="n">str_index_separator</span><span class="p">,</span>
-                                 <span class="n">_initial</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">_initial</span> <span class="ow">and</span> <span class="n">force_list</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="n">results</span><span class="p">))</span>
+                                 <span class="n">_initial</span><span class="o">=</span><span class="n">set_initial</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="n">results</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="iTree.find"><a class="viewcode-back" href="../../itertree.html#itertree.iTree.find">[docs]</a>    <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key_path</span><span class="p">,</span> <span class="n">item_filter</span><span class="o">=</span><span class="n">ALL</span><span class="p">,</span> <span class="n">default_return</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">str_path_separator</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span>
@@ -1687,42 +1678,74 @@
 
     <span class="c1"># predefined filter queries</span>
 
-<div class="viewcode-block" id="iTree.create_data_key_filter"><a class="viewcode-back" href="../../itertree.html#itertree.iTree.create_data_key_filter">[docs]</a>    <span class="k">def</span> <span class="nf">create_data_key_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_filter</span><span class="o">=</span><span class="n">ALL</span><span class="p">,</span> <span class="n">data_key</span><span class="o">=</span><span class="s1">&#39;__NOKEY__&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="iTree.create_data_key_filter"><a class="viewcode-back" href="../../itertree.html#itertree.iTree.create_data_key_filter">[docs]</a>    <span class="k">def</span> <span class="nf">create_data_key_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>  <span class="n">data_key</span><span class="o">=</span><span class="s1">&#39;__NOKEY__&#39;</span><span class="p">,</span><span class="n">item_filter</span><span class="o">=</span><span class="n">ALL</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        create a item_filter method regarding a specific data key</span>
-<span class="sd">        :param item_filter: pre filtering method or integer with filter constant</span>
 <span class="sd">        :param data_key: key that should be filtered out - if no key is given the no key item will be filtered</span>
-<span class="sd">        :return: specific item filter method</span>
+<span class="sd">        :param item_filter: pre filtering method or integer with filter constant</span>
+<span class="sd">        :return: specific item filter method that delivers True/False when item is given</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">item_filter</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
             <span class="n">i</span> <span class="o">=</span> <span class="n">item_filter</span>
             <span class="n">item_filter</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="p">((</span><span class="n">item</span><span class="o">.</span><span class="n">_flags</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
         <span class="k">return</span> <span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="p">(</span><span class="n">item_filter</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">data_key</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">data</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="iTree.create_data_value_filter"><a class="viewcode-back" href="../../itertree.html#itertree.iTree.create_data_value_filter">[docs]</a>    <span class="k">def</span> <span class="nf">create_data_value_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_filter</span><span class="o">=</span><span class="n">ALL</span><span class="p">,</span> <span class="n">data_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="iTree.create_data_key_match_filter"><a class="viewcode-back" href="../../itertree.html#itertree.iTree.create_data_key_match_filter">[docs]</a>    <span class="k">def</span> <span class="nf">create_data_key_match_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>  <span class="n">match_pattern</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">item_filter</span><span class="o">=</span><span class="n">ALL</span><span class="p">,):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        create a item_filter method searching for a specific data content</span>
+<span class="sd">        :param match_pattern: checks if a data key matches to the given pattern</span>
+<span class="sd">                             (fnmatch() is internally used for the checks)</span>
+<span class="sd">                             (non str, byte values will be taken as not matching)</span>
 <span class="sd">        :param item_filter: pre filtering method or integer with filter constant</span>
-<span class="sd">        :param data_value: data content the method will search for</span>
 <span class="sd">        :return: specific item filter method</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">item_filter</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
             <span class="n">i</span> <span class="o">=</span> <span class="n">item_filter</span>
             <span class="n">item_filter</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="p">((</span><span class="n">item</span><span class="o">.</span><span class="n">_flags</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="k">return</span> <span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="p">(</span><span class="n">item_filter</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="kc">True</span> <span class="ow">in</span> <span class="p">{</span><span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">v</span> <span class="o">==</span> <span class="n">data_value</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">()}))</span></div>
+        <span class="k">return</span> <span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="p">(</span><span class="n">item_filter</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="kc">True</span> <span class="ow">in</span>
+                                    <span class="p">{((</span><span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="p">{</span><span class="nb">str</span><span class="p">,</span><span class="nb">bytes</span><span class="p">})</span>
+                                           <span class="ow">and</span> <span class="p">(</span><span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="n">match_pattern</span><span class="p">))</span> <span class="ow">or</span> <span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">()}))</span></div>
 
-<div class="viewcode-block" id="iTree.create_data_item_filter"><a class="viewcode-back" href="../../itertree.html#itertree.iTree.create_data_item_filter">[docs]</a>    <span class="k">def</span> <span class="nf">create_data_item_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_filter</span><span class="o">=</span><span class="n">ALL</span><span class="p">,</span> <span class="n">data_key</span><span class="o">=</span><span class="s1">&#39;__NOKEY__&#39;</span><span class="p">,</span> <span class="n">data_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="iTree.create_data_value_filter"><a class="viewcode-back" href="../../itertree.html#itertree.iTree.create_data_value_filter">[docs]</a>    <span class="k">def</span> <span class="nf">create_data_value_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">item_filter</span><span class="o">=</span><span class="n">ALL</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Method creates a item_filter method that searches for specific data item (key, value pair)</span>
-<span class="sd">        :param item_filter: pre filtering method or integer with filter constant</span>
-<span class="sd">        :param data_key: key that should be filtered out - if no key is given the no key item will be filtered</span>
+<span class="sd">        create a item_filter method searching for a specific data content</span>
 <span class="sd">        :param data_value: data content the method will search for</span>
+<span class="sd">        :param item_filter: pre filtering method or integer with filter constant</span>
 <span class="sd">        :return: specific item filter method</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">item_filter</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
             <span class="n">i</span> <span class="o">=</span> <span class="n">item_filter</span>
             <span class="n">item_filter</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="p">((</span><span class="n">item</span><span class="o">.</span><span class="n">_flags</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="k">return</span> <span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="p">(</span><span class="n">item_filter</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">data_key</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">data_key</span><span class="p">]</span> <span class="o">==</span> <span class="n">data_value</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="p">(</span><span class="n">item_filter</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="kc">True</span> <span class="ow">in</span> <span class="p">{</span><span class="n">v</span> <span class="o">==</span> <span class="n">data_value</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">()}))</span></div>
+
+<div class="viewcode-block" id="iTree.create_data_value_match_filter"><a class="viewcode-back" href="../../itertree.html#itertree.iTree.create_data_value_match_filter">[docs]</a>    <span class="k">def</span> <span class="nf">create_data_value_match_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">match_pattern</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">item_filter</span><span class="o">=</span><span class="n">ALL</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        create a item_filter method searching for a specific data content</span>
+<span class="sd">        :param match_pattern: checks if a data value matches to the given pattern</span>
+<span class="sd">                             (fnmatch() is internally used for the checks)</span>
+<span class="sd">                             (non str, byte values will be taken as not matching)</span>
+<span class="sd">        :param item_filter: pre filtering method or integer with filter constant</span>
+<span class="sd">        :return: specific item filter method</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">item_filter</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">item_filter</span>
+            <span class="n">item_filter</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="p">((</span><span class="n">item</span><span class="o">.</span><span class="n">_flags</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="p">(</span><span class="n">item_filter</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="kc">True</span> <span class="ow">in</span>
+                                    <span class="p">{((</span><span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="p">{</span><span class="nb">str</span><span class="p">,</span><span class="nb">bytes</span><span class="p">})</span>
+                                           <span class="ow">and</span> <span class="p">(</span><span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="n">match_pattern</span><span class="p">))</span> <span class="ow">or</span> <span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">()}))</span></div>
+
+
+<div class="viewcode-block" id="iTree.create_item_match_filter"><a class="viewcode-back" href="../../itertree.html#itertree.iTree.create_item_match_filter">[docs]</a>    <span class="k">def</span> <span class="nf">create_item_match_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">match</span><span class="p">,</span> <span class="n">item_filter</span><span class="o">=</span><span class="n">ALL</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        create a item_filter method searching for a specific data content</span>
+<span class="sd">        :param match: iTMatch object or any match object with a check function for iTree objects</span>
+<span class="sd">        :param item_filter: pre filtering method or integer with filter constant</span>
+<span class="sd">        :return: specific item filter method</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">item_filter</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">item_filter</span>
+            <span class="n">item_filter</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="p">((</span><span class="n">item</span><span class="o">.</span><span class="n">_flags</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="p">(</span><span class="n">item_filter</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="ow">and</span> <span class="n">match</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">item</span><span class="p">))</span></div>
 
     <span class="c1"># serialize + file operations</span>
 
@@ -1734,28 +1757,53 @@
 <span class="sd">        :return: True - success</span>
 <span class="sd">                 False - load failed</span>
 <span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">load_ok</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_link</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">force</span><span class="p">:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_link</span><span class="o">.</span><span class="n">is_loaded</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="kc">False</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_link</span><span class="o">.</span><span class="n">file_path</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s1">&#39;Source file of the link not found!&#39;</span><span class="p">)</span>
-            <span class="n">full_tree</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_link</span><span class="o">.</span><span class="n">file_path</span><span class="p">,</span> <span class="n">load_links</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_link</span><span class="o">.</span><span class="n">key_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">load_item</span> <span class="o">=</span> <span class="n">full_tree</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">load_item</span> <span class="o">=</span> <span class="n">full_tree</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_link</span><span class="o">.</span><span class="n">key_path</span><span class="p">)</span>
-                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">load_item</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">iTree</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s1">&#39;Given key_path is not matching or unique!&#39;</span><span class="p">)</span>
-            <span class="c1"># now we take over the tree</span>
-            <span class="nb">super</span><span class="p">(</span><span class="n">iTree</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-            <span class="nb">super</span><span class="p">(</span><span class="n">iTree</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">super</span><span class="p">(</span><span class="n">iTree</span><span class="p">,</span> <span class="n">load_item</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_map</span> <span class="o">=</span> <span class="n">load_item</span><span class="o">.</span><span class="n">_map</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">():</span>
-                <span class="n">i</span><span class="o">.</span><span class="n">load_links</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="n">force</span><span class="p">)</span>
-                <span class="n">i</span><span class="o">.</span><span class="n">_flags</span><span class="o">=</span><span class="n">i</span><span class="o">.</span><span class="n">_flags</span><span class="o">|</span><span class="n">LINKED</span>
-            <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">return</span> <span class="kc">False</span></div>
+            <span class="k">if</span> <span class="n">force</span> <span class="ow">or</span>  <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_link_loaded</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_link</span><span class="o">.</span><span class="n">file_path</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s1">&#39;Source file of the link not found!&#39;</span><span class="p">)</span>
+                <span class="n">full_tree</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_link</span><span class="o">.</span><span class="n">file_path</span><span class="p">,</span> <span class="n">load_links</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_link</span><span class="o">.</span><span class="n">key_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">load_item</span> <span class="o">=</span> <span class="n">full_tree</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">load_item</span> <span class="o">=</span> <span class="n">full_tree</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_link</span><span class="o">.</span><span class="n">key_path</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">load_item</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">iTree</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s1">&#39;Given key_path is not matching or unique!&#39;</span><span class="p">)</span>
+                <span class="c1"># now we take over the tree</span>
+                <span class="nb">super</span><span class="p">(</span><span class="n">iTree</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                <span class="c1"># here we run a special extend (we don&#39;t care about parents and is_linked flag)</span>
+                <span class="n">sl</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">iTree</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+                <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map</span>
+                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">load_item</span><span class="p">:</span>
+                    <span class="n">item</span><span class="o">.</span><span class="n">_parent</span> <span class="o">=</span> <span class="bp">self</span>
+                    <span class="n">cache</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">_cache</span>
+                    <span class="n">cache</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">sl</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span>
+                    <span class="n">sl</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                    <span class="n">tag</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">tag</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">family</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="n">tag</span><span class="p">]</span>
+                        <span class="n">cache</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">l</span> <span class="o">=</span> <span class="n">family</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="n">l</span> <span class="o">==</span> <span class="n">BLIST_SWITCH</span><span class="p">:</span>
+                            <span class="n">m</span><span class="p">[</span><span class="n">tag</span><span class="p">]</span> <span class="o">=</span> <span class="n">family</span> <span class="o">=</span> <span class="n">blist</span><span class="p">(</span><span class="n">family</span><span class="p">)</span>
+                        <span class="n">family</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                        <span class="n">cache</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                        <span class="n">m</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">_tag</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="p">]</span>
+                    <span class="n">item</span><span class="o">.</span><span class="n">_flags</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">_flags</span> <span class="o">|</span> <span class="n">LINKED</span>
+                    <span class="n">item</span><span class="o">.</span><span class="n">load_links</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="n">force</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_map</span> <span class="o">=</span> <span class="n">load_item</span><span class="o">.</span><span class="n">_map</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_link</span><span class="o">.</span><span class="n">set_loaded</span><span class="p">(</span><span class="n">load_item</span><span class="o">.</span><span class="n">tag</span><span class="p">,</span><span class="n">load_item</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_flags</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_flags</span><span class="o">|</span><span class="n">LINKED</span>
+                <span class="n">load_ok</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">linked_flag</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">is_linked</span><span class="p">:</span>
+                <span class="n">linked_flag</span><span class="o">=</span><span class="n">LINKED</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_children</span><span class="p">():</span>
+                <span class="n">load_ok</span> <span class="o">=</span> <span class="n">load_ok</span> <span class="ow">or</span> <span class="n">i</span><span class="o">.</span><span class="n">load_links</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="n">force</span><span class="p">)</span>
+                <span class="n">i</span><span class="o">.</span><span class="n">_flags</span><span class="o">=</span><span class="n">i</span><span class="o">.</span><span class="n">_flags</span><span class="o">|</span><span class="n">linked_flag</span>
+        <span class="k">return</span> <span class="n">load_ok</span></div>
 
 <div class="viewcode-block" id="iTree.loads"><a class="viewcode-back" href="../../itertree.html#itertree.iTree.loads">[docs]</a>    <span class="k">def</span> <span class="nf">loads</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_str</span><span class="p">,</span> <span class="n">check_hash</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">load_links</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>

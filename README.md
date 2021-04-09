@@ -1,5 +1,11 @@
-# itertree
-itertree python package
+# itertree python package
+
+-- BETA -- 
+
+## Welcome to itertree python package. 
+
+Do you like to store your data some how in a tree like structure? Do you need good performance, a reach feature set and the possibility to store your data permanently in files?
+
 Give the itertree package a try!
 
 You might have a look into the feature list:
@@ -77,13 +83,13 @@ The structure of folder and files related to this package looks like this:
    * itree_helpers.py
    * itree_data.py
    * itree_serialize.py
- 
+   * _itree_internal.py
+
    * examples
 
       * itree_performance.py
       * itree_profiling.py
       * itree_data.py
-      * itree_usage.py
 
 ## Getting started, first steps 
 

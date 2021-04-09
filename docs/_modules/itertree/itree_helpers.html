@@ -178,244 +178,59 @@
 
 <span class="n">PRE_ALLOC_SIZE</span> <span class="o">=</span> <span class="mi">300</span>
 
-<div class="viewcode-block" id="iTMagicList"><a class="viewcode-back" href="../../itertree.html#itertree.itree_helpers.iTMagicList">[docs]</a><span class="k">class</span> <span class="nc">iTMagicList</span><span class="p">():</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    This object should increase th performance on huge lists by allocating the memory in blocks</span>
-<span class="sd">    and using numpy</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;_length&#39;</span><span class="p">,</span><span class="s1">&#39;_items2&#39;</span><span class="p">,</span><span class="s1">&#39;_is_list&#39;</span><span class="p">)</span>
-
-    
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">def_list</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_is_list</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">if</span> <span class="n">def_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">def_list</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_length</span> <span class="o">&gt;</span> <span class="n">PRE_ALLOC_SIZE</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">def_list</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np_object</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pre_alloc_list</span><span class="p">()</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span> <span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">def_list</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_length</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span> <span class="o">=</span> <span class="p">[]</span>
-
-<div class="viewcode-block" id="iTMagicList.pre_alloc_list"><a class="viewcode-back" href="../../itertree.html#itertree.itree_helpers.iTMagicList.pre_alloc_list">[docs]</a>    <span class="k">def</span> <span class="nf">pre_alloc_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">length</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">length</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">length</span><span class="o">=</span><span class="n">PRE_ALLOC_SIZE</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">length</span><span class="o">=</span><span class="n">length</span><span class="o">+</span><span class="n">PRE_ALLOC_SIZE</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np_object</span><span class="p">)])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_is_list</span> <span class="o">=</span> <span class="kc">False</span></div>
-
-    <span class="k">def</span> <span class="nf">_valid_idx_except</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idx</span><span class="p">):</span>
-        <span class="n">t</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">t</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">idx</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_length</span> <span class="ow">or</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="p">:</span>
-                <span class="k">return</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s1">&#39;Given index is out of range&#39;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">idx</span>
-        <span class="k">elif</span> <span class="n">t</span> <span class="ow">is</span> <span class="nb">slice</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_valid_idx_except</span><span class="p">(</span><span class="n">idx</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">idx</span><span class="o">.</span><span class="n">stop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_valid_idx_except</span><span class="p">(</span><span class="n">idx</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">idx</span>
-        <span class="k">else</span><span class="p">:</span> <span class="c1"># index list</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span><span class="o">&gt;</span><span class="n">PRE_ALLOC_SIZE</span><span class="p">:</span>
-                    <span class="n">idx</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">idx</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_length</span> <span class="o">|</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
-                        <span class="k">return</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s1">&#39;Given index is out of range&#39;</span><span class="p">)</span>
-                    <span class="k">return</span> <span class="n">idx</span>
-            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                <span class="k">pass</span>
-            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_valid_idx_except</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">idx</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_list</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">in</span> <span class="p">{</span><span class="nb">int</span><span class="p">,</span><span class="nb">slice</span><span class="p">}:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_valid_idx_except</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">___getitem__</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">or</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">key</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_valid_idx_except</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">key</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_length</span> <span class="o">-</span> <span class="n">key</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
-            <span class="k">if</span> <span class="n">key</span><span class="o">&gt;=</span><span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_length</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pre_alloc_list</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
-            <span class="k">if</span> <span class="n">key</span><span class="o">&gt;=</span><span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_length</span> <span class="o">+=</span> <span class="mi">1</span>
-
-    <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_valid_idx_except</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_list</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
-                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="o">-=</span><span class="mi">1</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="o">-=</span><span class="nb">len</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="o">.</span><span class="fm">__delete__</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">key</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
-                <span class="n">key</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="o">-=</span><span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">)</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="o">&gt;</span><span class="n">PRE_ALLOC_SIZE</span><span class="p">:</span>
-                <span class="c1">#free mem</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_length</span>
-
-    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">other</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">other</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span>
-
-    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">delta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">)</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_length</span>
-
-<div class="viewcode-block" id="iTMagicList.remove"><a class="viewcode-back" href="../../itertree.html#itertree.itree_helpers.iTMagicList.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_list</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="o">-=</span><span class="mi">1</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_items2</span> <span class="o">==</span> <span class="n">item</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="o">-=</span><span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta</span><span class="o">&gt;</span><span class="n">PRE_ALLOC_SIZE</span><span class="p">:</span>
-                    <span class="c1">#free mem</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="p">]</span></div>
-
-<div class="viewcode-block" id="iTMagicList.insert"><a class="viewcode-back" href="../../itertree.html#itertree.itree_helpers.iTMagicList.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">item</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        the insert operation  is by far th eslowest operation and should be avoided</span>
-<span class="sd">        :param key: insert position</span>
-<span class="sd">        :param item: item to be inserted</span>
-<span class="sd">        :return: True</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_valid_idx_except</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">key</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">:</span>
-            <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="o">-</span><span class="n">key</span>
-        <span class="k">if</span> <span class="n">key</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="p">:</span>
-            <span class="c1"># we append</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_length</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pre_alloc_list</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_length</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_list</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="n">item</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_length</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1">#self._items[(key+1):(self._length+1)]=self._items[key:self._length]</span>
-                <span class="c1">#self._items[key]=item</span>
-                <span class="n">l</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">item</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_length</span> <span class="o">+=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">)</span><span class="o">-</span><span class="n">l</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="iTMagicList.append"><a class="viewcode-back" href="../../itertree.html#itertree.itree_helpers.iTMagicList.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_list</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="o">&gt;=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pre_alloc_list</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_length</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="o">&gt;=</span><span class="n">PRE_ALLOC_SIZE</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pre_alloc_list</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_length</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_length</span> <span class="o">+=</span><span class="mi">1</span>
-        <span class="c1"># positive return needed for list comprehensions</span>
-        <span class="k">return</span> <span class="kc">True</span></div>
-
-<div class="viewcode-block" id="iTMagicList.extend"><a class="viewcode-back" href="../../itertree.html#itertree.itree_helpers.iTMagicList.extend">[docs]</a>    <span class="k">def</span> <span class="nf">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
-            <span class="n">delta</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">delta</span>
-            <span class="k">if</span> <span class="n">delta</span><span class="o">&lt;=</span><span class="n">size</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pre_alloc_list</span><span class="p">((</span><span class="n">size</span><span class="o">-</span><span class="n">delta</span><span class="p">))</span>
-        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="c1"># we might have an iterator therefore we cannot pre allocate!</span>
-            <span class="n">size</span><span class="o">=</span><span class="kc">None</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_list</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">)</span><span class="o">&gt;</span><span class="n">PRE_ALLOC_SIZE</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np_object</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_depth</span><span class="p">,</span><span class="n">items</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_depth</span><span class="p">,(</span><span class="bp">self</span><span class="o">.</span><span class="n">_depth</span><span class="o">+</span><span class="n">size</span><span class="p">))]</span><span class="o">=</span><span class="n">items</span>
-        <span class="c1"># positive return needed for list comprehensions</span>
-        <span class="k">return</span> <span class="kc">True</span></div>
-
-<div class="viewcode-block" id="iTMagicList.pop"><a class="viewcode-back" href="../../itertree.html#itertree.itree_helpers.iTMagicList.pop">[docs]</a>    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="o">-</span><span class="mi">1</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_valid_idx_except</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_list</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
-                <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="o">-=</span><span class="mi">1</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">item</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">key</span><span class="p">]</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_length</span> <span class="o">-=</span><span class="nb">len</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="o">-=</span><span class="nb">len</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta</span> <span class="o">&gt;</span> <span class="n">PRE_ALLOC_SIZE</span><span class="p">:</span>
-                <span class="c1"># free mem</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">item</span></div>
-
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_items2</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="p">]))</span></div>
 
 <div class="viewcode-block" id="iTLink"><a class="viewcode-back" href="../../itertree.html#itertree.itree_helpers.iTLink">[docs]</a><span class="k">class</span> <span class="nc">iTLink</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Definition of a link to an element in another DataTree</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;_ref_path&quot;</span><span class="p">,</span> <span class="s2">&quot;_ref_key&quot;</span><span class="p">,</span><span class="s1">&#39;_loaded&#39;</span><span class="p">)</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;_file_path&quot;</span><span class="p">,</span> <span class="s2">&quot;_key_path&quot;</span><span class="p">,</span><span class="s1">&#39;_loaded&#39;</span><span class="p">,</span><span class="s1">&#39;_link_data&#39;</span><span class="p">,</span><span class="s1">&#39;_link_tag&#39;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref_path</span><span class="p">,</span> <span class="n">ref_key</span><span class="p">,</span> <span class="n">ref_first</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ref_path</span> <span class="o">=</span> <span class="n">ref_path</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ref_key</span> <span class="o">=</span> <span class="n">ref_key</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">key_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_file_path</span> <span class="o">=</span> <span class="n">file_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_key_path</span> <span class="o">=</span> <span class="n">key_path</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_loaded</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_link_tag</span><span class="o">=</span><span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_link_data</span><span class="o">=</span><span class="kc">None</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">loaded</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loaded</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_iTreeLink</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">is_loaded</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loaded</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">file_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file_path</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">key_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_key_path</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_iTLink</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="iTLink.set_loaded"><a class="viewcode-back" href="../../itertree.html#itertree.itree_helpers.iTLink.set_loaded">[docs]</a>    <span class="k">def</span> <span class="nf">set_loaded</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_loaded</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span></div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">link_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_link_tag</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">link_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_link_data</span>
+
+<div class="viewcode-block" id="iTLink.set_loaded"><a class="viewcode-back" href="../../itertree.html#itertree.itree_helpers.iTLink.set_loaded">[docs]</a>    <span class="k">def</span> <span class="nf">set_loaded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">tag</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loaded</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_link_tag</span><span class="o">=</span><span class="n">tag</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_link_data</span><span class="o">=</span><span class="n">data</span></div>
 
 <div class="viewcode-block" id="iTLink.dict_repr"><a class="viewcode-back" href="../../itertree.html#itertree.itree_helpers.iTLink.dict_repr">[docs]</a>    <span class="k">def</span> <span class="nf">dict_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;ref_path&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref_path</span><span class="p">,</span><span class="s1">&#39;ref_key&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref_key</span><span class="p">}</span></div>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;path&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_path</span><span class="p">,</span><span class="s1">&#39;key&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_key_path</span><span class="p">}</span></div>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s1">&#39;iTreeLink(ref_path=</span><span class="si">%s</span><span class="s1">, ref_key=</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span>
-        <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref_path</span><span class="p">),</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref_key</span><span class="p">),</span> <span class="p">)</span></div>
+        <span class="k">return</span> <span class="s1">&#39;iTreeLink(file_path=</span><span class="si">%s</span><span class="s1">, key_path=</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span>
+        <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_path</span><span class="p">),</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_key_path</span><span class="p">),</span> <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="iTMatch"><a class="viewcode-back" href="../../itertree.html#itertree.itree_helpers.iTMatch">[docs]</a><span class="k">class</span> <span class="nc">iTMatch</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -431,7 +246,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_check</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_analyse</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_iTreeMatch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">is_iTMatch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">def</span> <span class="nf">_analyse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
@@ -516,9 +331,8 @@
             <span class="k">return</span> <span class="kc">False</span>
         <span class="n">tag</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">_tag</span>
         <span class="n">result</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_op</span>
-        <span class="n">check</span><span class="o">=</span><span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span>
         <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">patterns</span><span class="p">:</span>
-            <span class="n">stop</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_op_logic</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">check</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">pattern</span><span class="p">))</span>
+            <span class="n">stop</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_op_logic</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generic_fnmatch</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">pattern</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">stop</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">result</span>
         <span class="k">return</span> <span class="n">result</span>
@@ -537,6 +351,7 @@
                     <span class="k">return</span> <span class="kc">False</span>
             <span class="k">return</span> <span class="kc">True</span>
 
+
     <span class="k">def</span> <span class="nf">_check_sub</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">item_filter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">patterns</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">patterns</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
@@ -546,6 +361,11 @@
             <span class="k">if</span> <span class="n">stop</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">result</span>
         <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">_generic_fnmatch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">value</span><span class="p">,</span><span class="n">pattern</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="nb">str</span><span class="p">,</span><span class="nb">bytes</span><span class="p">}:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">value</span><span class="p">,</span><span class="n">pattern</span><span class="p">)</span>
 
 <div class="viewcode-block" id="iTMatch.check"><a class="viewcode-back" href="../../itertree.html#itertree.itree_helpers.iTMatch.check">[docs]</a>    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">item_filter</span><span class="o">=</span><span class="n">ALL</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">item_filter</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>

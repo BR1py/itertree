@@ -156,6 +156,9 @@
 <span class="n">STR</span> <span class="o">=</span> <span class="n">S</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># returns the string representation of the value (DTDataItems contains formatters for this)</span>
 <span class="n">FULL</span> <span class="o">=</span> <span class="n">F</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># In case DTDataItem objects are used for storage the full object is given back</span>
 
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">.itree_helpers</span> <span class="kn">import</span> <span class="n">COPY_NORMAL</span><span class="p">,</span><span class="n">COPY_OFF</span><span class="p">,</span><span class="n">COPY_DEEP</span>
 
 <div class="viewcode-block" id="iTreeValidationError"><a class="viewcode-back" href="../../itertree.html#itertree.itree_data.iTreeValidationError">[docs]</a><span class="k">class</span> <span class="nc">iTreeValidationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
@@ -322,13 +325,13 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_formatter_cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__formatter</span><span class="p">()</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_formatter_cache</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">iTreeDataModel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__format__</span><span class="p">(</span><span class="n">format_spec</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">iTDataModel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__format__</span><span class="p">(</span><span class="n">format_spec</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;iTreeDataModel(value= </span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span></div>
 
 
-<div class="viewcode-block" id="iTData"><a class="viewcode-back" href="../../itertree.html#itertree.itree_data.iTData">[docs]</a><span class="k">class</span> <span class="nc">iTData</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+<div class="viewcode-block" id="iTData"><a class="viewcode-back" href="../../itertree.html#itertree.itree_data.iTData">[docs]</a><span class="k">class</span> <span class="nc">iTData</span><span class="p">(</span><span class="n">OrderedDict</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Standard itertree Data management object might be overloaded or changed by the user</span>
 <span class="sd">    &#39;&#39;&#39;</span>
@@ -342,12 +345,27 @@
 
 <span class="sd">        :param data_items: single object or dict with key,value objects to be stored in the iTreeData object</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">iTData</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">data_items</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data_items</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">dict</span><span class="p">:</span>
-                <span class="nb">super</span><span class="p">(</span><span class="n">iTData</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">data_items</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="nb">super</span><span class="p">(</span><span class="n">iTData</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="n">__NOKEY__</span><span class="p">,</span> <span class="n">data_items</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">data_items</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">iTData</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data_items</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="nb">dict</span><span class="p">,</span> <span class="n">OrderedDict</span><span class="p">,</span><span class="nb">list</span><span class="p">}:</span> <span class="c1">#we can instance the whole data set via these types</span>
+                <span class="n">data_items</span><span class="o">=</span><span class="p">[(</span><span class="n">__NOKEY__</span><span class="p">,</span><span class="n">data_items</span><span class="p">)]</span>
+            <span class="nb">super</span><span class="p">(</span><span class="n">iTData</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">data_items</span><span class="p">)</span>
+
+<div class="viewcode-block" id="iTData.copy"><a class="viewcode-back" href="../../itertree.html#itertree.itree_data.iTData.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">copy_type</span><span class="o">=</span><span class="n">COPY_NORMAL</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+        <span class="k">if</span> <span class="n">copy_type</span> <span class="o">==</span> <span class="n">COPY_OFF</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="k">elif</span> <span class="n">copy_type</span> <span class="o">==</span> <span class="n">COPY_NORMAL</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">copy_type</span> <span class="o">==</span> <span class="n">COPY_DEEP</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Unknown copy_data parameter value </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">copy_type</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">iTData</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__copy__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
 <div class="viewcode-block" id="iTData.set"><a class="viewcode-back" href="../../itertree.html#itertree.itree_data.iTData.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">__NOKEY__</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -463,10 +481,9 @@
                 <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">clear_value</span><span class="p">()</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">iTData</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
 
-
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># we represent via dict because dict will automatically load in again as iTreeData object</span>
-        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="nb">super</span><span class="p">(</span><span class="n">iTData</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">())</span>
+        <span class="k">return</span> <span class="nb">repr</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>

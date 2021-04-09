@@ -17,7 +17,9 @@ print('ROOT_PATH', root_path)
 
 from itertree import *
 
-TEST_SELECTION={1,2,3,4,5,6,7,8,10}
+TEST_SELECTION={1,2,3,4,5,6,7,8,10,11}
+#TEST_SELECTION={11}
+
 
 print('Test start')
 
@@ -29,7 +31,26 @@ def get_relpath_to_root(item_path):
         new_path = new_path[1:]
     return root_path+'/'+new_path
 
-class TestiTreeBase:
+class Test_iTreeBase:
+    def _build_mix_tree(self):
+        root = iTree('root')
+        root+=iTree('c1',data=0)
+        root += iTree('c2', data=1)
+        root += iTree((0,), data=2)
+        root += iTree('c2', data=3)
+        root += iTree((1,), data=4)
+        root += iTree('c2', data=5)
+        root += iTree((1,), data=6)
+        root += iTree('c2', data=7)
+        root += iTree((1,), data=8)
+        root += iTree('c2', data=9)
+        root += iTree('c3', data=10)
+        root += iTree((2,), data=11)
+        # this will do internal copies!
+        root[2].extend(root)
+        root[2][2].extend(root)
+        root[3].extend(root)
+        return root
 
     def _build_base_tree(self):
         #build a tree
@@ -136,6 +157,11 @@ class TestiTreeBase:
             if i < len(lookup):
                 assert item.data['level'][1] == lookup[i]
         a=repr(root)
+
+        root2=self._build_mix_tree()
+        root2.render()
+        assert root2[TagIdx((1,),1)].get()==6
+        assert len(root2[TagIdx((0,), 0)][2]) == 14
 
     def test2_tree_manipulations(self):
         if not 2 in TEST_SELECTION:
@@ -278,18 +304,53 @@ class TestiTreeBase:
         print('\nRESULT OF TEST: base find operations')
         root=self._build_base_tree()
 
+        #iteratoren and filters
+        root[4] += iTree('sub4_100', data={'nolevel': 0})
+        items=list(root[4].iter_children())
+        assert len(items)==101
+        # data key filtering
+        myfilter=root.create_data_key_filter('level')
+        items = list(root[4].iter_children(item_filter=myfilter))
+        assert len(items) == 100
+        myfilter = root.create_data_key_filter('nolevel')
+        # here we switch to iter_all!
+        items = list(root[4].iter_all(item_filter=myfilter))
+        assert len(items) == 1
+        # data value filtering
+        myfilter = root.create_data_value_filter((0,1))
+        items = list(root.iter_all(item_filter=myfilter))
+        assert len(items) == 1
+        #combined filter
+        myfilter = root.create_data_value_filter('n10',item_filter=root.create_data_key_filter('level'))
+        items = list(root.iter_all(item_filter=myfilter))
+        assert len(items) == 1
+        assert items[0].get('level')=='n10'
+        #match filters
+        myfilter = root.create_data_key_match_filter('no*')
+        items = list(root.iter_all(item_filter=myfilter))
+        assert len(items) == 1
+        myfilter = root.create_data_value_match_filter('*n1*')
+        items = list(root.iter_all(item_filter=myfilter))
+        assert len(items) == 11 # n10-n19 + n100
+        # item match filter
+        myfilter = root.create_item_match_filter(iTMatch('sub0*'))
+        items = list(root.iter_all(item_filter=myfilter))
+        assert len(items) == 5 # sub0_0-sub0_4
 
-        # index_list
+        # index
         items=root.find_all(key_path=0)
         assert items[0].tag == 'sub0'
         item = root.find(0)
         assert item.tag == 'sub0'
 
+        # one level index list -> go deeper
         items = root.find_all([0, 2])
         item=root.find([0,2])
         assert item.tag=='sub0_2'
+
         item+=iTree('sub0_2_0')
-        item = root.find([0, 2,0])
+
+        item = root.find([0,2,0])
         assert item.tag == 'sub0_2_0'
         item += iTree('sub0_2_0_x',data=0)
         item += iTree('sub0_2_0_x',data=1)
@@ -334,13 +395,15 @@ class TestiTreeBase:
         item = root.find([4,slice(1,3)])
         # we expect here None because we don't get a single output
         assert item is None
+
         # with find_all we get the items 1,1+3=4,1+3+3=7
-        items = root.find_all([4,slice(1,9,3)],force_list=True)
+        items = list(root.find_all([4,slice(1,9,3)]))
         assert items[0].data.get('level') == 'n1'
         assert items[1].data.get('level') == 'n4'
         assert items[2].data.get('level') == 'n7'
-        item = root.find([4,slice(99, 10000)]) #this should work we got just one match
-        assert item.data.get('level') == 'n99' #last item
+        items = list(root.find_all([4,slice(99, 10000)]))
+        assert items[0].data.get('level') == 'n99' #pre last item
+        assert items[1].tag == 'sub4_100'  # last item
 
         # tag slice
         item = root.find([4,TagIdx('sub4_n',slice(1, 3))])
@@ -348,6 +411,13 @@ class TestiTreeBase:
         assert item is None
         item = root.find([4,TagIdx('sub4_n',slice(99, 10000))]) #this should work we got just one match
         assert item.data.get('level') == 'n99' #last item
+
+        # list of lists (two level list)
+        items = list(root.find_all([[0,4],[0,1]]))
+        assert len(items)==4
+        assert items[0].tag=='sub0_0'
+        assert items[3].tag == 'sub4_n'
+        assert items[3].get('level') == 'n1'
 
         #todo matches and items with hashed objects
 
@@ -383,10 +453,6 @@ class TestiTreeBase:
         assert len(root.data) == 1
 
 
-    def test9_temporary_items(self):
-        pass
-
-
     def test10_std_save_load(self):
         if not 10 in TEST_SELECTION:
             return
@@ -399,6 +465,7 @@ class TestiTreeBase:
             os.makedirs(root_data_path)
         target_path=root_data_path+'/out.dtz'
         target_path2 = root_data_path + '/out.dtr'
+        target_path3 = root_data_path + '/out2.dtz'
 
         print('Outputfile: %s'%os.path.abspath(target_path))
 
@@ -424,9 +491,68 @@ class TestiTreeBase:
         root_loaded=root.load(target_path)
         assert not root.equal(root_loaded)
         root.render()
+
+        print('Outputfile2: %s' % os.path.abspath(target_path3))
+        root2=self._build_mix_tree()
+        root2.dump(target_path3,overwrite=True)
+        root2_loaded = root2.load(target_path3)
+        assert root2.equal(root2_loaded)
+
         #print(root.renders())
 
 
     def test11_linking(self):
-        pass
+        if not 11 in TEST_SELECTION:
+            return
+        #first we create a file
+        root = self._build_base_tree()
+        root_data_path = get_relpath_to_root('tmp')
+        if not os.path.exists(root_data_path):
+            os.makedirs(root_data_path)
+        target_path = root_data_path + '/out.dtz'
+        root.dump(target_path=target_path,overwrite=True)
+
+        #we build a new tree
+        root=self._build_mix_tree()
+        #we add a linked element
+        linked_item=iTree('LINKED',data=0,link=iTLink(target_path,4))
+        root.insert(1,linked_item)
+        print()
+        #root.render()
+        assert len(linked_item)==0
+        root.load_links()
+        assert len(linked_item)==100
+        with pytest.raises(PermissionError):
+            linked_item+=iTree('BASTARD')
+        with pytest.raises(PermissionError):
+            linked_item.insert(0,iTree('BASTARD'))
+        with pytest.raises(PermissionError):
+            del linked_item[0]
+        #data can be changed
+        linked_item.set('DATA','TEST')
+        #but not in the sub items!
+        with pytest.raises(PermissionError):
+            linked_item[1].set('DATA', 'TEST')
+        for i,item in enumerate(root.iter_all()):
+            if i == 0:
+                assert not item.is_linked
+            elif i==1:
+                assert item.tag=='LINKED'
+                assert item.is_linked
+            elif i > 2 and i<=101:
+                assert item.is_linked
+            elif i == 101:
+                assert item.get('level')=='n99'
+            elif i == 102:
+                assert not item.is_linked
+                assert item.tag=='c2'
+            elif i > 102:
+                assert not item.is_linked
+
+        for i, item in enumerate(root.iter_all(T|N)):
+            assert not item.is_linked
+        for i, item in enumerate(root.iter_all(L)):
+            assert item.is_linked
+
+
 

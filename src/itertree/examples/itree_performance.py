@@ -3,14 +3,17 @@ from __future__ import absolute_import
 import timeit
 import os
 
-#max_items = 5000
+max_items = 5000
 max_items = 500000
 
 repeat = 4
 
+
 print('We run for treesizes: %i with %i repetitions'%(max_items,repeat))
 
+import itertree
 from itertree import *
+print('itertree version: %s'%itertree.__version__)
 
 root=None
 

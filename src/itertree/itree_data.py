@@ -6,6 +6,9 @@ VALUE = V = 0  # returns the stored value
 STR = S = 1  # returns the string representation of the value (DTDataItems contains formatters for this)
 FULL = F = 2  # In case DTDataItem objects are used for storage the full object is given back
 
+import copy
+from collections import OrderedDict
+from .itree_helpers import COPY_NORMAL,COPY_OFF,COPY_DEEP
 
 class iTreeValidationError(Exception):
     '''
@@ -172,13 +175,13 @@ class iTDataModel():
                 self._formatter_cache = self.__formatter()
             return self._formatter_cache
         else:
-            return super(iTreeDataModel, self).__format__(format_spec)
+            return super(iTDataModel, self).__format__(format_spec)
 
     def __repr__(self):
         return 'iTreeDataModel(value= %s)' % self._value
 
 
-class iTData(dict):
+class iTData(OrderedDict):
     '''
     Standard itertree Data management object might be overloaded or changed by the user
     '''
@@ -192,12 +195,27 @@ class iTData(dict):
 
         :param data_items: single object or dict with key,value objects to be stored in the iTreeData object
         '''
-        super(iTData, self).__init__()
-        if not data_items is None:
-            if type(data_items) is dict:
-                super(iTData, self).update(data_items)
-            else:
-                super(iTData, self).__setitem__(__NOKEY__, data_items)
+        if data_items is None:
+            super(iTData, self).__init__()
+        else:
+            if type(data_items) not in {dict, OrderedDict,list}: #we can instance the whole data set via these types
+                data_items=[(__NOKEY__,data_items)]
+            super(iTData, self).__init__(data_items)
+
+    def copy(self,copy_type=COPY_NORMAL):
+        data = [i for i in super().items()]
+        if copy_type == COPY_OFF:
+            data = data
+        elif copy_type == COPY_NORMAL:
+            data = copy.copy(data)
+        elif copy_type == COPY_DEEP:
+            data = copy.deepcopy(data)
+        else:
+            raise AttributeError('Unknown copy_data parameter value %s' % copy_type)
+        return iTData(data)
+
+    def __copy__(self):
+        return self.copy()
 
     def set(self, key, value=__NOKEY__):
         '''
@@ -313,10 +331,9 @@ class iTData(dict):
                 return item.clear_value()
         return super(iTData, self).pop(key)
 
-
     def __repr__(self):
         # we represent via dict because dict will automatically load in again as iTreeData object
-        return repr(super(iTData, self).__repr__())
+        return repr([i for i in self.items()])
 
     def __hash__(self):
         '''

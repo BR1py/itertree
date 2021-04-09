@@ -53,7 +53,7 @@ class iTStdObjSerializer(object):
                 #we skip temporary items
                 return
             dt_dict = {self.DTYPE: 'iTree',self.TAG: self.encode(o._tag)}
-            data = o.data
+            data = o._data
             if data is not None:
                 dt_dict[self.DATA] = self.encode(data)
             if o._flags&LINKED:
@@ -102,7 +102,7 @@ class iTStdObjSerializer(object):
                     new_dict[self.decode(key)]=self.decode(v)
                 return new_dict
             elif o_type == 'iTree':
-                tag=raw_o.get(self.TAG)
+                tag=self.decode(raw_o.get(self.TAG))
                 data=raw_o.get(self.DATA)
                 if data is not None:
                     data=self.decode(data)
@@ -251,6 +251,7 @@ class iTStdRenderer(object):
     def __init__(self):
         self._identation=4
         self._heading=u' \u2514\u2500\u2500'
+        self._link_heading=u' \u2514\u2500>'
 
     def __create_item_string(self,item):
         '''
@@ -260,21 +261,23 @@ class iTStdRenderer(object):
         :param item: item to be printed
         :return: string containing the item information
         '''
-        data=item.data
+        link_str=''
+        if item._link is not None:
+            link_str=', link=%s'%repr(item._link)
+        data=item._data
         if data.is_empty:
-            return 'iTree(%s)' % (repr(item.tag))
+            return 'iTree(%s%s)' % (repr(item.tag),link_str)
         if data.is_no_key_only:
-            return 'iTree(%s, data=%s)'%(repr(item.tag),repr(item.get()))
+            return 'iTree(%s%s, data=%s)'%(repr(item.tag),link_str,repr(item.get()))
         else:
-            return 'iTree(%s, data=%s)' % (repr(item.tag), repr(item.data))
+            return 'iTree(%s%s, data=%s)' % (repr(item.tag),link_str, repr(item._data))
 
-    def render(self,itree_object,item_filter=ALL,match=None,_level=0):
+    def render(self,itree_object,item_filter=ALL,_level=0):
         '''
         prints a pretty output of the iTree object
 
         :param itree_object: iTree object to be converted
         :param item_filter: item filter method or filter-constant to filter specific items out
-        :param match: match object to filter items out
         :param _level: internal parameter for recursive calls (do not use)
         :return: string containing the pretty print aoutput
         '''
@@ -285,17 +288,19 @@ class iTStdRenderer(object):
         else:
             output=[]
         sub_tree = None
-        for item in itree_object.iter_children(item_filter=item_filter,match=match):
-            print(''.join([' '*(self._identation*_level),self._heading,self.__create_item_string(item)]))
-            self.render(item,item_filter=item_filter,match=match,_level=_level+1)
+        header=self._heading
+        if itree_object._link is not None:
+            header=self._link_heading
+        for item in itree_object.iter_children(item_filter=item_filter):
+            print(''.join([' '*(self._identation*_level),header,self.__create_item_string(item)]))
+            self.render(item,item_filter=item_filter,_level=_level+1)
 
-    def renders(self,itree_object,item_filter=ALL,match=None,_level=0):
+    def renders(self,itree_object,item_filter=ALL,_level=0):
         '''
         creates a pretty print string from iTree object
 
         :param itree_object: iTree object to be converted
         :param item_filter: item filter method or filter-constant to filter specific items out
-        :param match: match object to filter items out
         :param _level: internal parameter for recursive calls (do not use)
         :return: string containing the pretty print aoutput
         '''
@@ -306,7 +311,7 @@ class iTStdRenderer(object):
         else:
             output=''
         sub_tree = None
-        for item in itree_object.iter_children(item_filter=item_filter,match=match):
+        for item in itree_object.iter_children(item_filter=item_filter):
             output=''.join([output,'\n', ' '*(self._identation*_level),self._heading,self.__create_item_string(item),
-            self.renders(item,item_filter=item_filter,match=match,_level=_level+1)])
+            self.renders(item,item_filter=item_filter,_level=_level+1)])
         return output

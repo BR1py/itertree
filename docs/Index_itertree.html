@@ -641,7 +641,7 @@ will be delivered.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>key</strong> – single target: index, TagIdx or tuple (tag, index) (not recommended)
-multi target: TagIdx_s or an iterable (like list) of these keys or a slice</p>
+multi target: TagIdx_s; iMatch; slice or an iterable (like list) of these keys</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>iTree item or iterator (multi target)</p>
@@ -722,16 +722,18 @@ flags stay unchanged!
 <dl class="py method">
 <dt id="itertree.iTree.copy">
 <code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.copy" title="Permalink to this definition">¶</a></dt>
-<dd><p>create a copy of this item
-:param copy_data: Type of copy</p>
-<blockquote>
-<div><p>COPY_OFF - keep the data uncopied
+<dd><p>create a copy of this item</p>
+<p>The function is used internally in extend operations too. And we can see (profiler) that
+improvements in this method might have big impact.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>copy_data</strong> – Type of copy
+COPY_OFF - keep the data uncopied
 COPY_NORMAL - (default) copy the data too
 COPY_DEEP - do a deepcopy()</p>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
 </dd>
 </dl>
 </dd></dl>
@@ -975,11 +977,7 @@ reached via this property. (E.g. this can be helpful when connecting the iTree w
 <dl class="py method">
 <dt id="itertree.iTree.data">
 <code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#itertree.iTree.data" title="Permalink to this definition">¶</a></dt>
-<dd><p>delivers the internal data structure object
-HINT: It’s more for debugging proposes, it’s no recommended to maipulate the data via this object use the
-get(),set(), etc. instead
-:return:</p>
-</dd></dl>
+<dd></dd></dl>
 
 <p>The data property should never be modified directly (like all other properties too. This will lead into inconstiéncies of the iTree object.</p>
 <p>Use the related methods instead. Those methods are linked to the related methods in the internal iTData object.</p>
@@ -1071,22 +1069,24 @@ a iTreeDataModel or matching object is already stored under the key</p>
 <li><p><strong>item_filter</strong> – filter for filter the items you can give a filter constant or
 a method for filtering (should return True/False)</p></li>
 <li><p><strong>match</strong> – match pattern a iTMatch object</p></li>
-</ul>
+<li><p><strong>top_down</strong> – <dl class="simple">
+<dt>True -  we start from parent to children</dt><dd><p>parent; child1; subchild1_1; subchild1_2; child2; subchild2_1</p>
 </dd>
-</dl>
-<dl>
-<dt>top_down: True -  we start from parent to children</dt><dd><blockquote>
-<div><p>parent; child1; subchild1_1; subchild1_2; child2; subchild2_1</p>
-</div></blockquote>
-<dl class="simple">
 <dt>False - we start from children to parent</dt><dd><p>subchild1_1; subchild1_2; child1; subchild2_1;  child2; parent</p>
 </dd>
 </dl>
+</p></li>
+<li><p><strong>filter_or</strong> – <dl class="simple">
+<dt>True - we combine the filtering with or this means even if we have no match in the higher</dt><dd><p>levels of the tree we will go deepere to find matches</p>
+</dd>
+<dt>False - filters are combined with and which means children will only be parsed in</dt><dd><p>case the parent matches also to the filter condition</p>
 </dd>
 </dl>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>iterator</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>iterator</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1186,27 +1186,17 @@ filtering method</p></li>
 <dt id="itertree.iTree.create_data_key_filter">
 <code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">create_data_key_filter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.create_data_key_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.create_data_key_filter" title="Permalink to this definition">¶</a></dt>
 <dd><p>create a item_filter method regarding a specific data key
-:param item_filter: pre filtering method or integer with filter constant
 :param data_key: key that should be filtered out - if no key is given the no key item will be filtered
-:return: specific item filter method</p>
+:param item_filter: pre filtering method or integer with filter constant
+:return: specific item filter method that delivers True/False when item is given</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="itertree.iTree.create_data_value_filter">
 <code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">create_data_value_filter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.create_data_value_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.create_data_value_filter" title="Permalink to this definition">¶</a></dt>
 <dd><p>create a item_filter method searching for a specific data content
-:param item_filter: pre filtering method or integer with filter constant
 :param data_value: data content the method will search for
-:return: specific item filter method</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="itertree.iTree.create_data_item_filter">
-<code class="sig-prename descclassname">iTree.</code><code class="sig-name descname">create_data_item_filter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.create_data_item_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.iTree.create_data_item_filter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method creates a item_filter method that searches for specific data item (key, value pair)
 :param item_filter: pre filtering method or integer with filter constant
-:param data_key: key that should be filtered out - if no key is given the no key item will be filtered
-:param data_value: data content the method will search for
 :return: specific item filter method</p>
 </dd></dl>
 

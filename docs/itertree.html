@@ -165,6 +165,13 @@
 <div class="section" id="subpackages">
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="itertree.examples.html">itertree examples package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="itertree.examples.html#modules">Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="itertree.examples.html#iterree-profiler-example">iterree profiler example</a></li>
+</ul>
+</li>
+</ul>
 </div>
 </div>
 <div class="section" id="modules">
@@ -300,16 +307,18 @@ flags stay unchanged!
 <dl class="py method">
 <dt id="itertree.itree_main.iTree.copy">
 <code class="sig-name descname">copy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">copy_data</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_main.iTree.copy" title="Permalink to this definition">¶</a></dt>
-<dd><p>create a copy of this item
-:param copy_data: Type of copy</p>
-<blockquote>
-<div><p>COPY_OFF - keep the data uncopied
+<dd><p>create a copy of this item</p>
+<p>The function is used internally in extend operations too. And we can see (profiler) that
+improvements in this method might have big impact.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>copy_data</strong> – Type of copy
+COPY_OFF - keep the data uncopied
 COPY_NORMAL - (default) copy the data too
 COPY_DEEP - do a deepcopy()</p>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
 </dd>
 </dl>
 </dd></dl>
@@ -333,41 +342,74 @@ reached via this property. (E.g. this can be helpful when connecting the iTree w
 </dd></dl>
 
 <dl class="py method">
-<dt id="itertree.itree_main.iTree.create_data_item_filter">
-<code class="sig-name descname">create_data_item_filter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item_filter</span><span class="o">=</span><span class="default_value">7</span></em>, <em class="sig-param"><span class="n">data_key</span><span class="o">=</span><span class="default_value">'__NOKEY__'</span></em>, <em class="sig-param"><span class="n">data_value</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.create_data_item_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_main.iTree.create_data_item_filter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method creates a item_filter method that searches for specific data item (key, value pair)
-:param item_filter: pre filtering method or integer with filter constant
+<dt id="itertree.itree_main.iTree.create_data_key_filter">
+<code class="sig-name descname">create_data_key_filter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_key</span><span class="o">=</span><span class="default_value">'__NOKEY__'</span></em>, <em class="sig-param"><span class="n">item_filter</span><span class="o">=</span><span class="default_value">7</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.create_data_key_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_main.iTree.create_data_key_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>create a item_filter method regarding a specific data key
 :param data_key: key that should be filtered out - if no key is given the no key item will be filtered
-:param data_value: data content the method will search for
-:return: specific item filter method</p>
+:param item_filter: pre filtering method or integer with filter constant
+:return: specific item filter method that delivers True/False when item is given</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="itertree.itree_main.iTree.create_data_key_filter">
-<code class="sig-name descname">create_data_key_filter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item_filter</span><span class="o">=</span><span class="default_value">7</span></em>, <em class="sig-param"><span class="n">data_key</span><span class="o">=</span><span class="default_value">'__NOKEY__'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.create_data_key_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_main.iTree.create_data_key_filter" title="Permalink to this definition">¶</a></dt>
-<dd><p>create a item_filter method regarding a specific data key
-:param item_filter: pre filtering method or integer with filter constant
-:param data_key: key that should be filtered out - if no key is given the no key item will be filtered
-:return: specific item filter method</p>
+<dt id="itertree.itree_main.iTree.create_data_key_match_filter">
+<code class="sig-name descname">create_data_key_match_filter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">match_pattern</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">item_filter</span><span class="o">=</span><span class="default_value">7</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.create_data_key_match_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_main.iTree.create_data_key_match_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>create a item_filter method searching for a specific data content
+:param match_pattern: checks if a data key matches to the given pattern</p>
+<blockquote>
+<div><p>(fnmatch() is internally used for the checks)
+(non str, byte values will be taken as not matching)</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>item_filter</strong> – pre filtering method or integer with filter constant</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>specific item filter method</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="itertree.itree_main.iTree.create_data_value_filter">
-<code class="sig-name descname">create_data_value_filter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item_filter</span><span class="o">=</span><span class="default_value">7</span></em>, <em class="sig-param"><span class="n">data_value</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.create_data_value_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_main.iTree.create_data_value_filter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">create_data_value_filter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_value</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">item_filter</span><span class="o">=</span><span class="default_value">7</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.create_data_value_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_main.iTree.create_data_value_filter" title="Permalink to this definition">¶</a></dt>
 <dd><p>create a item_filter method searching for a specific data content
-:param item_filter: pre filtering method or integer with filter constant
 :param data_value: data content the method will search for
+:param item_filter: pre filtering method or integer with filter constant
+:return: specific item filter method</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.itree_main.iTree.create_data_value_match_filter">
+<code class="sig-name descname">create_data_value_match_filter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">match_pattern</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">item_filter</span><span class="o">=</span><span class="default_value">7</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.create_data_value_match_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_main.iTree.create_data_value_match_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>create a item_filter method searching for a specific data content
+:param match_pattern: checks if a data value matches to the given pattern</p>
+<blockquote>
+<div><p>(fnmatch() is internally used for the checks)
+(non str, byte values will be taken as not matching)</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>item_filter</strong> – pre filtering method or integer with filter constant</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>specific item filter method</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="itertree.itree_main.iTree.create_item_match_filter">
+<code class="sig-name descname">create_item_match_filter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">match</span></em>, <em class="sig-param"><span class="n">item_filter</span><span class="o">=</span><span class="default_value">7</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.create_item_match_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_main.iTree.create_item_match_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>create a item_filter method searching for a specific data content
+:param match: iTMatch object or any match object with a check function for iTree objects
+:param item_filter: pre filtering method or integer with filter constant
 :return: specific item filter method</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="itertree.itree_main.iTree.data">
 <em class="property">property </em><code class="sig-name descname">data</code><a class="headerlink" href="#itertree.itree_main.iTree.data" title="Permalink to this definition">¶</a></dt>
-<dd><p>delivers the internal data structure object
-HINT: It’s more for debugging proposes, it’s no recommended to maipulate the data via this object use the
-get(),set(), etc. instead
-:return:</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt id="itertree.itree_main.iTree.depth">
@@ -505,7 +547,7 @@ filtering method</p></li>
 
 <dl class="py method">
 <dt id="itertree.itree_main.iTree.find_all">
-<code class="sig-name descname">find_all</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key_path</span></em>, <em class="sig-param"><span class="n">item_filter</span><span class="o">=</span><span class="default_value">7</span></em>, <em class="sig-param"><span class="n">str_path_separator</span><span class="o">=</span><span class="default_value">'/'</span></em>, <em class="sig-param"><span class="n">str_index_separator</span><span class="o">=</span><span class="default_value">'#'</span></em>, <em class="sig-param"><span class="n">force_list</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">_initial</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.find_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_main.iTree.find_all" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">find_all</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key_path</span></em>, <em class="sig-param"><span class="n">item_filter</span><span class="o">=</span><span class="default_value">7</span></em>, <em class="sig-param"><span class="n">str_path_separator</span><span class="o">=</span><span class="default_value">'/'</span></em>, <em class="sig-param"><span class="n">str_index_separator</span><span class="o">=</span><span class="default_value">'#'</span></em>, <em class="sig-param"><span class="n">_initial</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.find_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_main.iTree.find_all" title="Permalink to this definition">¶</a></dt>
 <dd><p>The find_all function targets over multiple levels of the datatree, it returns a list or iterator of the
 matching  items!</p>
 <p>The key_path parameter given is normally a list. This can be a list of keys or TagIdx objects. The function
@@ -540,7 +582,9 @@ Slice - a slice of indexes (like a special index list)
 string - will be parsed by the separators
 iterable list/tuple/deque,… -</p>
 <blockquote>
-<div><p>run over single items</p>
+<div><p>run over single keys if sub_key is again an iterable it will be taken as an index list
+(e.g. [1,2,3] - will go deeper in the tree 1. item; 2. subitem; 3. subsubitem
+but [[1,2,3]] - will stay in the first level and deliver 1. item; 2. item; 3. item)</p>
 </div></blockquote>
 </p></li>
 <li><p><strong>item_filter</strong> – filters the item content regarding NORMAL, TEMPORARY and LINKED flag or a given
@@ -698,7 +742,7 @@ This properties checks if the item is temporary
 
 <dl class="py method">
 <dt id="itertree.itree_main.iTree.iter_all">
-<code class="sig-name descname">iter_all</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item_filter</span><span class="o">=</span><span class="default_value">7</span></em>, <em class="sig-param"><span class="n">match</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">top_down</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.iter_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_main.iTree.iter_all" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">iter_all</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item_filter</span><span class="o">=</span><span class="default_value">7</span></em>, <em class="sig-param"><span class="n">top_down</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">filter_or</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.iter_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_main.iTree.iter_all" title="Permalink to this definition">¶</a></dt>
 <dd><p>main iterator for whole tree runs in top-&gt; down order</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -706,29 +750,31 @@ This properties checks if the item is temporary
 <li><p><strong>item_filter</strong> – filter for filter the items you can give a filter constant or
 a method for filtering (should return True/False)</p></li>
 <li><p><strong>match</strong> – match pattern a iTMatch object</p></li>
-</ul>
+<li><p><strong>top_down</strong> – <dl class="simple">
+<dt>True -  we start from parent to children</dt><dd><p>parent; child1; subchild1_1; subchild1_2; child2; subchild2_1</p>
 </dd>
-</dl>
-<dl>
-<dt>top_down: True -  we start from parent to children</dt><dd><blockquote>
-<div><p>parent; child1; subchild1_1; subchild1_2; child2; subchild2_1</p>
-</div></blockquote>
-<dl class="simple">
 <dt>False - we start from children to parent</dt><dd><p>subchild1_1; subchild1_2; child1; subchild2_1;  child2; parent</p>
 </dd>
 </dl>
+</p></li>
+<li><p><strong>filter_or</strong> – <dl class="simple">
+<dt>True - we combine the filtering with or this means even if we have no match in the higher</dt><dd><p>levels of the tree we will go deepere to find matches</p>
+</dd>
+<dt>False - filters are combined with and which means children will only be parsed in</dt><dd><p>case the parent matches also to the filter condition</p>
 </dd>
 </dl>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>iterator</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>iterator</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="itertree.itree_main.iTree.iter_children">
-<code class="sig-name descname">iter_children</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item_filter</span><span class="o">=</span><span class="default_value">7</span></em>, <em class="sig-param"><span class="n">match</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.iter_children"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_main.iTree.iter_children" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">iter_children</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item_filter</span><span class="o">=</span><span class="default_value">7</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.iter_children"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_main.iTree.iter_children" title="Permalink to this definition">¶</a></dt>
 <dd><p>main iterator in children level
 :param item_filter: the items can be filtered by giving a filter constants or giving a filter method
 :return: iterator</p>
@@ -736,7 +782,7 @@ a method for filtering (should return True/False)</p></li>
 
 <dl class="py method">
 <dt id="itertree.itree_main.iTree.iter_tag_idxs">
-<code class="sig-name descname">iter_tag_idxs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item_filter</span><span class="o">=</span><span class="default_value">7</span></em>, <em class="sig-param"><span class="n">match</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">top_down</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.iter_tag_idxs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_main.iTree.iter_tag_idxs" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">iter_tag_idxs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item_filter</span><span class="o">=</span><span class="default_value">7</span></em>, <em class="sig-param"><span class="n">top_down</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_main.html#iTree.iter_tag_idxs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_main.iTree.iter_tag_idxs" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1035,7 +1081,7 @@ cmp(x, y) -&gt; -1, 0, 1</p>
 
 <dl class="py class">
 <dt id="itertree.itree_helpers.iTLink">
-<em class="property">class </em><code class="sig-prename descclassname">itertree.itree_helpers.</code><code class="sig-name descname">iTLink</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ref_path</span></em>, <em class="sig-param"><span class="n">ref_key</span></em>, <em class="sig-param"><span class="n">ref_first</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_helpers.html#iTLink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_helpers.iTLink" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">itertree.itree_helpers.</code><code class="sig-name descname">iTLink</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_path</span></em>, <em class="sig-param"><span class="n">key_path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_helpers.html#iTLink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_helpers.iTLink" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Definition of a link to an element in another DataTree</p>
 <dl class="py method">
@@ -1044,8 +1090,33 @@ cmp(x, y) -&gt; -1, 0, 1</p>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="itertree.itree_helpers.iTLink.is_iTreeLink">
-<em class="property">property </em><code class="sig-name descname">is_iTreeLink</code><a class="headerlink" href="#itertree.itree_helpers.iTLink.is_iTreeLink" title="Permalink to this definition">¶</a></dt>
+<dt id="itertree.itree_helpers.iTLink.file_path">
+<em class="property">property </em><code class="sig-name descname">file_path</code><a class="headerlink" href="#itertree.itree_helpers.iTLink.file_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="itertree.itree_helpers.iTLink.is_iTLink">
+<em class="property">property </em><code class="sig-name descname">is_iTLink</code><a class="headerlink" href="#itertree.itree_helpers.iTLink.is_iTLink" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="itertree.itree_helpers.iTLink.is_loaded">
+<em class="property">property </em><code class="sig-name descname">is_loaded</code><a class="headerlink" href="#itertree.itree_helpers.iTLink.is_loaded" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="itertree.itree_helpers.iTLink.key_path">
+<em class="property">property </em><code class="sig-name descname">key_path</code><a class="headerlink" href="#itertree.itree_helpers.iTLink.key_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="itertree.itree_helpers.iTLink.link_data">
+<em class="property">property </em><code class="sig-name descname">link_data</code><a class="headerlink" href="#itertree.itree_helpers.iTLink.link_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="itertree.itree_helpers.iTLink.link_tag">
+<em class="property">property </em><code class="sig-name descname">link_tag</code><a class="headerlink" href="#itertree.itree_helpers.iTLink.link_tag" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1055,54 +1126,7 @@ cmp(x, y) -&gt; -1, 0, 1</p>
 
 <dl class="py method">
 <dt id="itertree.itree_helpers.iTLink.set_loaded">
-<code class="sig-name descname">set_loaded</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_helpers.html#iTLink.set_loaded"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_helpers.iTLink.set_loaded" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="itertree.itree_helpers.iTMagicList">
-<em class="property">class </em><code class="sig-prename descclassname">itertree.itree_helpers.</code><code class="sig-name descname">iTMagicList</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">def_list</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_helpers.html#iTMagicList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_helpers.iTMagicList" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>This object should increase th performance on huge lists by allocating the memory in blocks
-and using numpy</p>
-<dl class="py method">
-<dt id="itertree.itree_helpers.iTMagicList.append">
-<code class="sig-name descname">append</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_helpers.html#iTMagicList.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_helpers.iTMagicList.append" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="itertree.itree_helpers.iTMagicList.delta">
-<em class="property">property </em><code class="sig-name descname">delta</code><a class="headerlink" href="#itertree.itree_helpers.iTMagicList.delta" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="itertree.itree_helpers.iTMagicList.extend">
-<code class="sig-name descname">extend</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">items</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_helpers.html#iTMagicList.extend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_helpers.iTMagicList.extend" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="itertree.itree_helpers.iTMagicList.insert">
-<code class="sig-name descname">insert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">item</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_helpers.html#iTMagicList.insert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_helpers.iTMagicList.insert" title="Permalink to this definition">¶</a></dt>
-<dd><p>the insert operation  is by far th eslowest operation and should be avoided
-:param key: insert position
-:param item: item to be inserted
-:return: True</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="itertree.itree_helpers.iTMagicList.pop">
-<code class="sig-name descname">pop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_helpers.html#iTMagicList.pop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_helpers.iTMagicList.pop" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="itertree.itree_helpers.iTMagicList.pre_alloc_list">
-<code class="sig-name descname">pre_alloc_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">length</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_helpers.html#iTMagicList.pre_alloc_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_helpers.iTMagicList.pre_alloc_list" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="itertree.itree_helpers.iTMagicList.remove">
-<code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_helpers.html#iTMagicList.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_helpers.iTMagicList.remove" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_loaded</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tag</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_helpers.html#iTLink.set_loaded"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_helpers.iTLink.set_loaded" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1118,8 +1142,8 @@ and using numpy</p>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="itertree.itree_helpers.iTMatch.is_iTreeMatch">
-<em class="property">property </em><code class="sig-name descname">is_iTreeMatch</code><a class="headerlink" href="#itertree.itree_helpers.iTMatch.is_iTreeMatch" title="Permalink to this definition">¶</a></dt>
+<dt id="itertree.itree_helpers.iTMatch.is_iTMatch">
+<em class="property">property </em><code class="sig-name descname">is_iTMatch</code><a class="headerlink" href="#itertree.itree_helpers.iTMatch.is_iTMatch" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1130,7 +1154,7 @@ and using numpy</p>
 <dl class="py class">
 <dt id="itertree.itree_data.iTData">
 <em class="property">class </em><code class="sig-prename descclassname">itertree.itree_data.</code><code class="sig-name descname">iTData</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_items</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_data.html#iTData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_data.iTData" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.OrderedDict</span></code></p>
 <p>Standard itertree Data management object might be overloaded or changed by the user</p>
 <dl class="py method">
 <dt id="itertree.itree_data.iTData.check">
@@ -1140,6 +1164,11 @@ and using numpy</p>
 :param key: key to be stored in
 :return: tuple (True/False,’check text’)</p>
 </dd></dl>
+
+<dl class="py method">
+<dt id="itertree.itree_data.iTData.copy">
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; a shallow copy of od<a class="reference internal" href="_modules/itertree/itree_data.html#iTData.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_data.iTData.copy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt id="itertree.itree_data.iTData.data">
@@ -1469,14 +1498,13 @@ and back conversion is also included</p>
 <p>Standard renderer fr the iTree object for creating a very simple pretty print output</p>
 <dl class="py method">
 <dt id="itertree.itree_serialize.iTStdRenderer.render">
-<code class="sig-name descname">render</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">itree_object</span></em>, <em class="sig-param"><span class="n">item_filter</span><span class="o">=</span><span class="default_value">7</span></em>, <em class="sig-param"><span class="n">match</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">_level</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_serialize.html#iTStdRenderer.render"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_serialize.iTStdRenderer.render" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">render</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">itree_object</span></em>, <em class="sig-param"><span class="n">item_filter</span><span class="o">=</span><span class="default_value">7</span></em>, <em class="sig-param"><span class="n">_level</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_serialize.html#iTStdRenderer.render"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_serialize.iTStdRenderer.render" title="Permalink to this definition">¶</a></dt>
 <dd><p>prints a pretty output of the iTree object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>itree_object</strong> – iTree object to be converted</p></li>
 <li><p><strong>item_filter</strong> – item filter method or filter-constant to filter specific items out</p></li>
-<li><p><strong>match</strong> – match object to filter items out</p></li>
 <li><p><strong>_level</strong> – internal parameter for recursive calls (do not use)</p></li>
 </ul>
 </dd>
@@ -1488,14 +1516,13 @@ and back conversion is also included</p>
 
 <dl class="py method">
 <dt id="itertree.itree_serialize.iTStdRenderer.renders">
-<code class="sig-name descname">renders</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">itree_object</span></em>, <em class="sig-param"><span class="n">item_filter</span><span class="o">=</span><span class="default_value">7</span></em>, <em class="sig-param"><span class="n">match</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">_level</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_serialize.html#iTStdRenderer.renders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_serialize.iTStdRenderer.renders" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">renders</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">itree_object</span></em>, <em class="sig-param"><span class="n">item_filter</span><span class="o">=</span><span class="default_value">7</span></em>, <em class="sig-param"><span class="n">_level</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/itertree/itree_serialize.html#iTStdRenderer.renders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#itertree.itree_serialize.iTStdRenderer.renders" title="Permalink to this definition">¶</a></dt>
 <dd><p>creates a pretty print string from iTree object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>itree_object</strong> – iTree object to be converted</p></li>
 <li><p><strong>item_filter</strong> – item filter method or filter-constant to filter specific items out</p></li>
-<li><p><strong>match</strong> – match object to filter items out</p></li>
 <li><p><strong>_level</strong> – internal parameter for recursive calls (do not use)</p></li>
 </ul>
 </dd>
