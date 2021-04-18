@@ -15,10 +15,11 @@
 import sys, os, time
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+'\\src')
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__))+'\\src')
+
 sys.path.insert(0, os.path.abspath('..')+'\\src')
 
 print('PYTHONpath:',sys.path)
-#import itertree
+import itertree
 #from itertree import *
 
 # If extensions (or modules to document with autodoc) are in another directory,
