@@ -7,6 +7,9 @@ root=None
 def performance_dt():
     global root,max_items
     it = iTree('root')
+    #insert
+    for i in range(max_items):
+        it.insert(1,iTree('%i' % i))
     #append datatree with items
     for i in range(max_items):
         it += iTree('%i' % i)

@@ -4,8 +4,10 @@ helper classes used in DataTree object
 from __future__ import absolute_import
 import time
 import fnmatch
+from collections import namedtuple
 # We are testing here if numpy is available
 import numpy as np
+
 try:
     np_object=np.object_
 except TypeError:
@@ -14,10 +16,10 @@ except TypeError:
 
 #CONSTANTS used as parameters of methods in DataTree and related classes
 #Filter constants
-TEMPORARY=T=0b10
-LINKED = L = 0b100
-NORMAL= N = 0b1
-ALL=T|L|N
+TEMPORARY=TMP=0b10
+LINKED = LNK = 0b100
+READ_ONLY= RO = 0b1000
+
 #copy constants
 COPY_OFF=0
 COPY_NORMAL=1
@@ -217,10 +219,10 @@ class iTMatch(object):
             return False
         return fnmatch.fnmatch(value,pattern)
 
-    def check(self, item, item_filter=ALL):
-        if type(item_filter) is int:
-            i=item_filter
-            item_filter=lambda item: ((item._flags & ~i) == 0)
+    def check(self, item, item_filter=None):
+        if item_filter is not None:
+            if not item_filter(item):
+                return False
         result=not self._op
         for check_method, patterns in self._check.items():
             stop, result = self._op_logic(result, check_method(item, item_filter, patterns))
@@ -232,58 +234,73 @@ class iTMatch(object):
         return 'iTreeMatch(pattern=%s, op=%s)' % (repr(self._pattern), repr(self._op))
 
 
-class TagIdx():
+#base object for TagIdx definitions:
 
-    def __init__(self, tag, idx=None, tag_separator='#'):
-        '''
-        This is a special tuple containing a combination of tag,index used for the identification
-        of elements in iTrees
+TagIdx = namedtuple('TagIdx',['tag','idx'])
 
-        HINT: The object can be instanced by giving a tag and and index as parameters. But string only
-        parameters will be parsed and split by the separator given e.g. "mytag#1" -> ("mytag",1)
-        Obviously parsed tags can only be used if tags used in iTree are string objects!
+class TagIdxStr(TagIdx):
+    '''
+    Define a TagIdx by a sting with an index separator (default='#')
 
-        The content of the object can be reached via property obj.tag, obj.idx or per index obj[0](tag), obj[1] (index).
+    Example: "mytag#1" will be translated in the TagIdx("mytag",1)
 
-        :param tag: tag object (string or hashable object)
-        :param idx: for single target integer object (or None for parsed tags)
-                    for multi target None (pure tag without index -> tag_family target)
-                                     slice
-                                     index list/iterator
-        :param tag_separator: separator for split of tag and index (default is "#")
-        '''
-        if idx is None:
-            tag, idx = tag.split(tag_separator)
-            if ':' in idx:
-                tmp=idx.split(':')
-                slice_parameter=[int(i) for i in tmp]
-                idx=slice(*slice_parameter)
-            else:
-                idx=int(idx)
-        self._tuple = (tag, idx)
-        self._is_single=(type(self.idx) is int)
+    Note:: This makes only sense and can only be used if the tag is a string (not for other objects)
+
+    :param tag_idx_str: string containing the definition
+
+    '''
+
+    def __new__(cls,tag_idx_str, tag_separator='#'):
+        tag,idx= tag_idx_str.split(tag_separator)
+        idx = int(idx)
+        return super(TagIdxStr,cls).__new__(cls,tag,idx)
+
     @property
-    def is_TagIdx(self):
+    def is_TagIdxStr(self):
         return True
 
-    @property
-    def tag(self):
-        return self._tuple[0]
+class TagIdxBytes(TagIdxStr):
+    '''
+    Define a TagIdx by bytes with an index separator (default=b'#')
+
+    Example: b"mytag#1" will be translated in the TagIdx(b"mytag",1)
+
+    Note:: This makes only sense and can only be used if the tag is a byte (not for other objects)
+
+    :param tag_idx_bytes: bytes containing the definition
+
+    '''
+
+    def __new__(cls, tag_idx_bytes, tag_separator=b'#'):
+        return super(TagIdxBytes, cls).__new__(cls, tag_idx_bytes, tag_separator)
 
     @property
-    def idx(self):
-        return self._tuple[1]
+    def is_TagIdxBytes(self):
+        return True
+
+
+class TagMultiIdx(TagIdx):
+    '''
+    Define a TagMultiIdx
+
+    :param tag: item tag (can be any hashable object)
+
+    :param idxs: This parameter can be:
+                 list of integer indexes
+                 any iterable or iterator containing index integers
+                  slice object
+    '''
+    def __new__(cls,tag, idxs):
+        if type(idxs) in {str,bytes}:
+            raise TypeError('We expect a multi target here that should be an iterable, '
+                            'an iterator or a slice object!')
+        if not hasattr(idxs,'__iter__'):
+            if not hasattr(idxs,'__next__'):
+                if type(idxs) is not slice:
+                    raise TypeError('We expect a multi target here that should be an iterable, '
+                                    'an iterator or a slice object!')
+        return super(TagMultiIdx,cls).__new__(cls,tag,idxs)
 
     @property
-    def is_single(self):
-        return self._is_single
-
-    def __getitem__(self, idx):
-        return self._tuple[idx]
-
-    def __hash__(self):
-        return hash(self._tuple)
-
-    def __repr__(self):
-        return 'TagIdx(%s, %s)'%(repr(self.tag),repr(self.idx))
-
+    def is_TagMultiIdx(self):
+        return True
