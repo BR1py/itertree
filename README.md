@@ -159,6 +159,17 @@ The iterators and find functions of itertree can use item_filters to search for 
 
 HINT: In case a function returns multiple elements (multi target) itertree delivers always an iterator. The advantage is that we can create very quick results even when the item number is very high. For efficent usage the user should continue use iterators (e.g. see itertools package) to reach the final result. Normally only at the end of the whole operation the iterator should be "realized" by looping over the items or casting into a list. Even single item acces can be best realized via itertools.isslice() operation.
 
+This might be confusing but if the user really wants to have the expected list he can easy cast the iterator:
+::
+    >>>myresultlist=list(root.iter_all()) #  this is quick even for huge number of items
+    >>>first_item=list(root.iter_all())[0] # Anyway this is much slower than:
+    >>>first_item=next(root.iter_all())
+    >>>fifth_item=list(root.iter_all())[4] # and this is much slower than:
+    >>>fifth_item=next(itertools.isslice(root.iter_all(),4,None))
+    
+
+
+
 ### Data
 
 The data handling can be done over set and get functions, if no specific key is given the "__ NOKEY__" element in the internal data structure will be adressed. This is very helpful in case you want to store just one data object in the iTree object. By adding explicit keys multiple data elements can be stored in the internal dict structure of one iTree object (attributes). Additionally  a data-model can be defined so that only matching data values will be accepted in the data structure. The data access is possible via direct methods (get(),set(),check(), pop()) in the iTree.
