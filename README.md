@@ -80,25 +80,6 @@ The original implementation was realized with python 3.5 and it was tested with 
 The detailed package documentation can be found here:
 https://itertree.readthedocs.io/en/latest/#
 
-## Package structure and files 
-
-The structure of folder and files related to this package looks like this:
-
-* itertree (main folder)
-
-   * __ init __.py
-   * itree_main.py
-   * itree_helpers.py
-   * itree_data.py
-   * itree_serialize.py
-   * _itree_internal.py
-
-   * examples
-
-      * itree_performance.py
-      * itree_profiling.py
-      * itree_data.py
-
 ## Getting started, first steps 
 
 ### Import and first itertree
