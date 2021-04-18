@@ -55,7 +55,7 @@ Running the same profiling actions without blist package (using normal list) we 
     1         0.149    0.149    0.914    0.914 itree_main.py:919(extend)
     100000    0.082    0.000    0.097    0.000 itree_main.py:622(idx)
     
-Especially the index based searches in the lists are take much longer. And especially the insert() take exceptionally much longer but one may see this as a corner case only because the filling of a huge tree will normally always be done by appending or even better by extending elements. Inserting a single item is absolutly no issue! Please consider we talk here about a very huge number of insert() operations (100000). Same arguments can be made for the __delitem__ operation nobody will delete all the items step by step it's much easier to delete or clear the parent instead.
+Especially the index based searches in the lists are take much longer. And especially the insert() take exceptionally much longer but one may see this as a corner case only because the filling of a huge tree will normally always be done by appending or even better by extending elements. Inserting a single item is absolutly no issue! Please consider we talk here about a very huge number of insert() operations (100000). Same arguments can be made for the __delitem__() operation nobody will delete all the items step by step it's much easier to delete or clear the parent instead.
 
 We can summarize: Except from the told corner cases the itertree package runs with the same speed (sometimes a bit faster) even that the blist package is not installed.
 
@@ -63,7 +63,7 @@ We can summarize: Except from the told corner cases the itertree package runs wi
 Special iTree objects
 *********************
 
-In an iitertree person might need temporray items or they like to combine the tree from diffrent sources (files). Or they lie to protect specific items from writing (rad only). For this proposes we can integrate special iTree obejcts in the itertree.
+In an iitertree person might need temporary items or they like to combine the tree from diffrent sources (files). Or they lie to protect specific items from writing (rad only). For this proposes we can integrate special iTree obejcts in the itertree.
 
 Besides the normal iTree object we have three other types of iTree objects avaiable:
 

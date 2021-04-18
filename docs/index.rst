@@ -291,7 +291,7 @@ Tutorial
 ---------
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 3
    :hidden:
 
 
@@ -301,7 +301,7 @@ API Reference
 -------------
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 3
    :hidden:
 
    docs/itertree_api
@@ -310,7 +310,7 @@ Usage Examples
 --------------
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 3
    :hidden:
 
    docs/itertree_examples

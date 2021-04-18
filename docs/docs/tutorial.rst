@@ -54,25 +54,25 @@ To add or manipulate the children of an item we have several possibilities. The 
 
 Additionally a huge set of methods is available for structural manipulations related to the children of a item.
 
-.. automethod:: itertree.iTree.append
+.. autofunction:: itertree.iTree.append
 
-.. automethod:: itertree.iTree.appendleft
+.. autofunction:: itertree.iTree.appendleft
 
-.. automethod:: itertree.itree_main.iTree.extend
+.. autofunction:: itertree.itree_main.iTree.extend
 
-.. automethod:: itertree.itree_main.iTree.extendleft
+.. autofunction:: itertree.itree_main.iTree.extendleft
 
-.. automethod:: itertree.itree_main.iTree.insert
+.. autofunction:: itertree.itree_main.iTree.insert
 
-.. automethod:: itertree.itree_main.iTree.move
+.. autofunction:: itertree.itree_main.iTree.move
 
-.. automethod:: itertree.itree_main.iTree.rename
+.. autofunction:: itertree.itree_main.iTree.rename
 
-.. automethod:: itertree.itree_main.iTree.pop
+.. autofunction:: itertree.itree_main.iTree.pop
 
-.. automethod:: itertree.itree_main.iTree.popleft
+.. autofunction:: itertree.itree_main.iTree.popleft
 
-.. automethod:: itertree.iTree.clear
+.. autofunction:: itertree.iTree.clear
 
 The addition of iTrees is possible the result contains always the properties of the first added item and the children of the second added item are appended by creating a copy. 
 ::
@@ -96,7 +96,7 @@ item access
 
 The items in the iTree can be accessed via __getitem__() method:
 
-.. automethod:: itertree.iTree.__getitem__()
+.. autofunction:: itertree.iTree.__getitem__()
 
     >>> root=iTree('root')
     >>> root+=iTree('child',data=0)
@@ -125,41 +125,41 @@ The TagIdx class is used to address items that contains the same tag. The second
 iTree other structure related commands
 ***************************
 
-.. automethod:: itertree.iTree.__setitem__()
+.. autofunction:: itertree.iTree.__setitem__()
 
-.. automethod:: itertree.iTree.__delitem__()
+.. autofunction:: itertree.iTree.__delitem__()
 
-.. automethod:: itertree.iTree.clear()
+.. autofunction:: itertree.iTree.clear()
 
-.. automethod:: itertree.iTree.copy()
+.. autofunction:: itertree.iTree.copy()
 
-.. automethod:: itertree.iTree.reverse()
+.. autofunction:: itertree.iTree.reverse()
 
-.. automethod:: itertree.iTree.rotate()
+.. autofunction:: itertree.iTree.rotate()
 
 
 ***************************
 iTree compare items
 ***************************
 
-.. automethod:: itertree.iTree.__eq__()
+.. autofunction:: itertree.iTree.__eq__()
 
-.. automethod:: itertree.iTree.__neq__()
+.. autofunction:: itertree.iTree.__neq__()
 
-.. automethod:: itertree.iTree.equal()
+.. autofunction:: itertree.iTree.equal()
 
 
 Because the __eq__() method (== opertor) is internally used for same item object findings we really compare here based on the python object id. Therefore for the comparison of two non identical objects the equal() method should be used.
 
-.. automethod:: itertree.iTree.__contains__()
+.. autofunction:: itertree.iTree.__contains__()
 
-.. automethod:: itertree.iTree.__hash__()
+.. autofunction:: itertree.iTree.__hash__()
 
-.. automethod:: itertree.iTree.__len__()
+.. autofunction:: itertree.iTree.__len__()
 
 Based on the iTree length the comparison operators <; <=; >; >= are available too.
 
-.. automethod:: itertree.iTree.count()
+.. autofunction:: itertree.iTree.count()
 
 ***************************
 iTree properties
@@ -170,27 +170,27 @@ Warning:: The user should NEVER modify any of the given properties directly. Esp
 
 The iTree object contains the following general properties:
 
-.. automethod:: itertree.iTree.root
+.. autofunction:: itertree.iTree.root
 
-.. automethod:: itertree.iTree.is_root
+.. autofunction:: itertree.iTree.is_root
 
-.. automethod:: itertree.iTree.parent
+.. autofunction:: itertree.iTree.parent
 
-.. automethod:: itertree.iTree.pre_item
+.. autofunction:: itertree.iTree.pre_item
 
-.. automethod:: itertree.iTree.post_item
+.. autofunction:: itertree.iTree.post_item
 
-.. automethod:: itertree.iTree.depth
+.. autofunction:: itertree.iTree.depth
 
 Item identification properties:
 
-.. automethod:: itertree.iTree.idx
+.. autofunction:: itertree.iTree.idx
 
-.. automethod:: itertree.iTree.tag_idx
+.. autofunction:: itertree.iTree.tag_idx
 
-.. automethod:: itertree.iTree.idx_path
+.. autofunction:: itertree.iTree.idx_path
 
-.. automethod:: itertree.iTree.tag_idx_path
+.. autofunction:: itertree.iTree.tag_idx_path
 
     >>> root=iTree('root')
     >>> root+=iTree('child',data=0)
@@ -226,15 +226,15 @@ As shown in the last example hashable objects can be used as tags for the itertr
 
 Beside those structural properties the iTree objects contains some more properties that might be modified by the related methods.
 
-.. automethod:: itertree.iTree.is_temporary
+.. autofunction:: itertree.iTree.is_temporary
 
-.. automethod:: itertree.iTree.is_read_only
+.. autofunction:: itertree.iTree.is_read_only
 
-.. automethod:: itertree.iTree.is_linked
+.. autofunction:: itertree.iTree.is_linked
 
-.. automethod:: itertree.iTree.coupled_object
+.. autofunction:: itertree.iTree.coupled_object
 
-.. automethod:: itertree.iTree.set_coupled_object()
+.. autofunction:: itertree.iTree.set_coupled_object()
 
 Diffrent then the data the coupled_obj is just a pointer to another python object. By this you might couple the iTree to a graphical user interface object e.g. an item in a hypertreelist or it can be used to couple the itree object to an item in a mapping dictionary. The property couple_obj is not managed by the iTree object it's just a place to stroe the informations. for file exports or string exports this information will not be stored.
 
@@ -242,27 +242,27 @@ Diffrent then the data the coupled_obj is just a pointer to another python objec
 iTree data related methods
 ***************************
 
-.. automethod:: itertree.iTree.data
+.. autofunction:: itertree.iTree.data
 
 The data property should never be modified directly (like all other properties too. This will lead into inconstiéncies of the iTree object.
 
 Use the related methods instead. Those methods are linked to the related methods in the internal iTData object.
 
-.. automethod:: itertree.iTree.get
+.. autofunction:: itertree.iTree.get
 
-.. automethod:: itertree.Data.iTData.get()
+.. autofunction:: itertree.Data.iTData.get()
 
-.. automethod:: itertree.iTree.set
+.. autofunction:: itertree.iTree.set
 
-.. automethod:: itertree.Data.iTData.set()
+.. autofunction:: itertree.Data.iTData.set()
 
-.. automethod:: itertree.iTree.pop_data
+.. autofunction:: itertree.iTree.pop_data
 
-.. automethod:: itertree.Data.iTData.pop()
+.. autofunction:: itertree.Data.iTData.pop()
 
-.. automethod:: itertree.iTree.check
+.. autofunction:: itertree.iTree.check
 
-.. automethod:: itertree.Data.iTData.check()
+.. autofunction:: itertree.Data.iTData.check()
 
 The iTData objects contains a special functionality so that the user can store easy any related data objects into the iTree internal iTData object. If set() function is used with out giving a key the object will be stored in the (__NOKEY__) item. For more complex data the user can combine the data with a key and it is stored in the internal dict like structure.
 
@@ -272,25 +272,25 @@ iTree iterators and queries
 ***************************
 The standard iterator for iTrees delivers all chidlren beside this we have same special iterators that contain filter possibilities.
 
-.. automethod:: itertree.iTree.__iter__()
+.. autofunction:: itertree.iTree.__iter__()
 
-.. automethod:: itertree.iTree.iter_children()
+.. autofunction:: itertree.iTree.iter_children()
 
-.. automethod:: itertree.iTree.iter_all()
+.. autofunction:: itertree.iTree.iter_all()
 
-.. automethod:: itertree.iTree.iter_tag_idxs()
+.. autofunction:: itertree.iTree.iter_tag_idxs()
 
-.. automethod:: itertree.iTree.index()
+.. autofunction:: itertree.iTree.index()
 
 Beside the classical ietartors we have the more query related find methods:
 
-.. automethod:: itertree.iTree.find()
+.. autofunction:: itertree.iTree.find()
 
-.. automethod:: itertree.iTree.find_all()
+.. autofunction:: itertree.iTree.find_all()
 
 For filter creation we have some helper classes (itree_filter.py)
 
-.. automethod:: itertree.Filter.iTFilterDataKey()
+.. autofunction:: itertree.Filter.iTFilterDataKey()
 
 
 In each iTree object the user can store data objects. For this the data items are stored in the internal iTData class. It is possible to store just one data item or you can store multiple items by giving key/item pairs to the set function.
@@ -298,27 +298,27 @@ In each iTree object the user can store data objects. For this the data items ar
 ***************************
 iTree formatted output
 ***************************
-.. automethod:: itertree.iTree.__repr__()
+.. autofunction:: itertree.iTree.__repr__()
 
-.. automethod:: itertree.iTree.renders()
+.. autofunction:: itertree.iTree.renders()
 
-.. automethod:: itertree.iTree.render()
+.. autofunction:: itertree.iTree.render()
 
 ***************************
 iTree file storage
 ***************************
 
-.. automethod:: itertree.iTree.dump()
+.. autofunction:: itertree.iTree.dump()
 
-.. automethod:: itertree.iTree.dumps()
+.. autofunction:: itertree.iTree.dumps()
 
-.. automethod:: itertree.iTree.load()
+.. autofunction:: itertree.iTree.load()
 
-.. automethod:: itertree.iTree.loads()
+.. autofunction:: itertree.iTree.loads()
 
 The file storage methods and the rendering methods are initialized by:
 
-.. automethod:: itertree.iTree.init_serializer()
+.. autofunction:: itertree.iTree.init_serializer()
 
 This method is implizit executed and set to the default serializing functions of itertree. The user might load his own functionalities explicit by using this method or he might overload the iTree class and the init_serializer() method with his own functionality.
 
