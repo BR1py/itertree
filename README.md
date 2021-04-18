@@ -36,7 +36,15 @@ Use the package manager [pip](https://pip.pypa.io/en/stable/) to install the ite
 pip install itertree
 ```
 
-The package has no dependencies to other external packages. But some of the tests can only be performed if numpy is installed. Also the comparison tests with other packages are obviuosly only possible if the other packages are installed.
+The package has no dependencies to other external packages and is written in pure python.
+
+But we recommend to install the following packages for better performance:
+* blist
+* orjson
+
+If the packages are not found itertree will use the default packages (list, json).
+
+Some of the tests can only be performed if numpy is installed. Also the comparison tests with other packages are obviuosly only possible if the other packages are installed.
 
 ## Usage
 
