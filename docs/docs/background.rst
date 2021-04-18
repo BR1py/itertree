@@ -13,11 +13,12 @@ To speed up the instanciating process some information is only generated later o
 
 When profiling the different core methods the time consumption can be seen in more detail:
 ::
-    100000    0.220    0.000    0.473    0.000 itree_main.py:100(__init__)
-    100000    0.053    0.000    0.076    0.000 itree_main.py:266(__getitem__)
-    100000    0.080    0.000    0.110    0.000 itree_main.py:318(__delitem__)
-    100000    0.178    0.000    0.186    0.000 itree_main.py:436(__iadd__)
-    100000    0.223    0.000    1.379    0.000 itree_main.py:866(copy)
+    Running on itertree version: 0.6.0
+    100003    0.146    0.000    0.236    0.000 itree_main.py:112(__init__)
+    100000    0.053    0.000    0.076    0.000 itree_main.py:270(__getitem__)
+    100000    0.103    0.000    0.983    0.000 itree_main.py:303(__delitem__)
+    100000    0.028    0.000    0.286    0.000 itree_main.py:422(__iadd__)
+    100000    0.117    0.000    0.609    0.000 itree_main.py:813(__copy__)
     100002    0.234    0.000    0.263    0.000 itree_main.py:995(extend)
    
 
