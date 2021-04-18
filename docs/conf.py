@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# RPyC documentation build configuration file, created by
+# itertree documentation build configuration file, created by B.R.
 # sphinx-quickstart on Sat May 28 10:06:21 2011.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -14,6 +14,8 @@
 
 import sys, os, time
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+'\\src')
+sys.path.insert(0, os.path.abspath('..')+'\\src')
+
 print('PYTHONpath:',sys.path)
 import itertree
 from itertree import *
