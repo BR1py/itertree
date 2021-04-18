@@ -70,7 +70,7 @@ The original implementation was realized with python 3.5 and it was tested with 
 ## Documentation
 
 The detailed package documentation can be found here:
-https://itertree.readthedocs.io/en/latest/
+https://itertree.readthedocs.io/en/latest/#
 
 ## Package structure and files 
 
