@@ -157,7 +157,7 @@ The iterators and find functions of itertree can use item_filters to search for 
 [iTree(tag='child',data=2)]
 ```
 
-HINT: In case a function returns multiple elements (multi target) itertree delivers always an iterator. The advantage is that we can create very quick results even when the item number is very high. For efficent usage the user should continue use iterators (e.g. see itertools package) to reach the final result. Normally only at the end of the whole operation the iterator should be "realized" by looping over the items or casting into a list. Even single item acces can be best realized via itertools.isslice() operation.
+HINT: In case a function returns multiple elements (multi target) itertree delivers always an iterator. The advantage is that we can create very quick results even when the item number is very high. For efficent usage the user should continue use iterators (e.g. see itertools package) to reach the final result. Normally only at the end of the whole operation the iterator should be cosumed by looping over the items or casting into a list. Even single item access can be best realized via itertools.isslice() operation.
 
 This might be confusing but if the user really wants to have the expected list he can easy cast the iterator:
 ```python 
