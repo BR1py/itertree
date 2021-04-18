@@ -2,5 +2,5 @@ sphinx
 sphinx_rtd_theme
 numpy
 orjson
-fnmatch
 itertools
+blist
