@@ -26,15 +26,13 @@ COPY_OFF=0
 COPY_NORMAL=1
 COPY_DEEP=2
 #match operation combine
-AND=0
-OR=1
 
 PRE_ALLOC_SIZE = 300
 
 def accu_iterator(iterable, accu_method,initial_value=(None,)):
     """
     A method that enables itertools accumulation over a method
-    Note: This method is just needed because in python <3.8 itertools accumulation has no initial parameter!
+    .. note::  This method is just needed because in python <3.8 itertools accumulation has no initial parameter!
     :param iterable: iterable
     :param accu_method: accumulation method (will be fet by two parameters cumulated and new item)
     :return: accumulated iterator
@@ -115,9 +113,19 @@ class iTInterval():
 
     the class contains a check if a given value is in the defined interval or not
 
-    It's recommended to use the intervals or portion python package for data models in case more functionality is needed.
+    The class might be a little bit under estimated in all the itertree functionalities but its a short but very
+    powerful implementation of an Interval class for python.
 
-    Note:: For equal just set upper_limit to None (upper_open, lower_open parameter will be ignored in this case)
+    The class contains anything you might need in case of a Interval functionality. You can given open/closed interval
+    definitions including infinite limits. The intervals can be combined to a mathematical set via
+    the pre_interval parameter. And the check method allows to give other limits as defined (not for pre_intervals).
+    Especially useful for dynamically calculated limits.
+
+    The interval definition is also possible via a mathematical string like: "(1,2)" or "[10,+inf)".
+
+    If you need a more advanced implementation you might have a look on  the intervals/portion python package.
+
+    .. note::  For equal just set upper_limit to None (upper_open, lower_open parameter will be ignored in this case)
     """
     INF = 'inf'  # constant defining infinity limit
 
@@ -128,14 +136,12 @@ class iTInterval():
 
         the class contains a check if a given value is in the defined interval or not
 
-        Note:: For more advanced interval handling it's recommended to use the intervals or portion python package instead
-
-        Note:: For equal you give lower_limit and set upper_limit to None (lower_open,upper_open parameters will be
+        .. note::  For equal you give lower_limit and set upper_limit to None (lower_open,upper_open parameters will be
         ignored in this case). The math representation in this case is "== %s"%lower_limit
 
-        Note:: The not_in=True can be given to invert the interval check result (match is anything outside the interval)
+        .. note::  The not_in=True can be given to invert the interval check result (match is anything outside the interval)
                in the math representation we add in this case a "!" before the interval
-        Note:: Cascade interval definitions can be created the pre_interval definition
+        .. note::  Cascade interval definitions can be created the pre_interval definition
                              e.g. math_repr= "(([1,5]) and [9,12]) and [100,200]' valid values: 1...5,9...12,100..200
 
 
@@ -324,7 +330,7 @@ class iTInterval():
     def from_str(self, interval_str):
         """
         create the interval from a math representation string
-        Note:: Give inf for infinity
+        .. note::  Give inf for infinity
         :param interval_str: math string representation
         :return:
         """
@@ -473,13 +479,27 @@ class iTLink(object):
 class iTMatch(object):
     '''
     The match object is used to defined match to elements in the DtaTree used in  iterations over the DataTree
+    The defined iMatch object can be used for checks against iTree objects (mainly for checks against the tag and also
+    for string matches e.g. for finding iTree.data.keys() or .values() in filters.
     '''
 
     __slots__=('_pattern', '_op', '_check')
 
-    def __init__(self, pattern, combine=OR):
+    def __init__(self, pattern, combine_or=True):
+        """
+        Create a match pattern for different proposes. Depending on the type we have following functions:
+
+         * int     - check for an index
+         * TagIdx  - check for a TagIdx
+         * str - string pattern using fnmatch
+         * iterable like list, tuple, ... combine the given patterns with the combine key
+
+        :param pattern: give pattern
+
+        :param combine_or: True - or ; False - and; combination of matches/match patterns
+        """
         self._pattern = pattern
-        self._op = combine
+        self._op = combine_or
         self._check = self._analyse(pattern)
 
     @property
@@ -635,7 +655,7 @@ class TagIdxStr(TagIdx):
 
     Example: "mytag#1" will be translated in the TagIdx("mytag",1)
 
-    Note:: This makes only sense and can only be used if the tag is a string (not for other objects)
+    .. note::  This makes only sense and can only be used if the tag is a string (not for other objects)
 
     :param tag_idx_str: string containing the definition
 
@@ -656,7 +676,7 @@ class TagIdxBytes(TagIdxStr):
 
     Example: b"mytag#1" will be translated in the TagIdx(b"mytag",1)
 
-    Note:: This makes only sense and can only be used if the tag is a byte (not for other objects)
+    .. note::  This makes only sense and can only be used if the tag is a byte (not for other objects)
 
     :param tag_idx_bytes: bytes containing the definition
 

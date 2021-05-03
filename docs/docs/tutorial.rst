@@ -35,19 +35,19 @@ Instance the iTree object:
 ::
    >>>item1=iTree('item1') # itertree item with the tag 'item1'
    >>>item2=iTree('item2', data={'mykey':1}) # instance a iTree-object with data content (defined as a dict)
-   >>>item3=iTree('temp_item', is_temp=True) # instance a temporary iTree-object 
-   >>>item4=iTree('link_item', data={'mykey':2}, is_temp=True, link=DiTLink(dt.dtz',iTreeTagIdx(child',0)) # instance a iTree-object containing a link
+   >>>item3=iTreeTemporary('temp_item') # instance a temporary iTree-object 
+   >>>item4=iTreeLink('linked_item', data={'mykey':2}, link_file_path='dt.itz',link_key_path=iTreeTagIdx(child',0),load_links=True) # instance a iTree-object containing a link
    
 
-iTree objects can be marked as temporary. One can filter for this property and in the dump into a file temporary iTrees will be ignored.
+iTreeTemporary objects can filtered out and when dumping the whole iTree into a file the iTreeTemporary items will be ignored.
 
-In case a link is set the iTree object will integrate the childs of the linked iTree-objects as it's own childs into the tree. The iTree object can have own properties like temporary or own data. But it cannot contain own children. Operations that try to manipulate the children structure will fail in this case.
+In case a link is set by using the iTreeLink class will integrate the childs of the linked iTree-objects as it's own childs into the tree. The iTree object can have own properties like temporary or own data. But it cannot contain own children. Operations that try to manipulate the children structure will fail in this case.
 
 
 To add or manipulate the children of an item we have several possibilities. The following direct operations are recommended for structural manipulations in the tree:
 ::
    >>>root=iTree('root')
-   >>>root+=iTree('child') # append a child
+   >>>root.append(iTree('child')) # append a child
    >>>root[0]=iTree('newchild') # replace the child with index 0
    >>>del root[iTreeTagIdx('newchild',0)] # deletes the child with matching iTreeTagIdx
     
@@ -55,6 +55,8 @@ To add or manipulate the children of an item we have several possibilities. The 
 Additionally a huge set of methods is available for structural manipulations related to the children of a item.
 
 .. autofunction:: itertree.iTree.append
+
+.. autofunction:: itertree.iTree.__iadd__
 
 .. autofunction:: itertree.iTree.appendleft
 
@@ -125,9 +127,9 @@ The TagIdx class is used to address items that contains the same tag. The second
 
 .. autofunction:: itertree.iTree.find()
 
-***************************
+**************************************
 iTree other structure related commands
-***************************
+**************************************
 
 .. autofunction:: itertree.iTree.__setitem__()
 
@@ -169,7 +171,7 @@ Based on the iTree length the comparison operators <; <=; >; >= are available to
 iTree properties
 ***************************
 
-As we will see later on some properties of the iTree object can be modified by teh related methods. 
+As we will see later on some properties of the iTree object can be modified by the related methods. 
 Warning:: The user should NEVER modify any of the given properties directly. Especially the not discussed private properties (marked with the beginning underline). Direct modifications will normally lead into inconsistencies of the iTree object!
 
 The iTree object contains the following general properties:
@@ -187,6 +189,12 @@ The iTree object contains the following general properties:
 .. autofunction:: itertree.iTree.depth_up
 
 .. autofunction:: itertree.iTree.max_depth_down
+
+.. autofunction:: itertree.iTree.is_temporary
+
+.. autofunction:: itertree.iTree.is_read_only
+
+.. autofunction:: itertree.iTree.is_linked
 
 Item identification properties:
 
@@ -228,21 +236,15 @@ Item identification properties:
     >>> root[-1].tag_idx
     TagIdx((1, 2), 1)
 
-As shown in the last example hashable objects can be used as tags for the itertree items to be stored in the iTree object. Even for those kind of tag objects it is possible to store multiple items with the same tag. In the example the enumartion inside the tag family can be seen in the index enumeration in the TagIdx object.
+As shown in the last example hashable objects can be used as tags for the itertree items to be stored in the iTree object. Even for those kind of tag objects it is possible to store multiple items with the same tag. In the example the enumeration inside the tag family can be seen in the index enumeration in the TagIdx object.
 
 Beside those structural properties the iTree objects contains some more properties that might be modified by the related methods.
-
-.. autofunction:: itertree.iTree.is_temporary
-
-.. autofunction:: itertree.iTree.is_read_only
-
-.. autofunction:: itertree.iTree.is_linked
 
 .. autofunction:: itertree.iTree.coupled_object
 
 .. autofunction:: itertree.iTree.set_coupled_object()
 
-Diffrent then the data the coupled_obj is just a pointer to another python object. By this you might couple the iTree to a graphical user interface object e.g. an item in a hypertreelist or it can be used to couple the itree object to an item in a mapping dictionary. The property couple_obj is not managed by the iTree object it's just a place to stroe the informations. for file exports or string exports this information will not be stored.
+Different than the data the coupled_obj is just a pointer to another python object. E.g. by this you might couple the iTree to a graphical user interface object e.g. an item in a hypertreelist or it can be used to couple the itree object to an item in a mapping dictionary. The property couple_obj is not managed by the iTree object it's just a place to store the information. In file exports or string exports this information will not be considered.
 
 ***************************
 iTree data related methods
@@ -250,11 +252,11 @@ iTree data related methods
 
 .. autofunction:: itertree.iTree.data
 
-This is the data property. The property contains the iData objects which behaves in genral like a dict. There are two execpetions that must be considered: 
+This is the data property. The property contains the iData objects which behaves in general like a dict. But there are two execpetions that must be considered: 
 * The (__NOKEY__) key is an implizit key that will be used in case the user gives only one value (no_key) to the d_set() method. Then the given parameter will be stored in the (__NOKEY__) item of the dict.
 * In case a dict item contains a iDataModel object the given value in iTree.d_set() will be checked against the data model.
 
-To manipulate data you can use the functions of the iTree.data object or can use the quick access functions form iTree related to data access which have all the prefix "d_":
+To manipulate data you can use the functions of the iTree.data object or can use the quick access functions in iTree object ( methods related to data access have all the prefix "d_" ):
 
 .. autofunction:: itertree.iTree.d_get
 
@@ -285,7 +287,8 @@ Do not replace the iTree.data object with another object (iTree.data is just a p
 ***************************
 iTree iterators and queries
 ***************************
-The standard iterator for iTrees delivers all chidlren beside this we have same special iterators that contain filter possibilities.
+
+The standard iterator for iTrees delivers all children beside this we have same special iterators that contain filter possibilities.
 
 .. autofunction:: itertree.iTree.__iter__()
 
@@ -297,16 +300,31 @@ The standard iterator for iTrees delivers all chidlren beside this we have same 
 
 .. autofunction:: itertree.iTree.index()
 
-Beside the classical ietartors we have the more query related find methods:
+Beside the classical iterators we have the more query related find methods:
 
 .. autofunction:: itertree.iTree.find_all()
 
 For filter creation we have some helper classes (itree_filter.py)
 
+.. autofunction:: itertree.Filter.iTFilterTrue()
+
+.. autofunction:: itertree.Filter.iTFilterItemType()
+
+.. autofunction:: itertree.Filter.iTFilterItemTagMatch()
+
+.. autofunction:: itertree.Filter.iTFilterData()
+
 .. autofunction:: itertree.Filter.iTFilterDataKey()
 
+.. autofunction:: itertree.Filter.iTFilterDataKeyMatch()
 
-In each iTree object the user can store data objects. For this the data items are stored in the internal iTData class. It is possible to store just one data item or you can store multiple items by giving key/item pairs to the set function.
+.. autofunction:: itertree.Filter.iTFilterDataValueMatch()
+
+Depending on the data stored in the iTree.data object the user might create own filters. In general just a method must be created that takes the item as an argument and that delivers True in case of athe match and False in case of no match. We have also a base class (super-class) of the given filters available which might be used for own filters too.
+
+.. autofunction:: itertree.Filter.iTFilterBase()
+
+The fitering in iTree is very effective and quick. As an example one might execute the example script itree_usage_example1.py where the itertree.Filter.iTFilterData object is used.
 
 ***************************
 iTree formatted output
@@ -335,3 +353,29 @@ The file storage methods and the rendering methods are initialized by:
 
 This method is implizit executed and set to the default serializing functions of itertree. The user might load his own functionalities explicit by using this method or he might overload the iTree class and the init_serializer() method with his own functionality.
 
+***************************
+iTree helpers classes
+***************************
+
+In the itertree helper module we have some helper classes that can be used to construct specific iTree objects.
+
+We have the following helper classes available:
+
+.. autofunction:: itertree.itree_helpers.iTInterval()
+.. autofunction:: itertree.itree_helpers.iTInterval.__init__()
+
+.. autofunction:: itertree.itree_helpers.iTMatch()
+.. autofunction:: itertree.itree_helpers.iTMatch.__init__()
+
+
+.. autofunction:: itertree.itree_helpers.TagIdx()
+
+.. autofunction:: itertree.itree_helpers.TagIdxStr()
+
+.. autofunction:: itertree.itree_helpers.TagIdxBytes()
+
+The other classes in itree_helpers are used internally in the iTree object and might be less interesting for the user.
+
+Addinionally the user might have also a look in the the othe itertree modules like itertree_data.py or itertree_filter.py. Especially the class iTDataModel might be a good starting point for own data model definitions as it is also shown in  examples/itertree_data_model.py.
+
+.. autofunction:: itertree.itree_data.iTDataModel()

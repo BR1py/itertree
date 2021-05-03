@@ -96,93 +96,114 @@ __FILTER_DATA_FACTORY__={# In this case we search for values == None:
                          }
 
 class iTFilterBase(object):
-    def __new__(cls,filter_method,item_filter=None,invert=False,use_and=True,_any=False):
-        """
-        Base/Super class for all itertree filter classes might be used for user defined filters too
+    """
+    Base/Super class for all itertree filter classes might be used for user defined filters too
 
-        :param filter_method: method that is fet with an iTree item and that delivers True/False
-        :param item_filter: Additional filter to combine with this filter (will always be calculated before this filter!
-        :param invert: True - invert the result of the filter (not)
-                       False (default) - result of filter is kept unchanged
-        :param use_and: True (default) - combine this filter with item_filter via and operator
-                        False - use or operator instead of and
-        """
-        index=int(item_filter is None)<<2 | int(invert) | int(use_and)<<1 |int(_any)<<3
+    :param filter_method: method that is fet with an iTree item and that delivers True/False
+
+    :param pre_item_filter: Additional filter to combine with this filter (will always be calculated before this filter)
+
+    :param invert: True - invert the result of the filter (not)
+                   False (default) - result of filter is kept unchanged
+
+    :param use_and: True (default) - combine this filter with item_filter via and operator
+                    False - use or operator instead of and
+    """
+
+    def __new__(cls,filter_method,pre_item_filter=None,invert=False,use_and=True,_any=False):
+        index=int(pre_item_filter is None)<<2 | int(invert) | int(use_and)<<1 |int(_any)<<3
         #print(index)
-        return __FILTER_FACTORY__[index](filter_method,item_filter)
+        return __FILTER_FACTORY__[index](filter_method,pre_item_filter)
 
 class iTFilterTrue(iTFilterBase):
+    """
+    This filter might be useless but it delivers True for all items (or False if inverted).
 
-    def __new__(cls,item_filter=None,invert=False,use_and=True):
-        """
-        This filter might be useless but it delivers True for all items (or False if inverted).
+    :param pre_item_filter: Additional filter to combine with this filter (will always be calculated before this filter)
 
-        :param item_filter: Additional filter to combine with this filter (will always be calculated before this filter!
-        :param invert: True - invert the result of the filter (not)
-                       False (default) - result of filter is kept unchanged
-        :param use_and: True (default) - combine this filter with item_filter via and operator
-                        False - use or operator instead of and
-        """
+    :param invert: True - invert the result of the filter (not)
+                   False (default) - result of filter is kept unchanged
+
+    :param use_and: True (default) - combine this filter with item_filter via and operator
+                    False - use or operator instead of and
+    """
+
+    def __new__(cls,pre_item_filter=None,invert=False,use_and=True):
         return super().__new__(cls,
                                lambda item: True,
-                               item_filter,
+                               pre_item_filter,
                                invert,
                                use_and)
 
 
 class iTFilterItemType(iTFilterBase):
+    """
+    Filter for iTree types (we have iTree,ITreeReadOnly,iTreeTemporary,iTreeLink types)
 
-    def __new__(cls,item_type,item_filter=None,invert=False,use_and=True):
-        """
-        Filter for iTree types (we have iTree,ITreeReadOnly,iTreeTemporary,iTreeLink types)
-        :param item_type: target type class
-        :param item_filter: Additional filter to combine with this filter (will always be calculated before this filter!
-        :param invert: True - invert the result of the filter (not)
-                       False (default) - result of filter is kept unchanged
-        :param use_and: True (default) - combine this filter with item_filter via and operator
-                        False - use or operator instead of and
-        """
+    :param item_type: target type class
+
+    :param pre_item_filter: Additional filter to combine with this filter (will always be calculated before this filter)
+
+    :param invert: True - invert the result of the filter (not)
+                   False (default) - result of filter is kept unchanged
+
+    :param use_and: True (default) - combine this filter with item_filter via and operator
+                    False - use or operator instead of and
+    """
+
+    def __new__(cls,item_type,pre_item_filter=None,invert=False,use_and=True):
         return super().__new__(cls,
                                lambda item: type(item)==item_type,
-                               item_filter,
+                               pre_item_filter,
                                invert,
                                use_and)
 
 class iTFilterItemTagMatch(iTFilterBase):
-    def __new__(cls,match,item_filter=None,invert=False,use_and=True):
-        """
-        Filter using the iTMatch object (have a look on th iTMatch for more details). In generalyou can
-        use wild cards, etc. to find matching item tags
-        :param match: iTMatch object that checks the item for a match
-        :param item_filter: Additional filter to combine with this filter (will always be calculated before this filter!
-        :param invert: True - invert the result of the filter (not)
-                       False (default) - result of filter is kept unchanged
-        :param use_and: True (default) - combine this filter with item_filter via and operator
-                        False - use or operator instead of and
-        """
+    """
+    Filter using the iTMatch object (have a look on th iTMatch for more details). In generalyou can
+    use wild cards, etc. to find matching item tags
+
+    :param match: iTMatch object that checks the item for a match
+
+    :param pre_item_filter: Additional filter to combine with this filter (will always be calculated before this filter)
+
+    :param invert: True - invert the result of the filter (not)
+                   False (default) - result of filter is kept unchanged
+
+    :param use_and: True (default) - combine this filter with item_filter via and operator
+                    False - use or operator instead of and
+    """
+
+    def __new__(cls,match,pre_item_filter=None,invert=False,use_and=True):
         return super().__new__(cls,
                                lambda item: (match.check(item)),
-                               item_filter,
+                               pre_item_filter,
                                invert,
                                use_and)
 
 class iTFilterData(iTFilterBase):
-    def __new__(cls,data_key=None,data_value=None,item_filter=None,invert=False,use_and=True):
-        """
-        This is the main data filter that allows a large number of different filtering based on iTree.data content.
-        It's the recommended filter for this proposes because different than the simpler data filters in this module
-        we can filter based on combinations (key/value) related to the iTree.data items
-        :param data_key: Checks if the given data key exists in item.data in case iTMatch is given matching keys will be considered
-                         None - all keys will be considered
-        :param data_value: Checks if the given data value exists in item.data in case iTMatch is given matching values
-                           will be considered, if iTInterval is given numerical values matching to interval will be considered.
-                           None - all values will be considered
-        :param item_filter: Additional filter to combine with this filter (will always be calculated before this filter!
-        :param invert: True - invert the result of the filter (not)
-                       False (default) - result of filter is kept unchanged
-        :param use_and: True (default) - combine this filter with item_filter via and operator
-                        False - use or operator instead of and
-        """
+    """
+    This is the main data filter that allows a large number of different filtering based on iTree.data content.
+    It's the recommended filter for this proposes because different than the simpler data filters in this module
+    we can filter based on combinations (key/value) related to the iTree.data items
+
+    :param data_key: Checks if the given data key exists in item.data in case iTMatch is given matching keys will be considered
+                     None - all keys will be considered
+
+    :param data_value: Checks if the given data value exists in item.data in case iTMatch is given matching values
+                       will be considered, if iTInterval is given numerical values matching to interval will be considered.
+                       None - all values will be considered
+
+    :param pre_item_filter: Additional filter to combine with this filter (will always be calculated before this filter)
+
+    :param invert: True - invert the result of the filter (not)
+                   False (default) - result of filter is kept unchanged
+
+    :param use_and: True (default) - combine this filter with item_filter via and operator
+                    False - use or operator instead of and
+    """
+
+    def __new__(cls,data_key=None,data_value=None,pre_item_filter=None,invert=False,use_and=True):
         filter_number=0
         if data_key is not None:
             if type(data_key) is iTMatch:
@@ -202,85 +223,104 @@ class iTFilterData(iTFilterBase):
         # possible numbers (keys) are 0, 0b1, 0b10, 0b100,0b1000, 0b101, 0b110,0b1001,0b1010
         return super().__new__(cls,
                                lambda item: __FILTER_DATA_FACTORY__[filter_number](item,data_key,data_value),
-                               item_filter,
+                               pre_item_filter,
                                invert,
                                use_and,_any=True)
 
 # we kept some simpler data filters in the lib but they can all be replaced by the filter iTFilterData
 
 class iTFilterDataKey(iTFilterBase):
+    """
+    Filters in all items for the data key given. Delivers all items that have the given key in there data
 
-    def __new__(cls,data_key,item_filter=None,invert=False,use_and=True):
-        """
-        Filters in all items for the data key given. Delivers all items that have the given key in there data
-        :param data_key: Checks if the given data key exists in item.data
-        :param item_filter: Additional filter to combine with this filter (will always be calculated before this filter!
-        :param invert: True - invert the result of the filter (not)
-                       False (default) - result of filter is kept unchanged
-        :param use_and: True (default) - combine this filter with item_filter via and operator
-                        False - use or operator instead of and
-        """
+    :param data_key: Checks if the given data key exists in item.data
+
+    :param pre_item_filter: Additional filter to combine with this filter (will always be calculated before this filter)
+
+    :param invert: True - invert the result of the filter (not)
+                   False (default) - result of filter is kept unchanged
+
+    :param use_and: True (default) - combine this filter with item_filter via and operator
+                    False - use or operator instead of and
+    """
+
+    def __new__(cls,data_key,pre_item_filter=None,invert=False,use_and=True):
         return super().__new__(cls,
                                lambda item: (data_key in item.data),
-                               item_filter,
+                               pre_item_filter,
                                invert,
                                use_and)
 
 class iTFilterDataKeyMatch(iTFilterBase):
+    """
+    Filters in all items for the data key which matches to the given pattern (fnmatch search is used) you can
+    use wildcards here.
+    This filter works only on string or byte keys in the item.data (not on other objects)
 
-    def __new__(cls,match_pattern,item_filter=None,invert=False,use_and=True):
-        """
-        Filters in all items for the data key which matches to the given pattern (fnmatch search is used) you can
-        use wildcards here.
-        This filter works only on string or byte keys in the item.data (not on other objects)
-        :param match_pattern: string/bytes that contains a match pattern
-        :param invert: True - invert the result of the filter (not)
-                       False (default) - result of filter is kept unchanged
-        :param use_and: True (default) - combine this filter with item_filter via and operator
-                        False - use or operator instead of and
-        """
+    :param match_pattern: string/bytes that contains a match pattern
+
+    :param pre_item_filter: Additional filter to combine with this filter (will always be calculated before this filter)
+
+    :param invert: True - invert the result of the filter (not)
+                   False (default) - result of filter is kept unchanged
+
+    :param use_and: True (default) - combine this filter with item_filter via and operator
+                    False - use or operator instead of and
+    """
+
+    def __new__(cls,match_pattern,pre_item_filter=None,invert=False,use_and=True):
         return super().__new__(cls,
                                lambda item: fnmatch.filter(filter(lambda v: (type(v) is str) or (type(v) is bytes),
                                                            item.data.keys()),match_pattern),
-                               item_filter,
+                               pre_item_filter,
                                invert,
                                use_and)
 
 class iTFilterDataKeyMatch(iTFilterBase):
+    """
+    Filters in all items for the data key which matches to the given pattern (fnmatch search is used) you can
+    use wildcards here.
+    This filter works only on string or byte keys in the item.data (not on other objects)
 
-    def __new__(cls,match_pattern,item_filter=None,invert=False,use_and=True):
-        """
-        Filters in all items for the data key which matches to the given pattern (fnmatch search is used) you can
-        use wildcards here.
-        This filter works only on string or byte keys in the item.data (not on other objects)
-        :param match_pattern: string/bytes that contains a match pattern
-        :param invert: True - invert the result of the filter (not)
-                       False (default) - result of filter is kept unchanged
-        :param use_and: True (default) - combine this filter with item_filter via and operator
-                        False - use or operator instead of and
-        """
+    :param match_pattern: string/bytes that contains a match pattern
+
+    :param pre_item_filter: Additional filter to combine with this filter (will always be calculated before this filter)
+
+    :param invert: True - invert the result of the filter (not)
+                   False (default) - result of filter is kept unchanged
+
+    :param use_and: True (default) - combine this filter with item_filter via and operator
+                    False - use or operator instead of and
+    """
+
+    def __new__(cls,match_pattern,pre_item_filter=None,invert=False,use_and=True):
         return super().__new__(cls,
                                lambda item: fnmatch.filter(filter(lambda v: (type(v) is str) or (type(v) is bytes),
                                                            item.data.keys()),match_pattern),
-                               item_filter,
+                               pre_item_filter,
                                invert,
                                use_and)
 
 class iTFilterDataValueMatch(iTFilterBase):
-    def __new__(cls,match_pattern,item_filter=None,invert=False,use_and=True):
-        """
-        Filters in all items for containing a matching data value to given pattern. (Works only on string and byte values
-        :param match_pattern: pattern fnmatch will search for (you can use wildcards here)
-        :param item_filter: Additional filter to combine with this filter (will always be calculated before this filter!
-        :param invert: True - invert the result of the filter (not)
-                       False (default) - result of filter is kept unchanged
-        :param use_and: True (default) - combine this filter with item_filter via and operator
-                        False - use or operator instead of and
-        """
+    """
+    Filters in all items for containing a matching data value to given pattern. (Works only on string and byte values
+
+    :param match_pattern: pattern fnmatch will search for (you can use wildcards here)
+
+    :param pre_item_filter: Additional filter to combine with this filter (will always be calculated before this filter)
+
+    :param invert: True - invert the result of the filter (not)
+                   False (default) - result of filter is kept unchanged
+
+    :param use_and: True (default) - combine this filter with item_filter via and operator
+                    False - use or operator instead of and
+    """
+
+    def __new__(cls,match_pattern,pre_item_filter=None,invert=False,use_and=True):
         return super().__new__(cls,
                                lambda item: fnmatch.filter(filter(lambda v: (type(v) is str) or (type(v) is bytes),
                                                            item.data.values()),match_pattern),
-                           item_filter,
+                           pre_item_filter,
                            invert,
                            use_and)
 

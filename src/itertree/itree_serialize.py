@@ -364,8 +364,8 @@ class iTStdRenderer(object):
                              Note:: The root of the object is not filtered and always in the outputs first line
          :return:
          """
+        return self._render_main(itree_object,item_filter,True)
 
-        self._render_main(itree_object,item_filter,True)
     def renders(self, itree_object, item_filter=None):
         """
          creates a pretty print string from iTree object ad returns it in a string
@@ -379,8 +379,7 @@ class iTStdRenderer(object):
                              Note:: The root of the object is not filtered and always in the outputs first line
          :return: string containing the pretty print output
          """
-
-        self._render_main(itree_object,item_filter,False)
+        return self._render_main(itree_object,item_filter,False)
 
     def _render_main(self, itree_object, item_filter=None,_only_print_tree=False):
         """
@@ -419,7 +418,7 @@ class iTStdRenderer(object):
                 level+=1
             if level==-1:
                 continue
-            if item_filter(item):
+            if item_filter is None or item_filter(item):
                 if _only_print_tree:
                     print(''.join([' ' * (self._identation * level), self._heading, self.__create_item_string(item)]))
                 else:

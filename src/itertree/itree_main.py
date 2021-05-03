@@ -41,8 +41,6 @@ class iTree(blist):
     """
     This is the main class related to iTrees.
 
-    We give here a short functional summary:
-
     This object is the parent of a sub-tree (children, sub-children, etc.). The iTree object itself can also be a
     child of a parent iTree object. If this is not the case the iTree object is the root of the tree.
 
@@ -218,9 +216,7 @@ class iTree(blist):
         Method sets the exchange environment that should be used. If you leave the parameters as default,
         the standard objects will be used.
 
-        HINT: The method logic is called only one time the first time serializing is needed.
-              For standard serializer post import must be done against common python rules
-              because pre import will lead into cyclic importing
+        .. note:: The method logic is called only one time the first time serializing is needed.
 
         :param force: False (Default) - do not reload in case we have already loaded the items
         :param exporter: exporter object for file export of iTree (dump, dumps)
@@ -230,6 +226,9 @@ class iTree(blist):
 
         :return: None
         """
+        # A post import must be done here against common python rules
+        # reason is that a pre import will lead into cyclic importing
+
         if (not hasattr(self, '_def_serializer')) or (self._def_serializer is None) or force:
             if serializer is None:
                 from .itree_serialize import iTStdObjSerializer
@@ -960,10 +959,12 @@ class iTree(blist):
         dives into the tree key_list=[1,0,2] -> second element level 1 -> first element level 2 -> third element level 3
         -> same as self[1][0][2]
 
-        Note:: Each key in the key list must target to a single item only!
-               E.g. do not use tags here they deliver always a family iterator not a single item
-               (the method will raise an exception). Use index integers or TagIdx objects instead
+        .. note:: Each key in the key list must target to a single item only!
+                     E.g. do not use tags here they deliver always a family iterator not a single item
+                     (the method will raise an exception). Use index integers or TagIdx objects instead
+
         :param key_list:  list or iterator of keys (indexes,TagIdx, tuple(tag,index) -> only in case no tuple tags!
+
         :return: iTree object the key list targets
         """
         item=self
@@ -1232,7 +1233,8 @@ class iTree(blist):
     def iter_all(self, item_filter=None, filter_or=True):
         """
         main iterator for whole tree runs in top-> down order
-            e.g.:
+        e.g.
+        ::
             iTree('child')
              └──iTree('sub0')
                  └──iTree('sub0_0')
@@ -1241,22 +1243,25 @@ class iTree(blist):
                  └──iTree('sub0_3')
              └──iTree('sub1')
                  └──iTree('sub1_0')
-        Will be iterated:
-                 iTree('child')
-                 iTree('sub0')
-                 iTree('sub0_0')
-                 iTree('sub0_1')
-                 iTree('sub0_2')
-                 iTree('sub0_3')
-                 iTree('sub1')
-                 iTree('sub1_0')
+        will be iterated like:
+        ::
+             iTree('child')
+             iTree('sub0')
+             iTree('sub0_0')
+             iTree('sub0_1')
+             iTree('sub0_2')
+             iTree('sub0_3')
+             iTree('sub1')
+             iTree('sub1_0')
 
         :param item_filter: filter for filter the items you can give a filter constant or
                             a method for filtering (should return True/False)
-        :param filter_or: True - we combine the filtering with or this means even if we have no match in the higher
-                                 levels of the tree we will go deepere to find matches
+
+        :param filter_or: True -  we combine the filtering with or this means even if we have no match in the higher
+                                 levels of the tree we will go deeper to find matches
                           False - filters are combined with and which means children will only be parsed in
                                   case the parent matches also to the filter condition
+
         :return: iterator
         """
         if filter_or:
@@ -1371,77 +1376,102 @@ class iTree(blist):
         The find all function works on all levels of the tree. The key_path given (e.g. a list of indexes) addresses
         the items into the depth first item first level, second item second level,....
 
-        The method returns always an iterator or in case of no match an empty list! If you target to unique obejcts
+        The method returns always an iterator or in case of no match an empty list! If you target to unique objects
         you will get anyway an iterator containing this unique element.
+
+        .. warning:: It's possible to create invalid recursions when constructing the key_path. In these cases the
+                  recursion depth exceeded exception will be raised by the interpreter
 
         In case the target in the upper keys is not unique, all matches will be delivered!
         e.g. The operation my_tree.find_all(['child','sub_child']) takes first all items in the "child" family:
+
              TagIdx('child',0),TagIdx('child',1),...TagIdx('child',n) in an iterator and in the next step the function
              will go one level deeper and will cumulate all the 'sub_child' families in these items as the result:
+
              This means we have something like this:
+
              my_tree[TagIdx('child',0)][TagIdx('sub_child',0)],my_tree[TagIdx('child',0)][TagIdx('sub_child',1)],...,
+
              my_tree[TagIdx('child',1)][TagIdx('sub_child',0)],my_tree[TagIdx('child',0)][TagIdx('sub_child',1)],...,
+
              ...
+
              and in case of no match in the keys items are skipped.
 
-             Note:: It's not at all the same as: my_tree['child']['sub_child'] -> this operation will raise an exception!
+             .. note::  It's not at all the same as: my_tree['child']['sub_child'] -> this operation will raise an exception!
 
-        Warning:: It's possible to create invalid recursions when constructing the key_path. In these cases the
-                  recursion depth exceeded exception will be raised by the interpreter
-
-        Note:: When addressing a single item it's quicker (~10x faster depending on tree depth) to use the get_deep()
+        .. note::  When addressing a single item it's quicker (~10x faster depending on tree depth) to use the get_deep()
                method instead of the find_all() method.
 
         The key_path parameter is very flexible in case of the objects you put in. We have several possibilities:
 
         0. Special keys: We have the following special keys that might be used in the key_path:
+
             - "/" default path separator (might be changed by str_path_separator parameter)
               If this is the first key the find_all() search will be started in the root element not in the element the
               method is called.
-              Note:: Be careful with "//" or "/" placed not in the beginning of the path this will rollback the
+              .. note::  Be careful with "//" or "/" placed not in the beginning of the path this will rollback the
                      find_all() to the root which means anything in the key_path before this key will be ignored.
-            - "*" wildcard will iterate over all children of the item
-            - "**" wildcard will iterate over all items of the item and the item itself will be included
-                   in the iterator as first element.
-                   Note:: find_all('**') creates an different iterator then iter_all():
-                          list(my_tree.find_all('**')) = [my_tree] + list(my_tree.iter_all())
-            Note:: In case the iTree contains a family with the tag "/" or "*" or "**" the related family will be
-                   delivered. The special functionality is blocked in this moment (for "/" you might use the
-                   str_path_separator parameter to keep the functionality).
+
+            - "*"-wildcard will iterate over all children of the item
+
+            - "**"-wildcard will iterate over all items of the item. The item itself is the first element of the iterator delivered
+
+                   .. note::  find_all('**') creates an different iterator then iter_all()
+                              list(my_tree.find_all('**')) = [my_tree] + list(my_tree.iter_all())
+
+            .. warning::  It's always recommended to avoid the usage of string tags containing functional characters
+                          like "**","*","/","#","?". E.g. In case the iTree contains a family with the tag "/" or "*"
+                          or "**" the related family will be delivered. The special functionality is blocked in this
+                          moment (for "/" you might use the str_path_separator parameter to keep the functionality).
+                          Also filtering via iTMatch objects is limited in this case.
 
         1. Give normal keys like in __getitem__() method:
            normal keys can be:
-                                index integers
-                                tag strings
-                                TagIdx,TagIdxStr,TagIdxBytes
-                                TagMultiIdx,slices
-                                for index lists you must give[[1,2,3,4]] because first level will be interpreted as
-                                a list targeting into the depth of the tree
-           e.g.: by index my_tree.find_all(1) same as my_tree[1]
+
+             * index integers
+             * tag strings
+             * TagIdx,TagIdxStr,TagIdxBytes
+             * TagMultiIdx,slices
+             * for index lists you must give[[1,2,3,4]] because first level will be interpreted as
+             * a list targeting into the depth of the tree
+
+             e.g. by index my_tree.find_all(1) is same as my_tree[1]
+
                           my_tree.find_all('child') same as my_tree['child']
+
                           my_tree.find_all(TagIdx('child',1)) same as my_tree[TagIdx('child',1)]
-                          ...
-        2. Give a list of normal keys:
-           e.g.: by index my_tree.find_all([1,2]) same as my_tree[1][2]
-                          my_tree.find_all(['child','sub_child']) delivers an iterator over all "sub_child" families
-                                                                  found in all "child" families
-                          my_tree.find_all([TagIdx('child',1),TagIdx('sub_child',1)])
-                                                                   same as my_tree[TagIdx('child',1)][TagIdx('sub_child',1)]
+
                           ...
 
+        2. Give a list of normal keys:
+
+           e.g. by index my_tree.find_all([1,2]) same as my_tree[1][2]
+
+            my_tree.find_all(['child','sub_child']) delivers an iterator over all "sub_child" families found in all "child" families
+
+            my_tree.find_all([TagIdx('child',1),TagIdx('sub_child',1)]) same as my_tree[TagIdx('child',1)][TagIdx('sub_child',1)]
+
+            ...
+
         3. Give iTMatch() object or list of iTMatch() objects:
+
            An iterator of all matching tags will be created the matches will be combined with the and operation.
            You can also use an item_filter containing the Filter.iTFilterItemTagMatch to have the same functionality.
            In case a list is given the find_all() function is again going one level deeper for each element in the list.
 
         :param key_path: iterable/iterator that addresses items in the tree (see above explanations and examples)
+
         :param item_filter: item_filter method
+
         :param str_path_separator: In case of string tags the user can give also strings that are internally casted
                                    into a list by using the str_path_separator (default="/")
                                    e.g.: "/child_tag/sub_child_tag" -> ["child_tag","sub_child_tag"]
+
         :param str_index_separator: In case of string tags the user can give TgaIdx also by string definition this is
                                     the separator used to separate the index number from the tag (default="#")
                                     e.g. "child_tag#89" -> TagIdx("child_tag",89)
+
         :return: iterator over the matches or in case of no match found an empty list -> []
         """
 
