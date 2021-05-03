@@ -26,7 +26,7 @@
 itertree - Introduction 
 ========================
 
-Do you like to store data some how in a tree like structure? Do you need good performance, a rich feature set especially in case of filtered access to all data and the possibility to serialize and store the structure in files?
+Do you like to store data some how in a tree like structure? Do you need good performance, a reach feature set especially in case of filtered access to all data and the possibility to serialize and store the structure in files?
 
 Give itertree package a try!
 
@@ -55,7 +55,7 @@ Status and compatibility information
    Please use the `github issues <https://github.com/BR1py/itertree/issues>`_
    to ask questions report problems. **Please do not email me directly**
 
-.. |release| replace:: Version | 0.7.0|
+.. |release| replace:: Version | 0.7.1|
 .. _release: https://pypi.python.org/pypi/itertree/
 
 The original implementation is done in python 3.5 and it is tested under python 3.5 and 3.9. It should work in all python 3 environments.
