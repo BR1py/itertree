@@ -11,36 +11,6 @@ STR = S = 1  # returns the string representation of the value (DTDataItems conta
 FULL = F = 2  # In case DTDataItem objects are used for storage the full object is given back
 
 
-class iTreeValidationError(Exception):
-    """
-    Special data validation exception with validation traceback function
-
-    """
-
-    def __init__(self, *args, **kwargs):
-        try:
-            self._validation_traceback = kwargs.pop('validation_traceback')
-        except KeyError:
-            self._validation_traceback = {'text': 'Value validation failed (unknown reason)'}
-        super(iTreeValidationError, self).__init__(*args, *kwargs)
-
-    @property
-    def validation_traceback(self):
-        """
-        delivers the related validation traceback
-        :return:
-        """
-        return self._validation_traceback
-
-    @property
-    def text(self):
-        """
-        delivers the related validation traceback text
-        :return:
-        """
-        return self._validation_traceback.get('text')
-
-
 class iTDataModel(object):
     """
     The default iTree data model class
@@ -62,7 +32,9 @@ class iTDataModel(object):
         :param value: value object to be stored in the data model
         """
         if not value == __NOVALUE__:
-            self.__validator(value)
+            ok,text=self._validator(value)
+            if not ok:
+                raise ValueError(text)
         self._value = value
         self._formatter_cache = None
 
@@ -80,7 +52,7 @@ class iTDataModel(object):
         tells if the iTreeDataModel is empty or contains a value
         :return:
         """
-        return self.value == __NOVALUE__
+        return self._value == __NOVALUE__
 
     @property
     def value(self):
@@ -101,7 +73,7 @@ class iTDataModel(object):
         self._value = __NOVALUE__
         return v
 
-    def __validator(self, value):
+    def _validator(self, value):
         """
         Here we check the value
 
@@ -111,9 +83,9 @@ class iTDataModel(object):
 
         """
         # we actually accept here any value
-        pass
+        return True,'ok'
 
-    def __formatter(self):
+    def _formatter(self,value=None):
         """
         The formatter function allows us to create a specific string representation
 
@@ -127,9 +99,11 @@ class iTDataModel(object):
         :return: string representing the value
         """
         # place specific formatting here:
-        if self.is_empty:
-            return 'None'
-        return str(self._value)
+        if value is None:
+            if self.is_empty:
+                return 'None'
+            value = self._value
+        return str(value)
 
     def set(self, value):
         """
@@ -138,7 +112,9 @@ class iTDataModel(object):
         :param value: value object to be placed in the data model
         :return:
         """
-        self.__validator(value)
+        state,text=self._validator(value)
+        if state !=0:
+            raise TypeError(text)
         self._value = value
         self._formatter_cache = None
 
@@ -148,11 +124,7 @@ class iTDataModel(object):
         :param value: value object to be checked
         :return: tuple (True/False, checking text string)
         """
-        try:
-            self.__validator(value)
-            return True, 'ok'
-        except iTreeValidationError as e:
-            return False, e.text
+        return self._validator(value)
 
     def __contains__(self, item):
         """
@@ -171,16 +143,18 @@ class iTDataModel(object):
             # we might create an exception here when we have numerical values!
             # must be overloaded!
             return 'None'
-        if format_spec is None:
+        if format_spec is None or format_spec=='':
             # as long as the value is not changed we cache the result for quicker reuse:
             if self._formatter_cache is None:
                 # run the formatter
-                self._formatter_cache = self.__formatter()
+                self._formatter_cache = self._formatter()
             return self._formatter_cache
         else:
             return super(iTDataModel, self).__format__(format_spec)
 
     def __repr__(self):
+        if self.is_empty:
+            return 'iTreeDataModel()'
         return 'iTreeDataModel(value= %s)' % self._value
 
 
@@ -203,7 +177,8 @@ class iTData(dict):
             super().__init__()
         else:
             t = type(data_items)
-            if (t is dict) or (t is OrderedDict) or (t is list):  # we can instance the whole data set via these types
+            if (t is dict) or (t is OrderedDict) or (t is list) or (t is iTData) or (t is iTDataReadOnly):
+                # we can instance the whole data set via these types
                 super().__init__(data_items)
             else:
                 super().__init__([(__NOKEY__, data_items)])
@@ -214,7 +189,7 @@ class iTData(dict):
     def __deepcopy__(self):
         iTData(copy.deepcopy(super().copy()))
 
-    def set(self, key, value=__NOKEY__):
+    def __setitem__(self, key, value=__NOKEY__):
         """
         setter for the iTreeData object
         HINT: If no value is given the key item will be interpreted as value
@@ -227,19 +202,34 @@ class iTData(dict):
             value = key
             key = __NOKEY__
         if hasattr(value, 'is_iTDataModel'):
-            super(iTData, self).__setitem__(key, value)
-            return
+            return super(iTData, self).__setitem__(key, value)
         else:
-            try:
-                old_item = super(iTData, self).pop(key)
-            except KeyError:
-                super(iTData, self).__setitem__(key, value)
-                return
-            if hasattr(old_item, 'is_iTreeDataModel'):
-                old_item.set(value)
-                super(iTData, self).__setitem__(key, old_item)
-            else:
-                super(iTData, self).__setitem__(key, value)
+            if super(iTData, self).__contains__(key):
+                old_item = super(iTData, self).__getitem__(key)
+                if hasattr(old_item, 'is_iTDataModel'):
+                    old_item.set(value)
+                    return super(iTData, self).__setitem__(key, old_item)
+            return super(iTData, self).__setitem__(key, value)
+
+    def update(self, update_items):
+        """
+        function update of multiple items
+        if one item is invalid the whole update will be skipped and an exception will thrown!
+
+        :param update_items: dict, iterable of key,value pairs or iTData object
+        :return:
+        """
+        update_dict = dict(update_items)
+        for k, v in update_dict.items():
+            if super(iTData, self).__contains__(k):
+                i = super(iTData, self).__getitem__(k)
+                if hasattr(i, 'is_iTDataModel'):
+                    if not hasattr(v, 'is_iTDataModel'):
+                        back = i.check(v)
+                        if back[0] != 0:
+                            raise TypeError('Item (%s,%s): %s' % (repr(k), repr(v), back[1]))
+        for k, v in update_dict.items():
+            self.__setitem__(k,v)
 
     @property
     def data(self):
@@ -273,7 +263,7 @@ class iTData(dict):
         """
         return super(iTData, self).__len__() == 1 and super(iTData, self).__contains__(__NOKEY__)
 
-    def get(self, key=__NOKEY__, default_value=None, return_type=VALUE):
+    def __getitem__(self, key=__NOKEY__, default_value=None, return_type=VALUE):
         """
         get a specific data item by key
         :param key: key of the data item (if not given __NOKEY__ is used!
@@ -290,13 +280,30 @@ class iTData(dict):
             return default_value
         if return_type == FULL:
             return item
-        if hasattr(item, 'is_iTreeDataModel'):
+        if hasattr(item, 'is_iTDataModel'):
             if return_type == STR:
                 return format(item)
             return item.value
         if return_type == STR:
             return str(item)
         return item
+
+    def __delitem__(self, key=__NOKEY__, default_value=None, value_only=True):
+        """
+        get a specific data item by key
+        :param key: key of the data item (if not given __NOKEY__ is used!
+        :param default_value: value is delivered in case key is not found
+        :param return_type: We can deliver different returns
+                            VALUE - value object
+                            FULL - iTreeDataModel (only if used else same as VALUE)
+                            STR - formatted string representation of the data value
+        :return: requested value
+        """
+        if value_only:
+            item = super(iTData, self).__getitem__(key)
+            if hasattr(item, 'is_iTreeDataModel'):
+                return item.clear_value()
+        return super(iTData, self).__delitem__(key)
 
     def check(self, value, key=__NOKEY__):
         """
@@ -330,7 +337,7 @@ class iTData(dict):
 
     def __repr__(self):
         # we represent via dict because dict will automatically load in again as iTreeData object
-        return repr([i for i in self.items()])
+        return 'iTData(%s)'%super(iTData,self).__repr__()
 
     def __hash__(self):
         """
@@ -354,20 +361,27 @@ class iTDataReadOnly(iTData):
 
         :param data_items: single object or dict with key,value objects to be stored in the iTreeData object
         """
-        super(iTData, self).__init__(data_items)
+        super().__init__(data_items)
 
     def __setitem__(self, *arg, **kwargs):
+        raise PermissionError('The iTDataReadOnly() object data can not be changed')
+
+    def __delitem__(self, *arg, **kwargs):
         raise PermissionError('The iTDataReadOnly() object data can not be changed')
 
     def pop(self, *arg, **kwargs):
         raise PermissionError('The iTDataReadOnly() object data can not be changed')
 
-    def set(self, *arg, **kwargs):
-        raise PermissionError('The iTDataReadOnly() object data can not be changed')
-
     def __repr__(self):
         # we represent via dict because dict will automatically load in again as iTreeData object
-        return 'iTDataReadOnly(' + repr([i for i in self.items()]) + ')'
+        return 'iTDataReadOnly(%s)' % super(iTData, self).__repr__()
+
+    def __copy__(self):
+        return iTDataReadOnly(super(iTData,self).copy())
+
+    def __deepcopy__(self):
+        iTDataReadOnly(copy.deepcopy(super(iTData,self).copy()))
+
 
     @property
     def is_iTDataReadOnly(self):

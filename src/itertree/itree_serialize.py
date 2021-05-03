@@ -129,7 +129,7 @@ class iTStdObjSerializer(object):
                 return new_item
             elif o_type == 'OD':
                 return OrderedDict([(decode(i[0]), decode(i[1])) for i in raw_o[self.DATA_CONTAINER]])
-            elif (o_type is 'D') or (o_type is 'd') or (o_type is 'DR'):
+            elif (o_type == 'D') or (o_type == 'd') or (o_type == 'DR'):
                 return {decode(i[0]): decode(i[1]) for i in raw_o[self.DATA_CONTAINER]}
             elif o_type.startswith('ITER:'):
                 new = [decode(i) for i in raw_o.get(self.DATA_CONTAINER)]
@@ -300,11 +300,11 @@ class iTStdRenderer(object):
         if data.is_empty:
             return '%s(%s%s)' % (class_name, repr(item.tag), link_str)
         if data.is_no_key_only:
-            return '%s(%s%s, data=%s)' % (class_name, repr(item.tag), link_str, repr(item.get()))
+            return '%s(%s%s, data=%s)' % (class_name, repr(item.tag), link_str, repr(item.d_get()))
         else:
             return '%s(%s%s, data=%s)' % (class_name, repr(item.tag), link_str, repr(item._data))
 
-    def render(self, itree_object, item_filter=None, _level=0):
+    def render2(self, itree_object, item_filter=None, _level=0):
         """
         prints a pretty output of the iTree object
 
@@ -327,9 +327,10 @@ class iTStdRenderer(object):
             print(''.join([' ' * (self._identation * _level), header, self.__create_item_string(item)]))
             self.render(item, item_filter=item_filter, _level=_level + 1)
 
-    def renders(self, itree_object, item_filter=None, _level=0):
+    def renders2(self, itree_object, item_filter=None, _level=0):
         """
         creates a pretty print string from iTree object
+        This is the recursive version which might be a bit quicker
 
         :param itree_object: iTree object to be converted
         :param item_filter: item filter method or filter-constant to filter specific items out
@@ -342,9 +343,92 @@ class iTStdRenderer(object):
             output = self.__create_item_string(itree_object)
         else:
             output = ''
+        if (item_filter is not None) and (not item_filter(itree_object)):
+            return ''
         sub_tree = None
         for item in itree_object.iter_children(item_filter=item_filter):
             output = ''.join(
                 [output, '\n', ' ' * (self._identation * _level), self._heading, self.__create_item_string(item),
                  self.renders(item, item_filter=item_filter, _level=_level + 1)])
         return output
+
+    def render(self, itree_object, item_filter=None):
+        """
+         creates a pretty print from iTree object
+
+         Note:: Filtered renderings contains always the root object and the added children might have
+               confusing indentation levels because the parent elements might be filtered out
+
+         :param itree_object: iTree object to be converted
+         :param item_filter: item filter method or filter-constant to filter specific items out
+                             Note:: The root of the object is not filtered and always in the outputs first line
+         :return:
+         """
+
+        self._render_main(itree_object,item_filter,True)
+    def renders(self, itree_object, item_filter=None):
+        """
+         creates a pretty print string from iTree object ad returns it in a string
+
+         Note:: Filtered renderings contains always the root object and the added children might have
+               confusing indentation levels because the parent elements might be filtered out
+
+         :param itree_object: iTree object to be converted
+
+         :param item_filter: item filter method or filter-constant to filter specific items out
+                             Note:: The root of the object is not filtered and always in the outputs first line
+         :return: string containing the pretty print output
+         """
+
+        self._render_main(itree_object,item_filter,False)
+
+    def _render_main(self, itree_object, item_filter=None,_only_print_tree=False):
+        """
+        internal function for rendering the itertree
+
+        :param itree_object: iTree object to be converted
+        :param item_filter: item filter method or filter-constant to filter specific items out
+        :param _only_print_tree: True/False print or create return string
+        :return: string containing the pretty print a output
+        """
+        if not hasattr(itree_object, 'is_iTree'):
+            raise TypeError('Can only render iTree objects, got %s instead' % (type(itree_object)))
+        output=[]
+        items=[itree_object]
+        if item_filter is not None:
+            if _only_print_tree:
+                print(''.join([self.__create_item_string(itree_object)]))
+            else:
+                output.append(
+                    ''.join([self.__create_item_string(itree_object), '\n']))
+        while 1:
+            if len(items)==0:
+                break
+            item=items[0]
+            parent_list=items
+            if (type(item) is list) and len(item) == 0:
+                break
+            level = 0
+            while (type(item) is list):
+                parent_list=item
+                item=item[0]
+                if (type(item) is list) and len(item) == 0:
+                    del parent_list[0]
+                    level=-1
+                    break
+                level+=1
+            if level==-1:
+                continue
+            if item_filter(item):
+                if _only_print_tree:
+                    print(''.join([' ' * (self._identation * level), self._heading, self.__create_item_string(item)]))
+                else:
+                    output.append(''.join([' ' * (self._identation * level), self._heading, self.__create_item_string(item),'\n']))
+            new_items=list(item.iter_children())
+            if parent_list is None:
+                items=new_items
+            else:
+                # replace the original item with the children
+                parent_list[0]=new_items
+        return ''.join(output)
+

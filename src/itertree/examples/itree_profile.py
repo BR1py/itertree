@@ -1,8 +1,10 @@
 import cProfile
 from itertree import *
+import itertree
 
 max_items = 100000
 root=None
+print('Running on itertree version:',itertree.__version__)
 
 def performance_dt():
     global root,max_items
@@ -21,6 +23,12 @@ def performance_dt():
     for i in range(max_items):
         del it[0]
     new_it=it*max_items
+    it.extend(new_it)
+    if False:
+        for i in range(max_items):
+            for ii in range(10):
+                it[i].append(iTree(str(ii)))
+        it.count_all()
     root=it
 
 cProfile.run('performance_dt()')

@@ -4,6 +4,7 @@ This file contains the main iTree object
 from __future__ import absolute_import
 import os
 import itertools
+from collections import deque
 from .itree_data import iTData, iTDataReadOnly
 from .itree_helpers import *
 from .itree_filter import *
@@ -27,7 +28,8 @@ __GETITEM_RETURN__ = {
     TagIdxBytes: lambda self, key, _: self._map[key[0]][key[1]],
     slice: lambda self, key, _: itertools.islice(super(iTree, self).__iter__(), key.start, key.stop, key.step),
     iTMatch: lambda self, key, _: filter(lambda item: key.check(item), super(iTree, self).__iter__()),
-    list: lambda self, key, _: iter([self[k] for k in key]),
+    list: lambda self, key, _: accu_iterator(key,lambda c,k: self[k]),
+    #list: lambda self, key, _: iter((self[k] for k in key)),
     tuple: lambda self, key, _: self._map[key[0]][key[1]],
     str: lambda self, key, str_index_separator: self.__getitem__(TagIdxStr(key, str_index_separator)),
     bytes: lambda self, key, str_index_separator: self.__getitem__(TagIdxBytes(key, str_index_separator))
@@ -107,34 +109,33 @@ class iTree(blist):
     """
 
     __slots__ = (
-        '_tag', '_parent', '_map', '_coupled', '_data', '_cache', '_def_serializer','_get_return')
+        '_tag', '_parent', '_map', '_coupled', '_data', '_cache', '_def_serializer', '_get_return')
 
     def __init__(self, tag, data=iTData(), subtree=None):
         global __GETITEM_RETURN__
         super().__init__()
         # make global local
         self._get_return = __GETITEM_RETURN__
-
         t = type(tag)
         if (t is int) or (t is TagIdx):
             raise TypeError('Given tag cannot be used in iTree wrong type (int or TagIdx)')
         self._tag = tag
         self._parent = None
         self._map = {}
-        self._cache = [0, 0]
+        self._cache = (0, 0)
 
         (subtree is None) or self._load_subtree(subtree)
 
-        if type(data) is iTData:
+        t=type(data)
+        if t is iTData or t is iTDataReadOnly:
             self._data = data
         else:
             self._data = iTData(data_items=data)
 
-
     # These are the mandatory methods we expect in the data object
 
     @property
-    def set(self):
+    def d_set(self):
         """
         set function for a data-attribute
 
@@ -147,11 +148,10 @@ class iTree(blist):
 
         :return  None
         """
-        parent = self._parent
-        return self._data.set
+        return self._data.__setitem__
 
     @property
-    def get(self):
+    def d_get(self):
         """
         get function for a data attribute
 
@@ -161,10 +161,26 @@ class iTree(blist):
 
         :return: data attribute object
         """
-        return self._data.get
+        return self._data.__getitem__
 
     @property
-    def check(self):
+    def d_update(self):
+        """
+        set function for a data-attribute
+
+        In case the standard iTData object is used we have:
+
+        :param key: give key under which the data will be stored, in case data is None the first key parameter is taken
+                    as data object and it is stored in the "__NOKEY__" item
+
+        :param value: data value the object that should be stored in the data structure of this iTree
+
+        :return  None
+        """
+        return self._data.update
+
+    @property
+    def d_chk(self):
         """
         check if the given data-item can be stored under the given key. The check make only sense in case there is
         a iTreeDataModel or matching object is already stored under the key
@@ -177,12 +193,21 @@ class iTree(blist):
         return self._data.check
 
     @property
-    def pop_data(self):
+    def d_pop(self):
         """
         data related pop (will delete the given key
         :return:
         """
         return self._data.pop
+
+    @property
+    def d_del(self):
+        """
+        data related del (will delete the given key)
+
+        :return:
+        """
+        return self._data.__delitem__
 
     @property
     def data(self):
@@ -232,22 +257,24 @@ class iTree(blist):
 
         :return: value
         """
+        old_item = self.__getitem__(key)
         try:
             if value._parent is not None:
-                try:
-                    # e.g. for __iadd__ operation we may find exactly same item already in the tree
-                    if id(value) == id(super(iTree, self).__getitem__(value.idx)):
-                        # we must do nothing in that case
-                        return value
-                except:
-                    pass
+                if value._parent==self:
+                    # check for __iadd__()
+                    if super().__getitem__(value.idx) is value:
+                        return None
+                if value._parent == old_item:
+                    # check for __iadd__()
+                    if old_item.__getitem__(value.idx) is value:
+                        return None
                 raise RecursionError('Given item has already a parent iTree!')
         except AttributeError:
             if type(value) is not iTree:
                 raise TypeError('In iTree only children of type iTree can be integrated')
             raise
-        old_item = self.__getitem__(key)
         idx = old_item.idx
+        old_item._parent = None
         o_tag = old_item._tag
         value._parent = self
         super().__setitem__(idx, value)
@@ -260,9 +287,9 @@ class iTree(blist):
             m[old_item._tag].remove(old_item)
             try:
                 family = m.__getitem__(v_tag)
-                idx = self.__get_family_insertion_idx(family, value.idx)
-                value._cache[1] = idx
-                family.insert(idx, value)
+                tidx = self.__get_family_insertion_idx(family, idx)
+                value._cache = (idx, tidx)
+                family.insert(tidx, value)
             except:
                 m.__setitem__(v_tag, blist((value,)))
         return value
@@ -321,7 +348,7 @@ class iTree(blist):
                 del family[del_item.tag_idx[1]]
             del_item._parent = None
             return del_item
-        elif (t is TagIdx) or (t is TagIdxStr) or (t is TagIdxBytes):
+        elif ((t is TagIdx) or (t is TagIdxStr) or (t is TagIdxBytes)):
             family = m[key[0]]
             del_item = family.pop(key[1])
             if len(family) == 0:
@@ -350,7 +377,6 @@ class iTree(blist):
                 del_item._parent = None
             return iter(del_list)
         elif hasattr(key, 'is_iTree'):
-            # ToDo delete in the parent?
             idx = key.idx
             super().__delitem__(idx)
             tag_idx = key.tag_idx
@@ -364,28 +390,27 @@ class iTree(blist):
             # family tag given?
             try:
                 family = m.pop(key)
+                for item in family:
+                    super().remove(item)
+                    item._parent = None
+                return iter(family)
             except KeyError:
                 # iterator or iterable given?
-                if hasattr(key, '__next__') or hasattr(key, '__next__'):
+                if hasattr(key, '__iter__') or hasattr(key, '__next__'):
                     # return an iterator over the slice
                     return_list = list(self[key])
                     for i in return_list:
                         super().__delitem__(i.idx)
-                        tag_idx = i.tag_idx
-                        family = m[tag_idx.tag]
-                        del_item = family.pop(tag_idx.idx)
+                        tag, tidx = i.tag_idx
+                        family = m[tag]
+                        del family[tidx]
                         if len(family) == 0:
-                            m.pop(tag_idx.tag)
-                        del_item._parent = None
+                            del m[tag]
+                        i._parent = None
                     return iter(return_list)
                 else:
                     # no valid key found!
                     raise KeyError('No related item (key = %s) found for deletion' % key)
-            for item in family:
-                super(iTree, self).remove(item)
-            for i in family:
-                i._parent = None
-            return iter(family)
 
     def __mul__(self, factor):
         """
@@ -410,22 +435,18 @@ class iTree(blist):
         :param other: iTree object that should be added
         :return: New iTree object containing copies of all children
         """
-        items = [i.copy() for i in super(iTree, self).__iter__()]
-        for i in other:
-            if hasattr(i, '_parent'):
-                if i._parent is not None:
-                    items.append(i.copy())
-                    continue
-            items.append(i)
-        return iTree(self._tag, data=self._data, subtree=items)
+        self.extend(other)
+        return self
 
     def __iadd__(self, other):
-        """
-        This is the same operation as append (is a bit quicker)
-        :param other: iTree object that should be added
-        :return: None
-        """
-        self.append(other)
+        try:
+            if other._parent is not None:
+                raise RecursionError('Given item has already a parent iTree!')
+        except AttributeError:
+            if type(other) is not iTree:
+                raise TypeError('In iTree only children of type iTree can be integrated')
+            raise
+        self + [other]
         return self
 
     def __iter__(self, item_filter=None):
@@ -592,12 +613,41 @@ class iTree(blist):
         property delivers the root item of the tree
 
         :return: iTree root item
-
         """
-        if self._parent is None:
-            return self
-        else:
-            return self._parent.root
+        # We use an iterative not recursive solution here because we allow tree depth > recursion limit of the interpreter!
+        p=self
+        while 1:
+            p1 = p._parent
+            if p1 is None:
+                return p
+            p=p1
+
+    @property
+    def is_read_only(self):
+        """
+        In contrast to iTreeTemporary class this is False
+
+        :return: False
+        """
+        return False
+
+    @property
+    def is_temporary(self):
+        """
+        In contrast to iTreeTemporary class this is False
+
+        :return: False
+        """
+        return False
+
+    @property
+    def is_linked(self):
+        """
+        In contrast to iTreeLinked class this is False
+
+        :return: False
+        """
+        return False
 
     @property
     def pre_item(self):
@@ -608,7 +658,7 @@ class iTree(blist):
         idx = self.idx - 1
         if idx < 0:
             return None
-        return super(iTree, self).__getitem__(idx)
+        return super(iTree, self._parent).__getitem__(idx)
 
     @property
     def post_item(self):
@@ -617,49 +667,89 @@ class iTree(blist):
         :return: iTree successor or None (no match)
         """
         idx = self.idx + 1
-        if idx < super(iTree, self).__len__():
-            return None
-        return super(iTree, self).__getitem__(idx)
+        sl=super(iTree, self._parent)
+        if idx < sl.__len__():
+            return sl.__getitem__(idx)
+        return None
 
     @property
-    def depth(self):
+    def depth_up(self):
         """
         delivers the distance (number of levels) to the root element of the tree
 
         :return: integer
 
         """
-        if self._parent is None:
-            return 0
-        else:
-            return self._parent.depth + 1
+        # We use an iterative not recursive solution here because we allow tree depth > recursion limit of the interpreter!
+        p=self
+        i=0
+        while 1:
+            p = p._parent
+            if p is None:
+                return i
+            i+=1
 
     @property
-    def idx_path(self) -> list:
+    def max_depth_down(self):
+        """
+        delivers the max_depth in the direction of the children
+
+        :return: integer maximal children depth
+
+        """
+        if self.__len__()==0:
+            return 0
+        max_depth = 0
+        items = [self]
+        while 1:
+            new_items = []
+            deque((new_items.extend(list(i.iter_children())) for i in items), maxlen=0)
+            if len(items) == 0:
+                break
+            else:
+                max_depth += 1
+            items = new_items
+        return max_depth - 1
+
+    @property
+    def idx_path(self):
         """
         delivers the a list of indexes from the root to this item
 
         :return: list of index integers (here we do not deliver an iterator)
         """
-        if self._parent is None:
-            return []
-        else:
-            return self._parent.idx_path + [self.idx]
+        # We use an iterative not recursive solution here because we allow tree depth > recursion limit of the interpreter!
+        p=self
+        idx_list=[]
+        while 1:
+            if p is None:
+                return idx_list
+            idx=p.idx
+            if idx is None:
+                break
+            idx_list.insert(0,idx)
+            p=p._parent
+        return idx_list
 
     @property
-    def tag_idx_path(self) -> list:
+    def tag_idx_path(self):
         """
         delivers the a list of TagIdx objects from the root to this item
 
         :return: list of TagIdx (here we do not deliver an iterator)
         """
-        if self._parent is None:
-            return []
-        else:
-            return self._parent.tag_idx_path + [self.tag_idx]
+        # We use an iterative not recursive solution here because we allow tree depth > recursion limit of the interpreter!
+        p=self
+        idx_list=[]
+        while 1:
+            tag_idx=p.tag_idx
+            if tag_idx is None:
+                return idx_list
+            idx_list.insert(0,tag_idx)
+            p=p._parent
 
     @property
-    def tag_idx(self) -> TagIdx:
+    def tag_idx(self):
         """
         Get the TagIdx object related to this object
         (contains the tag and the index of the object in the tag-family)
@@ -677,16 +767,9 @@ class iTree(blist):
                 return TagIdx(self._tag, c_idx)
         except IndexError:
             pass
-        # we search nearby
-        try:
-            i = family.index(self, (c_idx - 10), (c_idx + 10))
-            if i != -1:
-                cache[1] = idx = i
-                return TagIdx(self._tag, idx)
-        except (ValueError, IndexError):
-            pass
         # full search cached index must be updated
-        cache[1] = idx = parent._map[self._tag].index(self)
+        idx = parent._map[self._tag].index(self)
+        self._cache = (cache[0], idx)
         return TagIdx(self._tag, idx)
 
     @property
@@ -708,51 +791,17 @@ class iTree(blist):
             return None
         # we use cached index to be quicker
         cache = self._cache
-        order = super(iTree, parent)
+        sl = super(iTree, parent) # do not delete parameters here!
         c_idx = cache[0]
         try:
-            if order.__getitem__(c_idx) is self:
+            if sl.__getitem__(c_idx) is self:
                 return c_idx
         except IndexError:
             pass
-        # we search nearby
-        try:
-            i = order.index(self, (c_idx - 10), (c_idx + 10))
-            if i != -1:
-                cache[0] = idx = i
-                return idx
-        except (ValueError, IndexError):
-            pass
         # cached index must be updated
-        cache[0] = idx = order.index(self)
+        idx = sl.index(self)
+        self._cache = (idx, cache[1])
         return idx
-
-    @property
-    def is_read_only(self):
-        """
-        In contrast to iTreeTemporary class this is False
-        
-        :return: False 
-        """
-        return False
-
-    @property
-    def is_temporary(self):
-        """
-        In contrast to iTreeTemporary class this is False
-        
-        :return: False 
-        """
-        return False
-
-    @property
-    def is_linked(self):
-        """
-        In contrast to iTreeLinked class this is False
-
-        :return: False
-        """
-        return False
 
     @property
     def coupled_object(self):
@@ -828,6 +877,7 @@ class iTree(blist):
                     subtree=[i.__copy__() for i in self.iter_children()]
                     # here we create a recursion -> subtree is copied!!
                     )
+
         return new
 
     @property
@@ -900,6 +950,27 @@ class iTree(blist):
         cnt += (i + 1)
         return cnt
 
+    # deep getter
+    def get_deep(self,key_list):
+        """
+        deep key access
+        the function is a replacement for self[key_list[0]][key_list[1]]...[key_list[-1]]
+        but you can also feed with an iterator
+
+        dives into the tree key_list=[1,0,2] -> second element level 1 -> first element level 2 -> third element level 3
+        -> same as self[1][0][2]
+
+        Note:: Each key in the key list must target to a single item only!
+               E.g. do not use tags here they deliver always a family iterator not a single item
+               (the method will raise an exception). Use index integers or TagIdx objects instead
+        :param key_list:  list or iterator of keys (indexes,TagIdx, tuple(tag,index) -> only in case no tuple tags!
+        :return: iTree object the key list targets
+        """
+        item=self
+        for key in key_list:
+            item=item.__getitem__(key)
+        return item
+
     # structure manipulations
 
     def clear(self):
@@ -944,16 +1015,15 @@ class iTree(blist):
         super().insert(idx, item)
         tag = item._tag
         m = self._map
-        cache = item._cache
-        cache[0] = idx
         if tag in m:
             family = m.__getitem__(tag)
-            idx = self.__get_family_insertion_idx(family, idx)
-            family.insert(idx, item)
-            cache[1] = idx
+            tidx = self.__get_family_insertion_idx(family, idx)
+            family.insert(tidx, item)
+
         else:
             m.__setitem__(tag, blist((item,)))
-            cache[1] = 0
+            tidx = 0
+        item._cache = (idx, tidx)
 
     def append(self, item):
         """
@@ -974,22 +1044,22 @@ class iTree(blist):
             raise
         # append item:
         item._parent = self
-        cache = item._cache
         # append to blist:
         sl = super()
-        cache[0] = sl.__len__()
+        idx = sl.__len__()
         sl.append(item)
         # append to map
         m = self._map
         tag = item._tag
-        if tag in m:
+        if m.__contains__(tag):
             family = m.__getitem__(tag)
-            cache[1] = family.__len__()
+            tidx = family.__len__()
             family.append(item)
         else:
             # first time tag is used!
-            cache[1] = 0
+            tidx = 0
             m.__setitem__(tag, blist((item,)))
+        item._cache = (idx, tidx)
         return True
 
     def appendleft(self, item):
@@ -1016,27 +1086,7 @@ class iTree(blist):
         :return: True
         """
         # collect for operation
-        sl = super()
-        m = self._map
-        for item in extend_items:
-            if item is None:
-                continue
-            parent = item._parent
-            if (parent is not None) and (parent != self):
-                item = item.__copy__()
-            item._parent = self
-            tag = item.tag
-            cache = item._cache
-            cache[0] = sl.__len__()
-            sl.append(item)
-            if tag in m:
-                family = m.__getitem__(tag)
-                cache[1] = family.__len__()
-                family.append(item)
-            else:
-                cache[1] = 0
-                m.__setitem__(item._tag, blist((item,)))
-        return True
+        return self._load_subtree(extend_items)
 
     def extendleft(self, extend_items):
         """
@@ -1061,7 +1111,7 @@ class iTree(blist):
             if item._parent is not None:
                 item = item.copy()
             item._parent = self
-            item._cache = [0, 0]
+            item._cache = (0, 0)
             sl.insert(0, item)
             tag = item._tag
             try:
@@ -1129,26 +1179,32 @@ class iTree(blist):
 
         :return: None
         """
-        if type(new_tag) in {int, TagIdx}:
+        t=type(new_tag)
+        if t is int or t is TagIdx:
             raise TypeError('Given tag cannot be used in iTree wrong type (int or TagIdx)')
         parent = self.parent
         if parent is None:
             self._tag = new_tag
             return
-        family = parent._map[self._tag]
-        family.remove(self)
-        if len(family) == 0:
-            del parent._map[self._tag]
+        pm=parent._map
+        tag=self._tag
+        # remove old tag in the map-dict
+        family = pm.__getitem__(tag)
+        if len(family) == 1:
+            pm.__delitem__(tag)
+        else:
+            family.remove(self)
+        # insert new tag
         self._tag = new_tag
-        pm = parent._map
-        try:
+        if new_tag in pm:
             new_family = pm.__getitem__(new_tag)
             idx = self.__get_family_insertion_idx(new_family, self.idx)
             new_family.insert(idx, self)
-            self._cache[1] = idx
-        except:
+            self._cache = (self._cache[0], idx)
+        else:
+            # create new family
             pm.__setitem__(new_tag, blist((self,)))
-            self._cache[1] = 0
+            self._cache = (self._cache[0], 0)
 
     def reverse(self):
         super(iTree, self).reverse()
@@ -1272,14 +1328,209 @@ class iTree(blist):
         for item in self.iter_children(item_filter=item_filter):
             tag = item._tag
             try:
-                cnt = tag_cnts[tag] + 1
-                tag_cnts[tag] = cnt
-                yield TagIdx(tag, cnt)
+                tag_cnts[tag] =cnt = tag_cnts[tag] + 1
             except KeyError:
-                tag_cnts[tag] = 0
-                yield TagIdx(tag, 0)
+                tag_cnts[tag] = cnt = 0
+            yield TagIdx(tag, cnt)
 
-    def find_all(self, key_path, item_filter=None, str_path_separator='/', str_index_separator='#',
+    def iter_tag_idxs_all(self, item_filter=None):
+        """
+        Delivers an iterator over all items tag_idx_paths
+        :param item_filter: item_filter for iTFilter object
+        :return: iterator over tuples of tag_idxs_paths of all items
+        """
+        tag_cnts = {}
+        for item in self.iter_children(item_filter):
+            tag = item._tag
+            try:
+                tag_cnts[tag] = cnt = tag_cnts[tag] + 1
+            except KeyError:
+                tag_cnts[tag] = cnt = 0
+            ti_l=(TagIdx(tag, cnt),)
+            yield ti_l
+            for tag_idx_list in item.iter_tag_idxs_all(item_filter):
+                yield ti_l + tag_idx_list
+
+    def iter_idxs_all(self, item_filter=None):
+        """
+        Delivers an iterator over all items index path tuples
+        Nte: This method is mainly usd for internal proposes (max_depth_down)
+        :param item_filter: item_filter filter method might be used
+        :return: iterator over tuples of index paths of all items
+        """
+        i=0
+        for item in self.iter_children(item_filter): # not use enumerate here because this consumes the iterator!
+            i = i + 1 #quicker then i+=1  i =
+            t=(i,)
+            yield t
+            for idx_list in item.iter_idxs_all(item_filter):
+                yield t+idx_list
+
+    def find_all(self, key_path, item_filter=None, str_path_separator='/', str_index_separator='#'):
+        """
+        The find all function works on all levels of the tree. The key_path given (e.g. a list of indexes) addresses
+        the items into the depth first item first level, second item second level,....
+
+        The method returns always an iterator or in case of no match an empty list! If you target to unique obejcts
+        you will get anyway an iterator containing this unique element.
+
+        In case the target in the upper keys is not unique, all matches will be delivered!
+        e.g. The operation my_tree.find_all(['child','sub_child']) takes first all items in the "child" family:
+             TagIdx('child',0),TagIdx('child',1),...TagIdx('child',n) in an iterator and in the next step the function
+             will go one level deeper and will cumulate all the 'sub_child' families in these items as the result:
+             This means we have something like this:
+             my_tree[TagIdx('child',0)][TagIdx('sub_child',0)],my_tree[TagIdx('child',0)][TagIdx('sub_child',1)],...,
+             my_tree[TagIdx('child',1)][TagIdx('sub_child',0)],my_tree[TagIdx('child',0)][TagIdx('sub_child',1)],...,
+             ...
+             and in case of no match in the keys items are skipped.
+
+             Note:: It's not at all the same as: my_tree['child']['sub_child'] -> this operation will raise an exception!
+
+        Warning:: It's possible to create invalid recursions when constructing the key_path. In these cases the
+                  recursion depth exceeded exception will be raised by the interpreter
+
+        Note:: When addressing a single item it's quicker (~10x faster depending on tree depth) to use the get_deep()
+               method instead of the find_all() method.
+
+        The key_path parameter is very flexible in case of the objects you put in. We have several possibilities:
+
+        0. Special keys: We have the following special keys that might be used in the key_path:
+            - "/" default path separator (might be changed by str_path_separator parameter)
+              If this is the first key the find_all() search will be started in the root element not in the element the
+              method is called.
+              Note:: Be careful with "//" or "/" placed not in the beginning of the path this will rollback the
+                     find_all() to the root which means anything in the key_path before this key will be ignored.
+            - "*" wildcard will iterate over all children of the item
+            - "**" wildcard will iterate over all items of the item and the item itself will be included
+                   in the iterator as first element.
+                   Note:: find_all('**') creates an different iterator then iter_all():
+                          list(my_tree.find_all('**')) = [my_tree] + list(my_tree.iter_all())
+            Note:: In case the iTree contains a family with the tag "/" or "*" or "**" the related family will be
+                   delivered. The special functionality is blocked in this moment (for "/" you might use the
+                   str_path_separator parameter to keep the functionality).
+
+        1. Give normal keys like in __getitem__() method:
+           normal keys can be:
+                                index integers
+                                tag strings
+                                TagIdx,TagIdxStr,TagIdxBytes
+                                TagMultiIdx,slices
+                                for index lists you must give[[1,2,3,4]] because first level will be interpreted as
+                                a list targeting into the depth of the tree
+           e.g.: by index my_tree.find_all(1) same as my_tree[1]
+                          my_tree.find_all('child') same as my_tree['child']
+                          my_tree.find_all(TagIdx('child',1)) same as my_tree[TagIdx('child',1)]
+                          ...
+        2. Give a list of normal keys:
+           e.g.: by index my_tree.find_all([1,2]) same as my_tree[1][2]
+                          my_tree.find_all(['child','sub_child']) delivers an iterator over all "sub_child" families
+                                                                  found in all "child" families
+                          my_tree.find_all([TagIdx('child',1),TagIdx('sub_child',1)])
+                                                                   same as my_tree[TagIdx('child',1)][TagIdx('sub_child',1)]
+                          ...
+
+        3. Give iTMatch() object or list of iTMatch() objects:
+           An iterator of all matching tags will be created the matches will be combined with the and operation.
+           You can also use an item_filter containing the Filter.iTFilterItemTagMatch to have the same functionality.
+           In case a list is given the find_all() function is again going one level deeper for each element in the list.
+
+        :param key_path: iterable/iterator that addresses items in the tree (see above explanations and examples)
+        :param item_filter: item_filter method
+        :param str_path_separator: In case of string tags the user can give also strings that are internally casted
+                                   into a list by using the str_path_separator (default="/")
+                                   e.g.: "/child_tag/sub_child_tag" -> ["child_tag","sub_child_tag"]
+        :param str_index_separator: In case of string tags the user can give TgaIdx also by string definition this is
+                                    the separator used to separate the index number from the tag (default="#")
+                                    e.g. "child_tag#89" -> TagIdx("child_tag",89)
+        :return: iterator over the matches or in case of no match found an empty list -> []
+        """
+
+        sl=super()
+        m=self._map
+        try: # direct match ?
+            if key_path in m:
+                return self.__build_find_all_result(m.__getitem__(key_path), item_filter)
+        except TypeError:
+            pass
+        t=type(key_path)
+        if t is str:
+            lkp=key_path.__len__()
+            if lkp==0:
+                return []
+            if key_path[0]=='*':
+                if lkp==1:
+                    # from here on theitem must have children!
+                    if sl.__len__() == 0:
+                        return []
+                    return iter.chain(self.__build_find_all_result(self,item_filter),
+                                      self.iter_children(item_filter=item_filter))
+                if key_path[1] == '*':
+                    if lkp == 2:
+                        return self.iter_all(item_filter=item_filter)
+            try:
+                return self.__build_find_all_result(self.__getitem__(key_path,str_index_separator),item_filter)
+            except KeyError:
+                pass
+            # from here on we create a list from the given keys by splitting
+            key_list = key_path.split(str_path_separator)
+            if len(key_list) == 1:  # single key this means the item was not found!
+                return []
+            if key_list[0] == '':
+                # we must ensure we start from the root
+                return self.root.find_all(key_list[1:], item_filter, str_path_separator, str_index_separator)
+            return self.find_all(key_list, item_filter, str_path_separator, str_index_separator)
+        # for those objects we do a direct search: (list is not in because in fnd we go deeper!!)
+        if t in (int, str, TagIdx, TagIdxStr, TagIdxBytes, TagMultiIdx, iTMatch, slice):
+            return self.__build_find_all_result(self.__getitem__(key_path,str_index_separator), item_filter)
+        # from here on we expect a list or iterator
+        # analyse iterator:
+        key,new_key_iter=self.__extract_first_iter_items(key_path)
+        # create the result of the key (first item)
+        if key is None:
+            # somethings wrong (empty iterator)
+            return []
+        if key==str_path_separator:
+            if not key in m:
+                # we switch up to root!
+                if new_key_iter is not None:
+                    return self.root.find_all(new_key_iter)
+                else:
+                    return self.__build_find_all_result(self.root, item_filter)
+        try:
+            result = self.__build_find_all_result(self.__getitem__(key,str_index_separator), item_filter)
+            if result==[]:
+                return []
+        except (IndexError, KeyError):
+            if type(key) is not str:
+                # we had no match on the object!
+                return []
+            if key[0]=='*':
+                if len(key) == 1:
+                    result = self.iter_children(item_filter=item_filter)
+                else:
+                    if key[1] == '*':
+                        if len(key) == 2:
+                            result = itertools.chain(self.__build_find_all_result(self,item_filter),
+                                                     self.iter_all(item_filter=item_filter))
+                        else:
+                            return []
+            else:
+                return []
+        if new_key_iter is None:
+            return result
+        else:
+            sub_method = lambda c, item: item.find_all(new_key_iter, item_filter,
+                                                       str_path_separator, str_index_separator)
+            # for debugging:
+            #results = [item.find_all(new_key_iter, item_filter,
+            #                          str_path_separator, str_index_separator) for item in result]
+            #return result
+            return itertools.chain.from_iterable(accu_iterator(result, sub_method))
+
+
+
+
+    def find_all2(self, key_path, item_filter=None, str_path_separator='/', str_index_separator='#',
                  _initial=True):
         """
         The find_all function targets over multiple levels of the datatree, it returns a list or iterator of the
@@ -1335,9 +1586,10 @@ class iTree(blist):
         t = type(key_path)
         if t is str:
             # empty key?
-            if len(key_path) == 0:
+            if len(key_path) == 0 or self.__len__()==0:
                 # empty string
                 return []
+
             # is string matching to a tag?
             try:
                 items = self.__getitem__(key_path, str_index_separator=str_index_separator)
@@ -1355,9 +1607,11 @@ class iTree(blist):
             if key_list[0] == '':
                 # we must ensure we start from the root
                 return self.root.find_all(key_list[1:], item_filter, str_path_separator, str_index_separator)
+            if len(key_list)==1: #single key this means the item was not found!
+                return []
             return self.find_all(key_list, item_filter, str_path_separator, str_index_separator)
         # first we check we have a valid tag:
-        if (not _initial) or (t in {int, str, TagIdx, TagIdxStr, TagIdxBytes, TagMultiIdx, iTMatch, slice}):
+        if (not _initial) or (t in (int, str, TagIdx, TagIdxStr, TagIdxBytes, TagMultiIdx, iTMatch, slice)):
             # if not _initial we are in deeper level of the iterator and we interpret here as an index list!
             items = self[key_path]
             return self.__build_find_all_result(items,
@@ -1377,11 +1631,11 @@ class iTree(blist):
             return []
         try:
             post_item = next(sub_iter)
-            new_key_path = itertools.chain([post_item], sub_iter)
+            new_key_path = itertools.chain((post_item,), sub_iter)
             try:
                 post_post_item = next(sub_iter)
                 # create a new iterator that contains the post items and the original iterator
-                new_key_path = itertools.chain([post_item, post_post_item], sub_iter)
+                new_key_path = itertools.chain((post_item, post_post_item), sub_iter)
                 set_initial = True
             except StopIteration:
                 # there is only one item left in iterator we will give the item directly
@@ -1404,9 +1658,9 @@ class iTree(blist):
                                       str_path_separator,
                                       str_index_separator, _initial=set_initial)
         elif key == '*':
-            result = self.iter_children(item_filter=item_filter)
+            result = itertools.chain((self,),self.iter_children(item_filter=item_filter))
         elif key == '**':
-            result = self.iter_all(item_filter=item_filter)
+            result = itertools.chain((self,),self.iter_all(item_filter=item_filter))
         else:
             result = self.find_all(key, item_filter,
                                    str_path_separator,
@@ -1416,12 +1670,21 @@ class iTree(blist):
             # we will not go deeper
             return result
         # iter into the next level
-        results = [item.find_all(new_key_path,
+        # We keep this for debugging proposes!
+        #results = [item.find_all(new_key_path,
+        #                         item_filter,
+        #                         str_path_separator,
+        #                         str_index_separator,
+        #                         _initial=set_initial) for item in result]
+        if True:
+            results=itertools.islice(
+                    itertools.accumulate(
+                        itertools.chain((None,), result), lambda c, item: item.find_all(new_key_path,
                                  item_filter,
                                  str_path_separator,
                                  str_index_separator,
-                                 _initial=set_initial) for item in result]
-        return itertools.chain(*results)
+                                 _initial=set_initial)), 1, None, 1),  # python <3.8 no initial parameter
+        return itertools.chain.from_iterable(*results)
 
     def find(self, key_path, item_filter=None, default_return=None, str_path_separator='/',
              str_index_separator='#'):
@@ -1487,16 +1750,16 @@ class iTree(blist):
         item_iter = iter(result)
         try:
             item = next(item_iter)
+            try:
+                post_item = next(item_iter)
+                # no StopIteration Exception! more then one element we return no match
+                return default_return
+            except (TypeError,StopIteration):
+                # match!
+                return item
         except StopIteration:
             # empty iterator!
             return default_return
-        try:
-            post_item = next(item_iter)
-            # no StopIteration Exception! more then one element we return no match
-            return default_return
-        except StopIteration:
-            # match!
-            return item
 
     def index(self, item, item_filter=None):
         """
@@ -1573,15 +1836,15 @@ class iTree(blist):
             self.init_serializer()
         return self._def_serializer[0].dump(self, target_path, pack=pack, calc_hash=calc_hash, overwrite=overwrite)
 
-    def renders(self):
+    def renders(self,item_filter=None):
         if (not hasattr(self, '_def_serializer')) or (self._def_serializer is None):
             self.init_serializer()
-        return self._def_serializer[3].renders(self)
+        return self._def_serializer[3].renders(self,item_filter)
 
-    def render(self):
+    def render(self,item_filter=None):
         if (not hasattr(self, '_def_serializer')) or (self._def_serializer is None):
             self.init_serializer()
-        return self._def_serializer[3].render(self)
+        return self._def_serializer[3].render(self,item_filter)
 
     # helpers
     def _load_subtree(self, extend_items):
@@ -1598,31 +1861,24 @@ class iTree(blist):
         # collect for operation
         sl = super()
         m = self._map
+        idx = sl.__len__() - 1
         for item in extend_items:
             if item is None:
                 continue
-            parent = item._parent
-            if (parent is not None):  # and (parent != self):
+            if item._parent is not None:  # and (parent != self):
                 item = item.__copy__()
             item._parent = self
-            tag = item.tag
-            cache = item._cache
-            cache[0] = sl.__len__()
+            tag = item._tag
+            idx += 1
             sl.append(item)
             if m.__contains__(tag):
                 family = m.__getitem__(tag)
-                cache[1] = family.__len__()
+                item._cache = (idx, family.__len__())
                 family.append(item)
             else:
-                cache[1] = 0
-                m.__setitem__(item._tag, blist((item,)))
+                item._cache = (idx, 0)
+                m.__setitem__(tag, blist((item,)))
         return True
-
-    def __iter_to_match(self, iterator, match_key):
-        for i in iterator:
-            if i.parent.tag_index(i) == match_key:
-                break
-            yield i
 
     def __get_family_insertion_idx(self, family, item_idx, last_index=0):
         fl = len(family)
@@ -1647,6 +1903,36 @@ class iTree(blist):
 
     # find helper methods for different types of keys
 
+    def __extract_first_iter_items(self,iterator):
+        """
+        analysis the iterator
+        :param iterator: iterator to be analysed
+        :return: tuple  -> (None,None,None) -> empty iterator
+                        -> (first_item,None,None) -> last element of iterator (no elements left afterwards)
+                        -> (first_item,second_item,None) -> last two elements of iterator (no elements left afterwards)
+                        -> (first_item,None,rest_iteratorNone) -> first item and the rest of the iterator (without first item)
+        """
+        # iterator/generator
+        if hasattr(iterator,'__len__'):
+            l = len(iterator)
+            if l == 0:
+                return None, None
+            elif l == 1:
+                return iterator[0], None
+            else:
+                return iterator[0], iterator[1:]
+        else:
+            try:
+                i1 = next(iterator)
+            except StopIteration:
+                return None, None
+            try:
+                i2 = next(iterator)
+                return i1, itertools.chain((i2,), iterator)
+            except StopIteration:
+                return i1, None
+
+
     def __build_find_all_result(self, result, item_filter=None):
         """
         helper function for find method
@@ -1656,9 +1942,9 @@ class iTree(blist):
         """
         if type(result) is iTree:
             if item_filter is None:
-                return [result]
+                return iter((result,))
             elif item_filter(result):
-                return [result]
+                return iter((result,))
             else:
                 return []
         if not result:  # != []
@@ -1819,14 +2105,14 @@ class iTreeLink(iTree):
     __slots__ = (
         '_tag', '_parent', '_map', '_coupled', '_data', '_cache', '_def_serializer', '_link')
 
-    def __init__(self, tag, data=None, link_file_path=None, link_key_path=None, load_links=True):
-        subtree = None
-        if type(tag) in {iTree, iTreeReadOnly}:
-            data = iTDataReadOnly(tag._data)
-            subtree = [iTreeLink(item) for item in tag.iter_children()]
-            tag = tag._tag
+    def __init__(self, tag, data=iTData(), link_file_path=None, link_key_path=None, load_links=True):
+        t=type(tag)
+        if t is int or t is TagIdx:
+            raise TypeError('Given tag cannot be used in iTree wrong type (int or TagIdx)')
+        else:
+            self._tag=tag
 
-        super(iTreeLink, self).__init__(tag, data, subtree)
+        super(iTreeLink, self).__init__(tag, data)
 
         if link_file_path is not None:
             self._link = iTLink(link_file_path, link_key_path)
@@ -1899,7 +2185,7 @@ class iTreeLink(iTree):
         """
         return self._link.is_loaded
 
-    def load_links(self, force=False):
+    def load_links(self, force=False,_items=[]):
         """
         load all linked items
         :param force: False (default) - load only if not already loaded
@@ -1907,7 +2193,6 @@ class iTreeLink(iTree):
         :return: True - success
                  False - load failed
         """
-
         load_ok = False
         if self._link is not None:
             if force or not self.is_link_loaded:
@@ -1920,29 +2205,53 @@ class iTreeLink(iTree):
                     load_item = full_tree.find(self._link.key_path)
                     if type(load_item) is not iTree:
                         raise FileNotFoundError('Given key_path is not matching or unique!')
-                # now we take over the tree
-                super(iTree, self).clear()
-                # here we run a special extend (we don't care about parents and is_linked flag)
                 sl = super(iTree, self)
+                # now we take over the tree
+                sl.clear()
+                # here we run a special extend (we don't care about parents and is_linked flag)
                 m = self._map
                 for item in load_item:
-                    new_item = iTreeLink(item)
+                    data=item._data
+                    if type(data) is not iTDataReadOnly:
+                        data=iTDataReadOnly(data)
+                    new_item = iTreeLink(item._tag,data)
                     new_item._parent = self
-                    cache = new_item._cache
-                    cache[0] = sl.__len__()
+                    idx = sl.__len__()
                     sl.append(new_item)
                     tag = new_item.tag
                     try:
                         family = m[tag]
-                        cache[1] = family.__len__()
+                        tidx = family.__len__()
                         family.append(new_item)
                     except KeyError:
-                        cache[1] = 0
+                        tidx = 0
                         m.__setitem__(new_item._tag, blist((new_item,)))
-                    new_item.load_links(force=force)
+                    new_item._cache = (idx, tidx)
+                    new_item.load_links(force=force,_items=item.iter_children())
                 self._map = load_item._map
                 self._link.set_loaded(load_item.tag, load_item.data)
                 load_ok = True
+        else: # sub linked item
+            sl = super(iTree, self)
+            # now we take over the tree
+            items=[(iTreeLink(item._tag, iTDataReadOnly(item._data)),item) for item in self.iter_children()]
+            # here we run a special extend (we don't care about parents and is_linked flag)
+            m = self._map
+            for new_item,item in items:
+                new_item._parent = self
+                idx = sl.__len__()
+                sl.append(new_item)
+                tag = new_item.tag
+                try:
+                    family = m[tag]
+                    tidx = family.__len__()
+                    family.append(new_item)
+                except KeyError:
+                    tidx = 0
+                    m.__setitem__(new_item._tag, blist((new_item,)))
+                new_item._cache = (idx, tidx)
+                new_item.load_links(force=force,_items=item.iter_children())
+            load_ok = True
         return load_ok
 
     def clear(self):

@@ -4,10 +4,11 @@ helper classes used in DataTree object
 from __future__ import absolute_import
 import time
 import fnmatch
+import operator
+import itertools
 from collections import namedtuple
 # We are testing here if numpy is available
 import numpy as np
-
 try:
     np_object=np.object_
 except TypeError:
@@ -30,6 +31,390 @@ OR=1
 
 PRE_ALLOC_SIZE = 300
 
+def accu_iterator(iterable, accu_method,initial_value=(None,)):
+    """
+    A method that enables itertools accumulation over a method
+    Note: This method is just needed because in python <3.8 itertools accumulation has no initial parameter!
+    :param iterable: iterable
+    :param accu_method: accumulation method (will be fet by two parameters cumulated and new item)
+    :return: accumulated iterator
+    """
+    for i in iterable:
+        initial_value=accu_method(initial_value,i)
+        yield initial_value
+
+def is_iterator_empty(iterator):
+    '''
+    checks if the given iterator is empty
+    :param iterator: iterator to be checked
+    :return: tuple (True,iterator) - empty
+                   (False, iterator) - item inside
+    '''
+    try:
+        i=next(iterator)
+    except StopIteration:
+        return True,iterator
+    return False,itertools.chain((i,),iterator)
+
+
+__INTERVAL_RESULTS__ = (
+    # 0 -normal range check
+    lambda v,ll,ul,lc,uc,pc: lc(v,ll) and uc(v,ul),
+    # 1 -not in 0
+    lambda v,ll,ul,lc,uc,pc: not (lc(v,ll) and uc(v,ul)),
+    # 0b10~2 up_limit is None (equal)
+    lambda v,ll,ul,lc,uc,pc: v == ll ,
+    # 0b11~3 up_limit is None (not equal)
+    lambda v, ll, ul, lc, uc, pc: v != ll,
+    # 0b100~4 low_limit is inf
+    lambda v,ll,ul,lc,uc,pc: uc(v,ul),
+    # 0b101~5 low_limit is inf not in
+    lambda v, ll, ul, lc, uc, pc: not uc(v,ul),
+    # 0b110~6 up_limit is inf
+    lambda v, ll, ul, lc, uc, pc: lc(v, ll),
+    # 0b111~7 up_limit is inf not in
+    lambda v, ll, ul, lc, uc, pc: not lc(v, ll),
+    # 0b1000~8 - pre and normal range check
+    lambda v, ll, ul, lc, uc, pc: pc.check(v) and lc(v, ll) and uc(v, ul),
+    # 0b1001~9 - pre and normal range check; not in
+    lambda v, ll, ul, lc, uc, pc: not (pc.check(v) and lc(v, ll) and uc(v, ul)),
+    # 0b1010~10 - pre and up_limit is None (equal)
+    lambda v, ll, ul, lc, uc, pc: pc.check(v) and v == ll,
+    # 0b1011~11 pre and up_limit is None (not equal)
+    lambda v, ll, ul, lc, uc, pc: pc.check(v) and v != ll,
+    # 0b1100~12 pre and low_limit is inf
+    lambda v, ll, ul, lc, uc, pc: pc.check(v) and uc(v, ul),
+    # 0b1101~13 pre and low_limit is inf not in
+    lambda v, ll, ul, lc, uc, pc: pc.check(v) and not uc(v, ul),
+    # 0b1110~14 pre and up_limit is inf
+    lambda v, ll, ul, lc, uc, pc: pc.check(v) and lc(v, ll),
+    # 0b1111~15 pre and up_limit is inf not in
+    lambda v, ll, ul, lc, uc, pc: pc.check(v) and not lc(v, ll),
+    # 0b10000~8 - pre or normal range check
+    lambda v, ll, ul, lc, uc, pc: pc.check(v) or lc(v, ll) and uc(v, ul),
+    # 0b10001~9 - pre or normal range check; not in
+    lambda v, ll, ul, lc, uc, pc: not (pc.check(v) or lc(v, ll) and uc(v, ul)),
+    # 0b10010~10 - pre or up_limit is None (equal)
+    lambda v, ll, ul, lc, uc, pc: pc.check(v) or v == ll,
+    # 0b10011~11 pre or up_limit is None (not equal)
+    lambda v, ll, ul, lc, uc, pc: pc.check(v) or v != ll,
+    # 0b10100~12 pre or low_limit is inf
+    lambda v, ll, ul, lc, uc, pc: pc.check(v) or uc(v, ul),
+    # 0b10101~13 pre or low_limit is inf not in
+    lambda v, ll, ul, lc, uc, pc: pc.check(v) or not uc(v, ul),
+    # 0b10110~14 pre or up_limit is inf
+    lambda v, ll, ul, lc, uc, pc: pc.check(v) or lc(v, ll),
+    # 0b10111~15 pre or up_limit is inf not in
+    lambda v, ll, ul, lc, uc, pc: pc.check(v) or not lc(v, ll),
+    )
+
+
+class iTInterval():
+    """
+    helper class that defines an interval for range definitions in Data Models or Filters
+
+    the class contains a check if a given value is in the defined interval or not
+
+    It's recommended to use the intervals or portion python package for data models in case more functionality is needed.
+
+    Note:: For equal just set upper_limit to None (upper_open, lower_open parameter will be ignored in this case)
+    """
+    INF = 'inf'  # constant defining infinity limit
+
+    def __init__(self, lower_limit=INF, upper_limit=INF, lower_open=True, upper_open=True,
+                 not_in=False , pre_interval=None, pre_and=False, str_def=None):
+        """
+        helper class that defines an interval for range definitions
+
+        the class contains a check if a given value is in the defined interval or not
+
+        Note:: For more advanced interval handling it's recommended to use the intervals or portion python package instead
+
+        Note:: For equal you give lower_limit and set upper_limit to None (lower_open,upper_open parameters will be
+        ignored in this case). The math representation in this case is "== %s"%lower_limit
+
+        Note:: The not_in=True can be given to invert the interval check result (match is anything outside the interval)
+               in the math representation we add in this case a "!" before the interval
+        Note:: Cascade interval definitions can be created the pre_interval definition
+                             e.g. math_repr= "(([1,5]) and [9,12]) and [100,200]' valid values: 1...5,9...12,100..200
+
+
+        :param lower_limit: lower limit of the interval
+        :param upper_limit: upper limit of the interval
+        :param lower_open: True - open interval (x>lower_limit)
+                           False - closed interval (x>=lower_limit)
+        :param upper_open: True - open interval (x<upper_limit)
+                            False - closed interval (x<=upper_limit)
+        :param not_in:  False - check for in interval
+                        True - check for not in interval (outside)
+        :param pre_interval: Interval object to be checked before this interval
+        :param pre_and: True - combine the result of pre check with and this Interval check with the and operator
+                        False - combine the result of pre check with and this Interval check with the or operator
+        :param str_def: instance the object from given math_repr string (other parameters will be ignored in this case)
+        """
+        if str_def is not None:
+            self.from_str(str_def)
+        else:
+            self.__init(lower_limit, upper_limit, lower_open, upper_open,
+                 not_in, pre_interval, pre_and)
+
+    def __init(self, lower_limit=INF, upper_limit=INF, lower_open=True, upper_open=True,
+                     not_in=False , pre_interval=None, pre_and=True):
+            method_key = 0
+            if not_in:
+                method_key = 1
+            #pre check?
+            self.pre_check=None
+            self.pre_interval = None
+            if pre_interval is not None:
+                if type(pre_interval) is not iTInterval:
+                    raise TypeError(
+                        'Given pre_interval an interval object')
+                self.pre_interval=pre_interval
+                if pre_and:
+                    self.pre_check=operator.and_
+                    method_key = method_key | 0b1000
+                else:
+                    self.pre_check=operator.or_
+                    method_key = method_key | 0b10000
+
+            if upper_limit is None:
+                method_key = method_key | 0b10 #equal/not equal
+                if type(lower_limit) is str:
+                    raise ValueError('Error iTInterval definition check on equal with %s limit is not possible'%lower_limit)
+                self.lower_limit=lower_limit
+                self.upper_limit = None
+                self._low_check = lambda v, limit: v == limit
+                self._up_check = lambda v, limit: True
+            else:
+                if type(lower_limit) is str:
+                    if lower_limit.strip(' -') != self.INF:
+                        raise ValueError('Invalid lower_limit given %s' % lower_limit)
+                    self.lower_limit = self.INF
+                    method_key = method_key | 0b100
+                else:
+                    self.lower_limit = lower_limit
+                if type(upper_limit) is str:
+                    if upper_limit.strip(' +') != self.INF:
+                        raise ValueError('Invalid upper_limit given %s' % upper_limit)
+                    self.upper_limit = self.INF
+                    method_key = method_key | 0b110
+                else:
+                    self.upper_limit = upper_limit
+
+                if self.upper_limit!=self.INF and self.lower_limit!=self.INF:
+                    if lower_limit>upper_limit:
+                        raise ValueError('lower_limit must be smaller the upper_limit!')
+
+                if lower_open:
+                    self._low_check = self._gt
+                else:
+                    self._low_check = self._ge
+                if upper_open:
+                    self._up_check = self._lt
+                else:
+                    self._up_check = self._le
+
+                if self.lower_limit==self.INF:
+                    # for corner case both are INF!
+                    self._low_check=lambda a,b: True
+            self.not_in=not_in
+            self.upper_open = upper_open
+            self.lower_open = lower_open
+            self.method_key=method_key
+
+    def _lt(self,a,b):
+        try:
+            return (a<b)
+        except TypeError:
+            return False
+    def _le(self,a,b):
+        try:
+            return (a<=b)
+        except TypeError:
+            return False
+    def _gt(self,a,b):
+        try:
+            return (a>b)
+        except TypeError:
+            return False
+    def _ge(self,a,b):
+        try:
+            return (a>=b)
+        except TypeError:
+            return False
+
+
+    @property
+    def is_equal(self):
+        return self.upper_limit is None
+
+    def check(self, value, lower_limit=None, upper_limit=None,return_iterator=False):
+        """
+        main check function
+        :param value: value to be check if in interval or not (you might give iterables too!
+        :param lower_limit: if a value is given the limit can be changed during the test (dynamic/post calculated limits)
+        :param upper_limit: if a value is given the limit can be changed during the test (dynamic/post calculated limits)
+        :return: True/False or iterator over single value check use all() to get a summary!
+        """
+        if lower_limit is None:
+            # use pre defined limit
+            lower_limit = self.lower_limit
+        if upper_limit is None:
+            # use pre defined limit
+            upper_limit = self.upper_limit
+        check_method=__INTERVAL_RESULTS__[self.method_key]
+        if type(value) in (str,bytes):
+            # we may miss here some types the generator object might be delivered in case an iterable is detected!
+            if self.not_in:
+                return_item= True
+            else:
+                return_item= False
+        elif hasattr(value, '__iter__') or hasattr(value, '__next__'):
+            # iterable
+            if return_iterator:
+                return_item= (check_method(v,lower_limit,upper_limit,self._low_check,self._up_check,self.pre_interval) for v in value)
+            else:
+                return_item= any((check_method(v, lower_limit, upper_limit, self._low_check, self._up_check, self.pre_interval)
+                        for v in value))
+        else:
+            if return_iterator:
+                return_item= iter((check_method(value, lower_limit, upper_limit, self._low_check, self._up_check, self.pre_interval),))
+
+            else:
+                return_item= check_method(value, lower_limit, upper_limit,  self._low_check,self._up_check, self.pre_interval)
+        return return_item
+
+    def math_repr(self):
+        """
+        mathematical string representation of the interval
+        :return: string
+        """
+
+        if self.upper_limit is None:
+            if self.not_in:
+                return '!=%s' % str(self.lower_limit)
+            else:
+                return '==%s'%str(self.lower_limit)
+        elif self.lower_open:
+            out_str = '('
+        else:
+            out_str = '['
+        if self.lower_limit == self.INF:
+            out_str = out_str + '-inf,'
+        else:
+            out_str = out_str + str(self.lower_limit) +','
+        if self.upper_limit == self.INF:
+            out_str = out_str + '+inf'
+        else:
+            out_str = out_str + str(self.upper_limit)
+        if self.upper_open:
+            out_str = out_str + ')'
+        else:
+            out_str = out_str + ']'
+        if self.not_in:
+            out_str = '!'+out_str
+        if self.pre_check is not None:
+            if self.pre_check==operator.and_:
+                out_str = '(%s) and '%self.pre_interval.math_repr() + out_str
+            else:
+                out_str = '(%s) or ' % self.pre_interval.math_repr() + out_str
+        return out_str
+
+    def from_str(self, interval_str):
+        """
+        create the interval from a math representation string
+        Note:: Give inf for infinity
+        :param interval_str: math string representation
+        :return:
+        """
+        interval_str=interval_str.strip(' ')
+        i=interval_str.rfind(') and ')
+        ii=interval_str.rfind(') or ')
+        if i>ii:
+            pre_and=True
+            pre_interval=iTInterval(str_def=interval_str[1:i])
+            interval_str=interval_str[(i+6):]
+        elif ii>i:
+            pre_and = False
+            pre_interval = iTInterval(str_def=interval_str[1:ii])
+            interval_str = interval_str[(ii + 5):]
+        else:
+            pre_and = True
+            pre_interval = None
+        if interval_str.startswith('=='):
+            self.__init(float(interval_str[2:]),None,pre_interval=pre_interval,pre_and=pre_and)
+            return
+        if interval_str.startswith('!='):
+            self.__init(float(interval_str[2:]), None, not_in=True, pre_interval=pre_interval, pre_and=pre_and)
+            return
+        if interval_str[0]=='!':
+            not_in=True
+            interval_str=interval_str[1:].strip(' ')
+        else:
+            not_in = False
+        if interval_str[0] == '[':
+            lower_open=False
+        elif interval_str[0] == '(':
+            lower_open=True
+        else:
+            raise AttributeError('given upper interval border unknown')
+
+        if interval_str[-1] == ']':
+            upper_open=False
+        elif interval_str[-1] == ')':
+            upper_open=True
+        else:
+            raise AttributeError('given upper interval border unknown')
+        i = interval_str.find(',')
+        if i == -1:
+            raise AttributeError('No comma separator found in interval_string')
+        if interval_str[1:i].strip(' +-') == self.INF:
+            lower_limit = self.INF
+        else:
+            lower_limit = float(interval_str[1: i])
+        if interval_str[(i + 1): -1].strip(' +-') == self.INF:
+            upper_limit = self.INF
+        else:
+            upper_limit = float(interval_str[(i + 1): -1])
+
+        self.__init(lower_limit, upper_limit,lower_open,upper_open, not_in, pre_interval=pre_interval, pre_and=pre_and)
+
+    def __repr__(self):
+        """
+        object representation (with all parameters)
+        :return: object representation string
+        """
+        out_str='iTInterval('
+        out_str=out_str+'lower_limit=%s,'%str(self.lower_limit)
+        if self.upper_limit is None: #EQUAL
+            out_str = out_str + ' upper_limit=None,'
+        else:
+            out_str = out_str + ' upper_limit=%s,' % str(self.upper_limit)
+            if self.lower_open:
+                out_str = out_str + ' lower_open=True,'
+            else: # CLOSED
+                out_str = out_str + ' lower_open=False,'
+            if self.upper_open:
+                out_str = out_str + ' upper_open=True,'
+            else:  # CLOSED
+                out_str = out_str + ' upper_open=False,'
+        if self.not_in:
+            out_str = out_str + ' not_in=True,'
+        if self.pre_interval is not None:
+            if self.pre_check==operator.or_:
+                out_str = out_str + ' pre_interval=%s, pre_and=False'%repr(self.pre_interval)
+            else:
+                out_str = out_str + ' pre_interval=%s, pre_and=True' % repr(self.pre_interval)
+        out_str = out_str[:-1]+')'
+        return out_str
+
+    def __str__(self):
+        """
+        object representation based on math_repr
+        :return: object representation string
+        """
+        return 'iTInterval(str_def=%s)' % repr(self.math_repr())
 
 class iTLink(object):
     '''
@@ -166,7 +551,10 @@ class iTMatch(object):
     def _check_tag_eq(self,item, item_filter=None, patterns=None):
         if patterns is None:
             return False
-        tag = item._tag
+        if hasattr(item, '_tag'):
+            tag = item._tag
+        else:
+            tag=item
         result=not self._op
         for pattern in patterns:
             if pattern=='*':
@@ -181,7 +569,10 @@ class iTMatch(object):
     def _check_tag_str(self, item, item_filter=None, patterns=None):
         if patterns is None:
             return False
-        tag = item._tag
+        if hasattr(item,'_tag'):
+            tag = item._tag
+        else:
+            tag=item
         result=not self._op
         for pattern in patterns:
             stop, result = self._op_logic(result, self._generic_fnmatch(tag, pattern))

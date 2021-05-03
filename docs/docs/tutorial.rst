@@ -121,6 +121,10 @@ The items in the iTree can be accessed via __getitem__() method:
     
 The TagIdx class is used to address items that contains the same tag. The second argument of the TagIdx is the index that the item has in the related tag-family. But we can also give multiple indexes or a slice. As the given example shows is the result of not unique targets always an iterator object. 
 
+.. autofunction:: itertree.iTree.get_deep()
+
+.. autofunction:: itertree.iTree.find()
+
 ***************************
 iTree other structure related commands
 ***************************
@@ -180,7 +184,9 @@ The iTree object contains the following general properties:
 
 .. autofunction:: itertree.iTree.post_item
 
-.. autofunction:: itertree.iTree.depth
+.. autofunction:: itertree.iTree.depth_up
+
+.. autofunction:: itertree.iTree.max_depth_down
 
 Item identification properties:
 
@@ -244,28 +250,37 @@ iTree data related methods
 
 .. autofunction:: itertree.iTree.data
 
-The data property should never be modified directly (like all other properties too. This will lead into inconstiéncies of the iTree object.
+This is the data property. The property contains the iData objects which behaves in genral like a dict. There are two execpetions that must be considered: 
+* The (__NOKEY__) key is an implizit key that will be used in case the user gives only one value (no_key) to the d_set() method. Then the given parameter will be stored in the (__NOKEY__) item of the dict.
+* In case a dict item contains a iDataModel object the given value in iTree.d_set() will be checked against the data model.
 
-Use the related methods instead. Those methods are linked to the related methods in the internal iTData object.
+To manipulate data you can use the functions of the iTree.data object or can use the quick access functions form iTree related to data access which have all the prefix "d_":
 
-.. autofunction:: itertree.iTree.get
+.. autofunction:: itertree.iTree.d_get
 
-.. autofunction:: itertree.Data.iTData.get()
+.. autofunction:: itertree.Data.iTData.__getitem__()
 
-.. autofunction:: itertree.iTree.set
+.. autofunction:: itertree.iTree.d_set
 
-.. autofunction:: itertree.Data.iTData.set()
+.. autofunction:: itertree.Data.iTData.__setitem__()
 
-.. autofunction:: itertree.iTree.pop_data
+.. autofunction:: itertree.iTree.d_del
+
+.. autofunction:: itertree.Data.iTData.__delitem__()
+
+.. autofunction:: itertree.iTree.d_pop
 
 .. autofunction:: itertree.Data.iTData.pop()
 
-.. autofunction:: itertree.iTree.check
+.. autofunction:: itertree.iTree.d_update
+
+.. autofunction:: itertree.Data.iTData.update()
+
+.. autofunction:: itertree.iTree.d_chk
 
 .. autofunction:: itertree.Data.iTData.check()
 
-The iTData objects contains a special functionality so that the user can store easy any related data objects into the iTree internal iTData object. If set() function is used with out giving a key the object will be stored in the (__NOKEY__) item. For more complex data the user can combine the data with a key and it is stored in the internal dict like structure.
-
+Do not replace the iTree.data object with another object (iTree.data is just a property which is linking into the internal structure). You will destroy a part of the functionality, use iTree.data.clear() and iTree.data.update() instead.
 
 ***************************
 iTree iterators and queries
@@ -283,8 +298,6 @@ The standard iterator for iTrees delivers all chidlren beside this we have same 
 .. autofunction:: itertree.iTree.index()
 
 Beside the classical ietartors we have the more query related find methods:
-
-.. autofunction:: itertree.iTree.find()
 
 .. autofunction:: itertree.iTree.find_all()
 

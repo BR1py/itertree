@@ -4,27 +4,27 @@
     <span style="color:transparent;position: absolute;font-size:5px;width: 0px;height: 0px;">B.R.</span></a>
     <br/>
     </div>
+ 
+   
 
-.. highlight:: python
-   :linenothreshold: 5
 
+.. toctree::
+   :maxdepth: 1
+   :hidden: 
+
+   docs/docs
+   docs/changelog
+   docs/tutorial
+   docs/itertree_api
+   docs/itertree_examples
+   docs/comparison
+   docs/background
 
 .. _intro:
 
+
 itertree - Introduction 
 ========================
-
-.. admonition:: |release|_ has been released!
-   :class: note
-
-   Be sure to read the :ref:`changelog <changelog>` before upgrading!
-
-   Please use the `github issues <https://github.com/BR1py/itertree/issues>`_
-   to ask questions report problems. **Please do not email me directly**
-
-.. |release| replace:: Version |version|
-.. _release: https://pypi.python.org/pypi/itertree/
-
 
 Do you like to store data some how in a tree like structure? Do you need good performance, a reach feature set especially in case of filtered access to all data and the possibility to serialize and store the structure in files?
 
@@ -38,18 +38,29 @@ The main class for construction of the itertrees is the iTree class. The class a
 | └──iTree('subitem2',data={1:2}) 
 | └──iTree('subitem2',data={2:3}) 
 
-Every node in the itertree (iTree object) stores the related sub-structure (iTree-children) additinal the related node data can be stored in the internal data structure.
+Every node in the itertree (iTree object) stores the related sub-structure (iTree-children) additional the related node data can be stored in the internal data structure of the object.
 
-The itertree solution can be compared with nested dicts or lists. Other packages that targeting in the in the same direction are anytree, xml.ElemetTree, sorted_containers. In detail the feature-set and functional focus of iTree is a bit different. An overview of the advantage and disadvantages related to the other packages is given in the chapter Package Comparision.
+The itertree solution can be compared with nested dicts or lists. Other packages that targeting in the in the same direction are anytree, xml.ElemetTree, sorted_containers. In detail the feature-set and functional focus of iTree is a bit different. An overview of the advantage and disadvantages related to the other packages is given in the chapter Package :ref:`Comparison <comparison>`.
 
 ************************************
 Status and compatibility information
 ************************************
 
 
+.. admonition:: |release|_ has been released!
+   :class: note
+
+   Be sure to read the :ref:`changelog <changelog>` before upgrading!
+
+   Please use the `github issues <https://github.com/BR1py/itertree/issues>`_
+   to ask questions report problems. **Please do not email me directly**
+
+.. |release| replace:: Version | 0.7.0|
+.. _release: https://pypi.python.org/pypi/itertree/
+
 The original implementation is done in python 3.5 and it is tested under python 3.5 and 3.9. It should work in all python 3 environments.
 
-The actual development status is Beta. The planned featureset is implemented. Work effort goes in the moment in testing, bugfixing and the creation of the documentation.
+The actual development status is Beta. The planned featureset is implemented. Work effort goes in the moment in testing, bugfixing and the creation of the documentation and examples.
 
 ************************************
 Feature Overview
@@ -82,7 +93,6 @@ Here is very simple example of itertree usage:
      └──iTree('sub', data="{'mykey': 3}")
      └──iTree('sub', data="{'mykey': 4}")
 
-
 *****************************
 Documentation
 *****************************
@@ -100,12 +110,12 @@ Documentation
 * :ref:`Background information <background>` - Some background information about itertree and the target of the development
 
 
+*****************************
 Getting started, first steps 
-=============================
+*****************************
 
-*****************************
 Installation and dependencies
-*****************************
+-----------------------------
 
 The package is a pure python package abd does not have any dependencies. But we have some high recommandations to give the package additional performance:
 
@@ -137,9 +147,8 @@ The structure of folder and files related to this package looks like this:
       * itree_data_models.py
       * itree_usage.py
 
-*****************************
 First steps
-*****************************
+------------
 
 
 All important classes of the package are puplished by the __init__.py file so that the functionality of itertree can be reached by simply importing:
@@ -151,7 +160,7 @@ All important classes of the package are puplished by the __init__.py file so th
 
 The datarees are build by adding iTree-objects to a iTree-parent-object. This means we do not have an external tree generator.
 
-We start now building a itertree with the recommended method for adding items. Just use the += operator (__iadd__()) which adds the righthandside item to the lefthandside item.
+We start now building a itertree with the recommended method for adding items. You can just use the += operator (__iadd__()) which adds the righthandside item to the lefthandside item or you use the append() method.
 ::
     >>> root=iTree('root') # first we create a root element
     >>> root+=iTree(tag='child', data=0) # add a child via += operator
@@ -228,12 +237,13 @@ At least the itertree can be stored and reconstructed from a file. We can also l
     True
     >>>root+=iTree('link',link=iTLink(dt.dtz',iTreeTagIdx(child',0))) # The node item will integrate the children of the linked item.
     
+*******************
 iterators vs. lists
-===================
+*******************
 
 We named the package itertree because when ever a operation delivers multiple items as result the iTree object delivers an iterator (not a list what the user might expect). 
 
-Iterators are very powerful instruments. The creation of the iterator can be done very fast. They can be combined and you can create very effective filters. It's recommended to have a look in the powerful itertools package to combine it with itertree (functions are realized on c-level they are incredible fast). 
+Iterators are very powerful instruments. The creation of the iterator can be done very fast. They can be combined and you can create very effective filters. It's recommended to have a look in the powerful itertools and more_itertools packages to combine it with itertree (functions are realized on c-level they are incredible fast). 
 The main idea is to combine all the filtering and iterator options together before you start the final iteration (consume the iterator), which might end up in a list. By this we do at least only one iteration over the items and we must not do multiple typecasts in between even when we combine multiple filters.
 
 If the user wants to have the expected list he can easy cast the iterator:
@@ -249,7 +259,7 @@ As it is shown in the performance test this operation list() is very quick (less
 
 But there might be two downsides:
 
-* The StoIteration exception must be handled in case of empty iterators (but normaly we deliver an empty list in this case , do make the handling easier).
+* The StopIteration exception must be handled in case of empty iterators. To make the handling a bit easier iTree delivers in most cases an empty list if we have not match. The handling should be a bit easier for the users. But in some cases (e.g. filter operations) the user will get an iterator even when the iterator is empty. In helpers the user can find an iterator empty check function (is_iterator_empty(iterator)).
 
 * The user must also consider that an iterator can only consumed one time. To reuse an interator multiple times you may have a look on itertools.tee().
 
@@ -257,80 +267,4 @@ To summarize this chapter:
 
 We decided to deliver only iterators (and not lists) to give the user the possibility to utilize the whole iterator power. If he really needs a list (in most cases for index access) he can convert to a list very easy and quick. But giving lists directly would slowdown the performance of the whole itertree filter functions a lot.
 
-
-Documentation
--------------
-
-.. toctree::
-   :maxdepth: 1
-   :hidden:
-
-docs
-
-
-Introduction
-------------
-
-.. toctree::
-   :maxdepth: 1
-   :hidden:
-
-   docs/intro
-   
-
-Changelog
----------
-
-.. toctree::
-   :maxdepth: 1
-   :hidden:
-
-   changelog
-
-Tutorial
----------
-
-.. toctree::
-   :maxdepth: 3
-   :hidden:
-
-
-   docs/tutorial
-
-API Reference
--------------
-
-.. toctree::
-   :maxdepth: 3
-   :hidden:
-
-   docs/itertree_api
-
-Usage Examples
---------------
-
-.. toctree::
-   :maxdepth: 3
-   :hidden:
-
-   docs/itertree_examples
-
-Comparison
-----------
-
-.. toctree::
-   :maxdepth: 1
-   :hidden:
-
-   docs/comparison
-
-
-Background
-----------
-
-.. toctree::
-   :maxdepth: 1
-   :hidden:
-
-   docs/background
 

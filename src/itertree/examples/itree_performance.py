@@ -1,12 +1,25 @@
+"""
+performance comparison with huge number of elements
+"""
+
 from __future__ import absolute_import
 
 import timeit
 import os
 import tempfile
+import sys
 
 
-max_items = 5000
+
+#max_items = 5000
 max_items = 500000
+
+itree_only=False
+if len(sys.argv)==2:
+    max_items=int(sys.argv[1])
+if len(sys.argv)==3:
+    max_items=int(sys.argv[1])
+    itree_only=int(sys.argv[2])
 
 repeat = 4
 
@@ -54,6 +67,15 @@ def performance_it_build2():
     #append itertree with items
     dt=iTree('root',subtree=[iTree('%i' % i) for i in range(max_items)])
     dt_root=dt
+
+def performance_it_get_tags():
+    #tag access
+    global dt_root,max_items
+    dt=dt_root
+
+    #read itertree items per tag and index
+    for i in range(max_items):
+        a = dt['%i' % i]
 
 def performance_it_get_tags():
     #tag access
@@ -131,6 +153,8 @@ print('Exectime time itertree load from file: {}'.format(a / repeat))
 
 print('Loaded iTree is equal: %s'%(str(dt_root.equal(load_root))))
 
+if itree_only:
+    exit(0)
 
 try:
     from lldict4 import llDict as llDict2
