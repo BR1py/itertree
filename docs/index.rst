@@ -26,7 +26,7 @@
 itertree - Introduction 
 ========================
 
-Do you like to store data some how in a tree like structure? Do you need good performance, a reach feature set especially in case of filtered access to all data and the possibility to serialize and store the structure in files?
+Do you like to store data some how in a tree like structure? Do you need good performance, a rich feature set especially in case of filtered access to all data and the possibility to serialize and store the structure in files?
 
 Give itertree package a try!
 

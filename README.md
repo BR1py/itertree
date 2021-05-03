@@ -1,10 +1,10 @@
 # itertree python package
 
--- BETA -- 
+-- BETA -- This is already the candidate for 1.0.0 release
 
 ## Welcome to itertree python package. 
 
-Do you like to store your data some how in a tree like structure? Do you need good performance, a reach feature set and the possibility to store your data permanently in files?
+Do you like to store your data some how in a tree like structure? Do you need good performance, a rich feature set and the possibility to store your data permanently in files?
 
 Give the itertree package a try!
 
