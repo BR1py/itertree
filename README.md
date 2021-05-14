@@ -1,8 +1,9 @@
 # itertree python package
 
--- BETA -- This is already the candidate for 1.0.0 release
 
 ## Welcome to itertree python package. 
+
+0.7.2 --BETA-- -> but implementation is already a release candidate (all interfaces are fixed)!
 
 Do you like to store your data some how in a tree like structure? Do you need good performance, a rich feature set and the possibility to store your data permanently in files?
 
@@ -36,15 +37,7 @@ Use the package manager [pip](https://pip.pypa.io/en/stable/) to install the ite
 pip install itertree
 ```
 
-The package has no dependencies to other external packages and is written in pure python.
-
-But we recommend to install the following packages for better performance:
-* blist
-* orjson
-
-If the packages are not found itertree will use the default packages (list, json).
-
-Some of the tests can only be performed if numpy is installed. Also the comparison tests with other packages are obviuosly only possible if the other packages are installed.
+The package has no dependencies to other external packages. But some of the tests can only be performed if numpy is installed. Also the comparison tests with other packages are obviuosly only possible if the other packages are installed.
 
 ## Usage
 
@@ -79,6 +72,25 @@ The original implementation was realized with python 3.5 and it was tested with 
 
 The detailed package documentation can be found here:
 https://itertree.readthedocs.io/en/latest/#
+
+## Package structure and files 
+
+The structure of folder and files related to this package looks like this:
+
+* itertree (main folder)
+
+   * __ init __.py
+   * itree_main.py
+   * itree_helpers.py
+   * itree_data.py
+   * itree_serialize.py
+   * _itree_internal.py
+
+   * examples
+
+      * itree_performance.py
+      * itree_profiling.py
+      * itree_data.py
 
 ## Getting started, first steps 
 
@@ -152,22 +164,12 @@ The iterators and find functions of itertree can use item_filters to search for 
  
 ```python
 >>># '**' is a wildcard for any item; c is an iterator
->>>c=root.find_all(['**'],item_filter=Filter.iTFilterDataValue(2))  
+>>>c=root.find_all(['**'],item_filter=root.create_data_value_filter(2))  
 >>>print(list(s)) # to print iterator content we must create a list
 [iTree(tag='child',data=2)]
 ```
 
-HINT: In case a function returns multiple elements (multi target) itertree delivers always an iterator. The advantage is that we can create very quick results even when the item number is very high. For efficent usage the user should continue use iterators (e.g. see itertools package) to reach the final result. Normally only at the end of the whole operation the iterator should be cosumed by looping over the items or casting into a list. Even single item access can be best realized via itertools.isslice() operation.
-
-This might be confusing but if the user really wants to have the expected list he can easy cast the iterator:
-```python 
-    >>>myresultlist=list(root.iter_all()) #  this is quick even for huge number of items
-    >>>first_item=list(root.iter_all())[0] # Anyway this is much slower than:
-    >>>first_item=next(root.iter_all())
-    >>>fifth_item=list(root.iter_all())[4] # and this is much slower than:
-    >>>fifth_item=next(itertools.isslice(root.iter_all(),4,None))
-```
-
+HINT: In case a function returns multiple elements (multi target) itertree delivers always an iterator. The advantage is that we can create very quick results even when the item number is very high. For efficent usage the user should continue use iterators (e.g. see itertools package) to reach the final result. Normally only at the end of the whole operation the iterator should be "realized" by looping over the items or casting into a list. Even single item acces can be best realized via itertools.isslice() operation.
 
 ### Data
 
@@ -175,12 +177,12 @@ The data handling can be done over set and get functions, if no specific key is 
 
 ```python
 >>>root.set(1) # implicit key
->>>print(root.get())
+>>>print(root.d_get())
 1
->>>root.set('mykey':2) # explicit key
->>>print(root.get()) # the "__NOKEY__" data item is untouched by the last operation
+>>>root.d_set('mykey':2) # explicit key
+>>>print(root.d_get()) # the "__NOKEY__" data item is untouched by the last operation
 1
->>>print(root.get('mykey'))
+>>>print(root.d_get('mykey'))
 2
 ```
     

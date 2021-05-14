@@ -10,7 +10,7 @@ import tempfile
 import itertools
 import sys
 
-max_items = 100
+max_items = 150
 #max_items=20
 itree_only=False
 
@@ -407,11 +407,8 @@ try:
     else:
         print('Anytree key access skipped -> slow')
     #this is somehow not woking:
-    if max_items<2000: # not working for huge sizes!
-        a = timeit.timeit(performance_at_get_idx, number=repeat)
-        print('Exectime time Anytree index access: {}'.format(a / repeat))
-    else:
-        print('Exectime time Anytree index access: not working')
+    a = timeit.timeit(performance_at_get_idx, number=repeat)
+    print('Exectime time Anytree index access: {}'.format(a / repeat))
 
 except ImportError:
     pass

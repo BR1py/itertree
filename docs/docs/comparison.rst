@@ -31,106 +31,141 @@ Running the test on a tree with 5000 items delivers the following result on my P
 ::
     >>>python iter_performance.py
     We run for treesizes: 5000 with 4 repetitions
-    itertree version: 0.6.1
-    Exectime time itertree build (with insert): 0.01852375
-    Exectime time itertree build: 0.01571845
-    Exectime time itertree build: with subtree list comprehension: 0.014712800000000005
-    Exectime time itertree tag access: 0.0028093999999999897
-    Exectime time itertree tag index access: 0.006358150000000007
-    Exectime time itertree tag index tuple access: 0.004354625000000001
-    Exectime time itertree index access: 0.0029322250000000105
-    Exectime time itertree convert iter_all iterator to list: 0.0035161499999999957
-    Exectime time itertree save to file: 0.023204075000000005
-    Exectime time itertree load from file: 0.03163832500000001
+    itertree version: 0.7.2
+    Exectime time itertree build (with insert): 0.019098325
+    Exectime time itertree build: 0.014976649999999998
+    Exectime time itertree build: with subtree list comprehension: 0.012945000000000005
+    Exectime time itertree tag access: 0.0037104999999999985
+    Exectime time itertree tag index access: 0.006267600000000012
+    Exectime time itertree tag index tuple access: 0.0038876500000000064
+    Exectime time itertree index access: 0.002535850000000006
+    Exectime time itertree convert iter_all iterator to list: 0.0031453000000000036
+    Exectime time itertree save to file: 0.022033625
+    Exectime time itertree load from file: 0.030593775000000017
     Loaded iTree is equal: True
     -- Standard classes -----------------------------------
-    Exectime time dict build: 0.002406100000000022
-    Exectime time dict key access: 0.001221899999999998
-    Exectime time dict index access: 0.29872780000000004
-    Exectime time list build (via comprehension): 0.0007667500000000382
-    Exectime time list build (via append): 0.0009924000000000044
-    Exectime time list build (via insert): 0.004767324999999989
-    Exectime time list index access: 0.00017365000000002517
-    Exectime time list key access: 0.18101884999999995
-    Exectime time OrderedDict build: 0.0016964999999999897
-    Exectime time OrderedDict key access: 0.001065074999999971
-    Exectime time deque build (append): 0.0014350250000000342
-    Exectime time deque build (insert): 0.0017438749999999503
-    Exectime time deque index access: 0.0002723000000000031
-    Exectime time IndexedOrderedDict build: 0.003601199999999971
-    Exectime time IndexedOrderedDict key access: 0.0012901249999999198
-    Exectime time IndexedOrderedDict idx access: 0.0035858749999999606
+    Exectime time dict build: 0.0024210749999999948
+    Exectime time dict key access: 0.0009341249999999524
+    Exectime time dict index access: 0.287543025
+    Exectime time list build (via comprehension): 0.0007490250000000698
+    Exectime time list build (via append): 0.0009026749999999639
+    Exectime time list build (via insert): 0.005635124999999963
+    Exectime time list index access: 0.00019597499999990386
+    Exectime time list key access: 0.18907299999999994
+    Exectime time OrderedDict build: 0.0016958500000000543
+    Exectime time OrderedDict key access: 0.0010443250000000681
+    Exectime time deque build (append): 0.0013654499999999903
+    Exectime time deque build (insert): 0.0016538249999999977
+    Exectime time deque index access: 0.00027447499999999625
+    Exectime time IndexedOrderedDict build: 0.0035797750000000628
+    Exectime time IndexedOrderedDict key access: 0.001373650000000004
+    Exectime time IndexedOrderedDict idx access: 0.0034133499999999817
     -- SortedDict ---------------------------------
-    Exectime time SortedDict build: 0.04718642500000003
-    Exectime time SortedDict key access: 0.0015281499999999504
-    Exectime time SortedDict index access: 0.009181499999999954
+    Exectime time SortedDict build: 0.047670250000000025
+    Exectime time SortedDict key access: 0.0020484999999998976
+    Exectime time SortedDict index access: 0.014395775
     -- xml ElementTree ---------------------------------
-    Exectime time xml ElementTree build: 0.0028383499999999895
-    Exectime time xml ElementTree key access: 0.2222158500000001
-    Exectime time xml ElementTree index access: 0.00018889999999993634
+    Exectime time xml ElementTree build: 0.002762700000000007
+    Exectime time xml ElementTree key access: 0.22262320000000002
+    Exectime time xml ElementTree index access: 0.00018012499999997544
     -- anytree ---------------------------------
-    Exectime time Anytree build: 0.6258656249999999
-    Exectime time Anytree key access (no cache): 25.842957875
-    Exectime time Anytree index access: 0.09278047500000142
+    Exectime time Anytree build: 0.6403147500000002
+    Exectime time Anytree key access (no cache): 28.026045425
+    Exectime time Anytree index access: 0.09010782500000047
+
+
+Running the test on a tree with a depth of 150 levels and 22500 items delivers the following result on my PC under python 3.5.
+::
+    >>>python iter_performance2.py
+    We run for deep tree sizes: depth of 150 with 22500 items and 4 repetitions
+    itertree version: 0.7.2
+    Exectime time itertree build (with insert): 0.074820475
+    Exectime time itertree build append: 0.058775024999999995
+    Max tree depth 150
+    Exectime time itertree get max_depth_down~iter_all(): 0.003849375000000016
+    Exectime time itertree get deep indexes access (all items iterated): 0.75179915
+    Exectime time itertree get find_all by indexes access (all items iterated): 6.4050042
+    Exectime time itertree find all by deep tag list (one deep search last item): 0.10924139999999927
+    -- Standard classes -----------------------------------
+    Exectime time dict build: 0.01569815000000041
+    Exectime time dict key access: 0.10080344999999902
+    Exectime time list build (via comprehension): 0.009661024999999768
+    Exectime time list index access: 0.05815424999999941
+    -- SortedDict ---------------------------------
+    Exectime time SortedDict build: 0.21091212499999834
+    Exectime time SortedDict key access: 0.24229827499999956
+    -- xml ElementTree ---------------------------------
+    Exectime time xml ElementTree build: 0.011450075000000837
+    Exectime time xml ElementTree key access: 2.9352207250000006
+    Exectime time xml ElementTree index access: 0.060677574999999706
+    -- anytree ---------------------------------
+    Exectime time Anytree build: 0.5204251749999997
+    Anytree key access skipped -> slow
+    Exectime time Anytree index access: 1.450274425
 
 
 I have following comments on the findings:
 
-1. iTree objects behave ~ 10-20 times slower then the build in objects like dict, lists, etc. Reason is mainly that iTree is a pure python package which does not has the the speed advantage of an underlaying C-Layer. Anyway a 20 times slower execution is really not an issue if you consider the wide range of functionalities found in iTree objects.
-2. For untypical access of dict per idx or list per key the buildin objects perform ~ 100 times slower then iTree.
+1. iTree objects behave ~ 10-20 times slower then the build in objects like dict, lists, etc. Reason is mainly that iTree is a pure python package which does not has the the speed advantage of an underlaying C-Layer. Anyway a 20 times slower execution is really not an issue from our point of view. Please consider the wide range of functionalities found in iTree objects.
+2. For untypical access of dict per idx or list per key the buildin objects perform ~ 100 times slower than iTree.
 3. The other tree like packages are on par or slower then iTree (in some cases incredible slower). An exception is the package xml-ElementTree which incredible fast in case of index access (quicker then buildin lists).
 
 On a large tree of 500000 we have the following findings:
 ::
-    >>>python iter_performance.py
     We run for treesizes: 500000 with 4 repetitions
-    itertree version: 0.6.1
-    Exectime time itertree build (with insert): 1.822058575
-    Exectime time itertree build: 1.7976585249999997
-    Exectime time itertree build: with subtree list comprehension: 1.7526210750000004
-    Exectime time itertree tag access: 0.3406376249999994
-    Exectime time itertree tag index access: 0.8212707750000003
-    Exectime time itertree tag index tuple access: 0.5618178500000006
-    Exectime time itertree index access: 0.3043280250000002
-    Exectime time itertree convert iter_all iterator to list: 0.3584018750000002
-    Exectime time itertree save to file: 2.775001025
-    Exectime time itertree load from file: 3.4587883999999995
+    itertree version: 0.7.2
+    Exectime time itertree build (with insert): 1.74269395
+    Exectime time itertree build: 1.6926405249999998
+    Exectime time itertree build: with subtree list comprehension: 1.566644975
+    Exectime time itertree tag access: 0.35531610000000047
+    Exectime time itertree tag index access: 0.8030910000000002
+    Exectime time itertree tag index tuple access: 0.5862510749999998
+    Exectime time itertree index access: 0.3270301999999994
+    Exectime time itertree convert iter_all iterator to list: 0.33946562500000077
+    Exectime time itertree save to file: 2.6457562999999986
+    Exectime time itertree load from file: 3.3323247249999994
     Loaded iTree is equal: True
+    -- llDict2 ---------------------------------
+    Exectime time llDict build: 3.3274443500000004
+    Exectime time llDict key access: 0.44133524999999807
+    Exectime time llDict save: 2.9867540249999998
+    Exectime time llDict load: 7.121958450000001
     -- Standard classes -----------------------------------
-    Exectime time dict build: 0.5536466499999975
-    Exectime time dict key access: 0.14499792499999842
+    Exectime time dict build: 0.475520024999998
+    Exectime time dict key access: 0.15201870000000284
     Exectime time dict index access: skipped incredible slow
-    Exectime time list build (via comprehension): 0.10255107500000094
-    Exectime time list build (via append): 0.11917187499999926
+    Exectime time list build (via comprehension): 0.10252797500000099
+    Exectime time list build (via append): 0.12216082499999814
     Exectime time list build (via insert): Skipped very slow
-    Exectime time list index access: 0.03232377500000183
+    Exectime time list index access: 0.038429500000003
     Exectime time list key access: Skipped incredible slow
-    Exectime time OrderedDict build: 0.29996864999999673
-    Exectime time OrderedDict key access: 0.1450631499999986
-    Exectime time deque build (append): 0.17220544999999987
-    Exectime time deque build (insert): 0.19610544999999746
-    Exectime time deque index access: 7.205191400000004
-    Exectime time IndexedOrderedDict build: 0.4442919250000017
-    Exectime time IndexedOrderedDict key access: 0.1821846500000035
-    Exectime time IndexedOrderedDict idx access: 0.4304988250000008
+    Exectime time OrderedDict build: 0.3099339749999963
+    Exectime time OrderedDict key access: 0.15397620000000245
+    Exectime time deque build (append): 0.17147012499999903
+    Exectime time deque build (insert): 0.19724187499999601
+    Exectime time deque index access: 7.642273525
+    Exectime time IndexedOrderedDict build: 0.4487147000000036
+    Exectime time IndexedOrderedDict key access: 0.18558857500000414
+    Exectime time IndexedOrderedDict idx access: 0.43815337500000595
     -- SortedDict ---------------------------------
-    Exectime time SortedDict build: 5.621732250000001
-    Exectime time SortedDict key access: 0.19455682499999938
-    Exectime time SortedDict index access: 1.6786233250000038
+    Exectime time SortedDict build: 5.4110905
+    Exectime time SortedDict key access: 0.19541597500000307
+    Exectime time SortedDict index access: 1.8141597750000003
     -- xml ElementTree ---------------------------------
-    Exectime time xml ElementTree build: 0.4656471249999967
+    Exectime time xml ElementTree build: 0.4500223750000032
     xml ElementTree key access skipped -> too slow
-    Exectime time xml ElementTree index access: 0.020482749999999328
+    Exectime time xml ElementTree index access: 0.023925374999997473
+
+Additional we ran anytree only on 50000 items (higher numbers are too slow):
+::    
+    We run for treesizes: 50000 with 4 repetitions
     -- anytree ---------------------------------
-    Exectime time Anytree build: 0.6159421000000052
-    Anytree key access skipped -> incredible slow
-    Exectime time Anytree index access: not working
+    Exectime time Anytree build: 68.98334625
+    Exectime time Anytree index access: 11.958389874999995
 
 Some of the steps are skipped because bad performance (some functions need hours).
 
-Maybe I made something wrong but I did not get the anytree package working for bigger treesizes (only building worked but access did not work).
-
-Insertion of elements in lists is very slow. This might only be a minor cornercase because filling a list might always be done by append() or even better with a list comprehension. The iTree insertion mechanism (based on blist) works much quicker and is nearly on the speed of append(). But we also recommend list comprehension mechanism for quickest filling of itertrees too. The mayor time in filling an iTree goes into the instanciation and if need copy() of the list items.
+Insertion of elements in lists is very slow. This might only be a minor cornercase because filling a list might always be done by append() or even better with a list comprehension. The iTree insertion mechanism (based on blist) works much quicker and is nearly on the speed of append(). But we also recommend list comprehension mechanism for quickest filling of itertrees too. The mayor time in filling an iTree goes into the instanciation and if needed in the copy() of the list items.
 
 ***************************
 iTree vs. dict / collections.OrderedDict
@@ -161,6 +196,13 @@ iTree does not yet support the grouping function supported by sorted-dicts. But 
 iTree vs. anytree
 ***************************
 
-The anytree packages gains mostly in the same direction as itertree. You can find nearly comparable serialization possibiliies. The rendering found in iTree is a simple "copy" of what you can get in anytree. As in iTree objects you can combine children of same name with a parent in anytree too. But you can only use string based tags. The way you can navigate in the tree is in anytree a bit more extended compared to iTree object. Before the itertree package was developed we thought anytree is the solution to go for and there is no need for a package like itertree. But the results of the anytree package tests we did where very ambigous. We found a very rich featureset but in some cases a very poor performance. But the real blocker is that the access to the children property on large trees (>10000 items) is not working at all (or we do something wrong).
+The anytree packages gains mostly in the same direction as itertree. You can find nearly comparable serialization possibiliies. The rendering found in iTree is a simple "copy" of what you can get in anytree. As in iTree objects you can combine children of same name with a parent in anytree too. But there are limitations in anytree:
+
+    * You can only use string based tags (not hashable objects like in itertree). 
+    * properties of a specific item do not exists (iTree.idx, iTree.idx_path, ....)
+    * Main issue from our point of view is the really bad performance in case of huge trees (Especially search for item.name is very slow)
+    * filtering is very slow and not as powerful as in itertree
+
+Before the itertree package was developed we thought anytree is the solution to go for and there is no need for a package like itertree. But the results of the anytree package tests we did where very ambigous. We found a very rich featureset but a very poor performance. This was also shortly discussed with the author: https://github.com/c0fec0de/anytree/issues/169.
 
 At least we came to the conclusion that anytree seems not match to our requirements for tree structured storage and access. From description it should match, but in practice the package did not work for us as expected.

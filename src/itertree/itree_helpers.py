@@ -57,53 +57,53 @@ def is_iterator_empty(iterator):
 
 __INTERVAL_RESULTS__ = (
     # 0 -normal range check
-    lambda v,ll,ul,lc,uc,pc: lc(v,ll) and uc(v,ul),
+    lambda v,ll,ul,lc,uc,pc,pl: lc(v,ll) and uc(v,ul),
     # 1 -not in 0
-    lambda v,ll,ul,lc,uc,pc: not (lc(v,ll) and uc(v,ul)),
+    lambda v,ll,ul,lc,uc,pc,pl: not (lc(v,ll) and uc(v,ul)),
     # 0b10~2 up_limit is None (equal)
-    lambda v,ll,ul,lc,uc,pc: v == ll ,
+    lambda v,ll,ul,lc,uc,pc,pl: v == ll ,
     # 0b11~3 up_limit is None (not equal)
-    lambda v, ll, ul, lc, uc, pc: v != ll,
+    lambda v, ll, ul, lc, uc, pc,pl: v != ll,
     # 0b100~4 low_limit is inf
-    lambda v,ll,ul,lc,uc,pc: uc(v,ul),
+    lambda v,ll,ul,lc,uc,pc,pl: uc(v,ul),
     # 0b101~5 low_limit is inf not in
-    lambda v, ll, ul, lc, uc, pc: not uc(v,ul),
+    lambda v, ll, ul, lc, uc, pc,pl: not uc(v,ul),
     # 0b110~6 up_limit is inf
-    lambda v, ll, ul, lc, uc, pc: lc(v, ll),
+    lambda v, ll, ul, lc, uc, pc,pl: lc(v, ll),
     # 0b111~7 up_limit is inf not in
-    lambda v, ll, ul, lc, uc, pc: not lc(v, ll),
+    lambda v, ll, ul, lc, uc, pc,pl: not lc(v, ll),
     # 0b1000~8 - pre and normal range check
-    lambda v, ll, ul, lc, uc, pc: pc.check(v) and lc(v, ll) and uc(v, ul),
+    lambda v, ll, ul, lc, uc, pc,pl: pc.check(v,pl) and lc(v, ll) and uc(v, ul),
     # 0b1001~9 - pre and normal range check; not in
-    lambda v, ll, ul, lc, uc, pc: not (pc.check(v) and lc(v, ll) and uc(v, ul)),
+    lambda v, ll, ul, lc, uc, pc,pl: not (pc.check(v,pl) and lc(v, ll) and uc(v, ul)),
     # 0b1010~10 - pre and up_limit is None (equal)
-    lambda v, ll, ul, lc, uc, pc: pc.check(v) and v == ll,
+    lambda v, ll, ul, lc, uc, pc,pl: pc.check(v,pl) and v == ll,
     # 0b1011~11 pre and up_limit is None (not equal)
-    lambda v, ll, ul, lc, uc, pc: pc.check(v) and v != ll,
+    lambda v, ll, ul, lc, uc, pc,pl: pc.check(v,pl) and v != ll,
     # 0b1100~12 pre and low_limit is inf
-    lambda v, ll, ul, lc, uc, pc: pc.check(v) and uc(v, ul),
+    lambda v, ll, ul, lc, uc, pc,pl: pc.check(v,pl) and uc(v, ul),
     # 0b1101~13 pre and low_limit is inf not in
-    lambda v, ll, ul, lc, uc, pc: pc.check(v) and not uc(v, ul),
+    lambda v, ll, ul, lc, uc, pc,pl: pc.check(v,pl) and not uc(v, ul),
     # 0b1110~14 pre and up_limit is inf
-    lambda v, ll, ul, lc, uc, pc: pc.check(v) and lc(v, ll),
+    lambda v, ll, ul, lc, uc, pc,pl: pc.check(v,pl) and lc(v, ll),
     # 0b1111~15 pre and up_limit is inf not in
-    lambda v, ll, ul, lc, uc, pc: pc.check(v) and not lc(v, ll),
+    lambda v, ll, ul, lc, uc, pc,pl: pc.check(v,pl) and not lc(v, ll),
     # 0b10000~8 - pre or normal range check
-    lambda v, ll, ul, lc, uc, pc: pc.check(v) or lc(v, ll) and uc(v, ul),
+    lambda v, ll, ul, lc, uc, pc,pl: pc.check(v,pl) or lc(v, ll) and uc(v, ul),
     # 0b10001~9 - pre or normal range check; not in
-    lambda v, ll, ul, lc, uc, pc: not (pc.check(v) or lc(v, ll) and uc(v, ul)),
+    lambda v, ll, ul, lc, uc, pc,pl: not (pc.check(v,pl) or lc(v, ll) and uc(v, ul)),
     # 0b10010~10 - pre or up_limit is None (equal)
-    lambda v, ll, ul, lc, uc, pc: pc.check(v) or v == ll,
+    lambda v, ll, ul, lc, uc, pc,pl: pc.check(v,pl) or v == ll,
     # 0b10011~11 pre or up_limit is None (not equal)
-    lambda v, ll, ul, lc, uc, pc: pc.check(v) or v != ll,
+    lambda v, ll, ul, lc, uc, pc,pl: pc.check(v,pl) or v != ll,
     # 0b10100~12 pre or low_limit is inf
-    lambda v, ll, ul, lc, uc, pc: pc.check(v) or uc(v, ul),
+    lambda v, ll, ul, lc, uc, pc,pl: pc.check(v,pl) or uc(v, ul),
     # 0b10101~13 pre or low_limit is inf not in
-    lambda v, ll, ul, lc, uc, pc: pc.check(v) or not uc(v, ul),
+    lambda v, ll, ul, lc, uc, pc,pl: pc.check(v,pl) or not uc(v, ul),
     # 0b10110~14 pre or up_limit is inf
-    lambda v, ll, ul, lc, uc, pc: pc.check(v) or lc(v, ll),
+    lambda v, ll, ul, lc, uc, pc,pl: pc.check(v,pl) or lc(v, ll),
     # 0b10111~15 pre or up_limit is inf not in
-    lambda v, ll, ul, lc, uc, pc: pc.check(v) or not lc(v, ll),
+    lambda v, ll, ul, lc, uc, pc,pl: pc.check(v,pl) or not lc(v, ll),
     )
 
 
@@ -118,8 +118,8 @@ class iTInterval():
 
     The class contains anything you might need in case of a Interval functionality. You can given open/closed interval
     definitions including infinite limits. The intervals can be combined to a mathematical set via
-    the pre_interval parameter. And the check method allows to give other limits as defined (not for pre_intervals).
-    Especially useful for dynamically calculated limits.
+    the pre_interval parameter. And the check method allows to give other limits as defined.
+    This is especially useful for dynamically calculated limits.
 
     The interval definition is also possible via a mathematical string like: "(1,2)" or "[10,+inf)".
 
@@ -255,20 +255,38 @@ class iTInterval():
     def is_equal(self):
         return self.upper_limit is None
 
-    def check(self, value, lower_limit=None, upper_limit=None,return_iterator=False):
+    def check(self, value, use_limits=None,return_iterator=False):
         """
         main check function
         :param value: value to be check if in interval or not (you might give iterables too!
-        :param lower_limit: if a value is given the limit can be changed during the test (dynamic/post calculated limits)
-        :param upper_limit: if a value is given the limit can be changed during the test (dynamic/post calculated limits)
-        :return: True/False or iterator over single value check use all() to get a summary!
+        :param use_limits: You can replace the static limits in the interval with dynamic ones given in the check, any
+                           nested iterable can be used here (do not use iterators!).
+                           None - use static limit
+                           (lower,_limit, upper_limit) - replace limits in highest level interval if lower_limit or
+                                                        upper_limit is None the static one is used
+                          (((lower_limit_l2,upper_limit_l2),(lower_limit_l1,upper_limit_l1)),(lower_limit_l0,upper_limit_l0))
+                          - use nested tuples to give replacement limits to deeper levels (use None for using static ones)
+        :return: True/False or iterator over single value check use any() to get a summary!
         """
-        if lower_limit is None:
+        lower_limit = self.lower_limit
+        upper_limit = self.upper_limit
+        pre_limits=None
+        if use_limits is not None:
+            if len(use_limits)==2:
+                if use_limits[0] is not None:
+                    lower_limit = use_limits[0]
+                if use_limits[1] is not None:
+                    lower_limit = use_limits[1]
+            elif len(use_limits)==3:
+                if use_limits[1] is not None:
+                    lower_limit = use_limits[1]
+                if use_limits[2] is not None:
+                    lower_limit = use_limits[2]
+                if use_limits[0] is not None:
+                    pre_limits = use_limits[0]
+            else:
+                raise SyntaxError('Given use_limits %s not matching'%use_limits)
             # use pre defined limit
-            lower_limit = self.lower_limit
-        if upper_limit is None:
-            # use pre defined limit
-            upper_limit = self.upper_limit
         check_method=__INTERVAL_RESULTS__[self.method_key]
         if type(value) in (str,bytes):
             # we may miss here some types the generator object might be delivered in case an iterable is detected!
@@ -279,16 +297,24 @@ class iTInterval():
         elif hasattr(value, '__iter__') or hasattr(value, '__next__'):
             # iterable
             if return_iterator:
-                return_item= (check_method(v,lower_limit,upper_limit,self._low_check,self._up_check,self.pre_interval) for v in value)
+                return_item= (check_method(v,lower_limit,upper_limit,
+                                           self._low_check,self._up_check,
+                                           self.pre_interval, pre_limits) for v in value)
             else:
-                return_item= any((check_method(v, lower_limit, upper_limit, self._low_check, self._up_check, self.pre_interval)
+                return_item= any((check_method(v, lower_limit, upper_limit,
+                                               self._low_check, self._up_check,
+                                               self.pre_interval, pre_limits)
                         for v in value))
         else:
             if return_iterator:
-                return_item= iter((check_method(value, lower_limit, upper_limit, self._low_check, self._up_check, self.pre_interval),))
+                return_item= iter((check_method(value, lower_limit, upper_limit,
+                                                self._low_check, self._up_check,
+                                                self.pre_interval, pre_limits),))
 
             else:
-                return_item= check_method(value, lower_limit, upper_limit,  self._low_check,self._up_check, self.pre_interval)
+                return_item= check_method(value, lower_limit, upper_limit,
+                                          self._low_check,self._up_check,
+                                          self.pre_interval, pre_limits)
         return return_item
 
     def math_repr(self):

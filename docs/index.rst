@@ -55,7 +55,7 @@ Status and compatibility information
    Please use the `github issues <https://github.com/BR1py/itertree/issues>`_
    to ask questions report problems. **Please do not email me directly**
 
-.. |release| replace:: Version | 0.7.1|
+.. |release| replace:: Version | 0.7.2|
 .. _release: https://pypi.python.org/pypi/itertree/
 
 The original implementation is done in python 3.5 and it is tested under python 3.5 and 3.9. It should work in all python 3 environments.
@@ -217,13 +217,13 @@ The iterators and find functions of itertree can use item_filters to search for 
 The data handling can be done over set and get functions, if no specific key is given the ("__NOKEY__") element will be addressed. This is very helpful in case you want to store just one data object in the iTree-object.
 ::
     >>> root=iTree('root')
-    >>> root.set(1)
-    >>> root.get()
+    >>> root.d_set(1)
+    >>> root.d_get()
     1
-    >>> root.set('mykey',2)
-    >>> root.get() # the ("__NOKEY__") data item is untouched by the last operation
+    >>> root.d_set('mykey',2)
+    >>> root.d_get() # the ("__NOKEY__") data item is untouched by the last operation
     1
-    >>> root.get('mykey')
+    >>> root.d_get('mykey')
     2
     >>> item=iTree('root2',data={'A':'a','B':'b'})
     >>> item.data
@@ -259,7 +259,7 @@ As it is shown in the performance test this operation list() is very quick (less
 
 But there might be two downsides:
 
-* The StopIteration exception must be handled in case of empty iterators. To make the handling a bit easier iTree delivers in most cases an empty list if we have not match. The handling should be a bit easier for the users. But in some cases (e.g. filter operations) the user will get an iterator even when the iterator is empty. In helpers the user can find an iterator empty check function (is_iterator_empty(iterator)).
+* The StopIteration exception must be handled in case of empty iterators. To make the handling a bit easier iTree delivers in most cases an empty list if we have not match. But in some cases (e.g. filter operations) the user will get an iterator even when the iterator is empty. In helpers the user can find an iterator empty check function (is_iterator_empty(iterator)).
 
 * The user must also consider that an iterator can only consumed one time. To reuse an interator multiple times you may have a look on itertools.tee().
 

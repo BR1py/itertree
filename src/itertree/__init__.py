@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 
 __package__ = 'itertree'
-__version__ = '0.7.1'
+__version__ = '0.7.2'
 __licence__ = 'MIT'
 __author__ = 'B.R.'
 __url__ = 'https://github.com/BR1py/itertree'

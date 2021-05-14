@@ -13,11 +13,7 @@ try:
     IS_ORJSON=True
     # orjson is much faster then standard json but might not be available
 except:
-    try:
-        import ujson as JSON
-        # ujson is much faster then standard json but might not be available
-    except:
-        import json as JSON
+    import json as JSON
 try:
     import numpy as np
     # only needed in case of numpy arrays in data
@@ -158,6 +154,32 @@ class iTStdJSONSerializer(object):
         else:
             self.obj_serializer = obj_serializer
 
+    def dumps2(self, o, add_header=True, calc_hash=True):
+        """
+        new dump not yet working still in development!
+        should be iterative and only one iteration over all items should be done (not two like in the current solution)
+        :param o:
+        :param add_header:
+        :param calc_hash:
+        :return:
+        """
+        return_items=b''
+        iterator=o.iter_all_bottom_up(item_filter=iTFilterItemType(iTreeTemporary,invert=True))
+        parents = [o]
+
+        for item in iterator:
+            p=item._parent
+            if p not in parents:
+                i=len(parents)
+                parents.append(p)
+            else:
+                i=parents.index(p)
+                diff=len(parents)-i
+                if diff!=1:
+                    parents=parents[:(i+1)]
+            return_items=b'  '*i+JSON.dumps(self.obj_serializer.encode(item))+b'\n'+return_items
+        return JSON.dumps(self.obj_serializer.encode(o))+b'\n'+return_items
+
     def dumps(self, o, add_header=True, calc_hash=True):
         """
         In JSON the iTree object is represented in the following form
@@ -265,6 +287,8 @@ class iTStdJSONSerializer(object):
             pass
         # data=data.decode(decode)
         return self.loads(data, check_hash=check_hash, load_links=load_links)
+
+
 
 
 class iTStdRenderer(object):

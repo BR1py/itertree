@@ -2,6 +2,25 @@
 
 Changelog
 =============
+
+************************************
+Version 0.7.2
+************************************
+
+Improved Interval class (dynamic limits in all levels)
+
+Adapted some tests and the documentation
+
+Still Beta SW -> but release canditate!
+
+************************************
+Version 0.7.1
+************************************
+
+Bigger bugfix on 0.7.0 which was really not well tested!
+
+Still Beta SW -> but release canditate!
+
 ************************************
 Version 0.7.0
 ************************************

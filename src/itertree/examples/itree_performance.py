@@ -13,6 +13,8 @@ import sys
 
 #max_items = 5000
 max_items = 500000
+#max_items = 50000
+
 
 itree_only=False
 if len(sys.argv)==2:
@@ -25,6 +27,10 @@ repeat = 4
 
 
 print('We run for treesizes: %i with %i repetitions'%(max_items,repeat))
+
+
+
+
 
 from itertree import iTree, __version__,TagIdx
 print('itertree version: %s'%__version__)
@@ -538,7 +544,7 @@ try:
     def performance_at_build():
         global dt_root, max_items,nodes
         dt = Node('root')
-        for i in range(5000):
+        for i in range(max_items):
             b=Node('%i' % i, parent=dt)
         dt_root = dt
 
