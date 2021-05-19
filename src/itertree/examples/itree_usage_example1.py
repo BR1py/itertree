@@ -53,6 +53,56 @@ if __name__ == '__main__':
     """
     We run all the example (this will take a while and generate a huge print output!
     """
+    # first we build a very simple tree:
+    root=iTree('root')
+    root.append(iTree('Africa',data={'surface':30200000,'inhabitants':1257000000}))
+    root.append(iTree('Asia', data={ 'surface': 44600000, 'inhabitants': 4000000000}))
+    root.append(iTree('America', data={ 'surface': 42549000, 'inhabitants': 1009000000}))
+    root.append(iTree('Australia&Oceania', data={'surface': 8600000, 'inhabitants': 36000000}))
+    # you might add items also via __iadd__() (+=) operator
+    root+=iTree('Europe', data={'surface': 10523000 , 'inhabitants': 746000000})
+    root+=iTree('Antarktika', data={'surface': 14000000, 'inhabitants': 1100})
+
+    # for building next level here we select per index:
+    root[0]+=iTree('Ghana',data={'surface':238537,'inhabitants':30950000})
+    root[0]+=iTree('Niger', data={ 'surface': 1267000, 'inhabitants': 23300000})
+    root[1].append(iTree('China', data={ 'surface': 9596961, 'inhabitants': 1411780000}))
+    root[1].append(iTree('India', data={ 'surface': 3287263, 'inhabitants': 1380004000}))
+    root[2].append(iTree('Canada', data={ 'surface': 9984670, 'inhabitants': 38008005}))
+    # here we select per TagIdx - remember in itertree you might put items with same tag multiple times:
+    root[TagIdx('America',0)].append(iTree('Mexico', data={'surface': 1972550, 'inhabitants': 127600000 }))
+    # add multiple items via extend:
+    root[3].extend([iTree('Australia', data={'surface': 7688287, 'inhabitants': 25700000 }),
+                    iTree('New Zealand', data={ 'surface': 269652, 'inhabitants': 4900000 })])
+    root[4].append(iTree('France', data={'surface': 632733, 'inhabitants': 67400000 }))
+    # use TagIdx for item selection
+    # remember itertree can have multiple items with same tag, we need here TagIdx object!
+    root[TagIdx('Europe',0)].append(iTree('Finland', data={ 'surface': 338465, 'inhabitants': 5536146 }))
+
+    root.render()
+
+    # we might filter for data content:
+    inhabitants_interval=iTInterval(0, 20000000)
+    item_filter = Filter.iTFilterData(data_key='inhabitants', data_value=inhabitants_interval)
+    iterator=root.iter_all(item_filter=item_filter)
+
+    print('Filtered items; inhabitants in range: %s'%inhabitants_interval.math_repr())
+    for i in iterator:
+        print(i)
+
+    # we do a mixed filtering:
+    inhabitants_interval = iTInterval(0, 20000000)
+    item_filter1 = Filter.iTFilterData(data_key='inhabitants', data_value=inhabitants_interval)
+    surface_interval = iTInterval(0, 1000000)
+    item_filter2 = Filter.iTFilterData(data_key='surface', data_value=surface_interval,pre_item_filter=item_filter1,use_and=True)
+    iterator = root.iter_all(item_filter=item_filter2)
+
+    print('Filter2 items (we expect Antarktika does not match anymore!):')
+    for i in iterator:
+        print(i)
+
+    print('\nIt follows another example of a bigger tree:')
+
     if sys.platform == 'linux':
         root_dir='/usr/lib'
     else:

@@ -4,6 +4,16 @@ Changelog
 =============
 
 ************************************
+Version 0.7.3
+************************************
+
+Bugfixes in repr() and render()
+
+Extended examples
+
+Still Beta SW -> but release canditate!
+
+************************************
 Version 0.7.2
 ************************************
 

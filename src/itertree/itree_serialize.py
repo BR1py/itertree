@@ -424,6 +424,7 @@ class iTStdRenderer(object):
             else:
                 output.append(
                     ''.join([self.__create_item_string(itree_object), '\n']))
+        heading = ''
         while 1:
             if len(items)==0:
                 break
@@ -444,9 +445,11 @@ class iTStdRenderer(object):
                 continue
             if item_filter is None or item_filter(item):
                 if _only_print_tree:
-                    print(''.join([' ' * (self._identation * level), self._heading, self.__create_item_string(item)]))
+                    print(''.join([' ' * (self._identation * level), heading, self.__create_item_string(item)]))
                 else:
-                    output.append(''.join([' ' * (self._identation * level), self._heading, self.__create_item_string(item),'\n']))
+                    output.append(''.join([' ' * (self._identation * level), heading, self.__create_item_string(item),'\n']))
+            if level==0:
+                heading = self._heading
             new_items=list(item.iter_children())
             if parent_list is None:
                 items=new_items

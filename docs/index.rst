@@ -55,7 +55,7 @@ Status and compatibility information
    Please use the `github issues <https://github.com/BR1py/itertree/issues>`_
    to ask questions report problems. **Please do not email me directly**
 
-.. |release| replace:: Version | 0.7.2|
+.. |release| replace:: Version | 0.7.3|
 .. _release: https://pypi.python.org/pypi/itertree/
 
 The original implementation is done in python 3.5 and it is tested under python 3.5 and 3.9. It should work in all python 3 environments.

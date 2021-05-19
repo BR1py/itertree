@@ -3,7 +3,7 @@
 
 ## Welcome to itertree python package. 
 
-0.7.2 --BETA-- -> but implementation is already a release candidate (all interfaces are fixed)!
+0.7.3 --BETA-- -> but implementation is already a release candidate (all interfaces are fixed)!
 
 Do you like to store your data some how in a tree like structure? Do you need good performance, a rich feature set and the possibility to store your data permanently in files?
 

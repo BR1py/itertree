@@ -531,7 +531,7 @@ class iTree(blist):
         repr_str = 'iTree("%s"' % (repr(self._tag))
         if not self._data.is_empty:
             if self._data.is_no_key_only:
-                repr_str = repr_str + ', data=%s' % repr(self._data.get())
+                repr_str = repr_str + ', data=%s' % repr(self.d_get())
             else:
                 repr_str = repr_str + ', data=%s' % repr(self._data)
             subtree = super(iTree, self).__repr__()
