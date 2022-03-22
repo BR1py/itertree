@@ -104,6 +104,11 @@ During the execution of the module we build an itertree and we fill the iTree ob
      └──iTree('digital signals', data=iTData({'description': StringModel(value= 'Digital signals (switches and state inputs)', match=None, max_length=200)}))
          └──iTree('power switch', data=iTData({'buffer_size': IntegerModel(value= 100, range_interval=Interval().from_string([0.000,1024.000]), representation=2), 'offset': FloatModel(value= 0, range_interval=Interval().from_string((-inf,+inf)), digits=4), 'io_type': EnumerationModel(value= 1, enum_iterable_dict={1: 'INPUT', 2: 'OUTPUT'}), 'gain': FloatModel(value= 1, range_interval=Interval().from_string((-inf,+inf)), digits=4), 'addresse': IntegerModel(value= 2020963, range_interval=Interval().from_string([0.000,+inf]), representation=1), 'type': StringModel(value= 'digital input', match=None, max_length=20), 'raw_data': ArrayModel(value= [1, 2, 3, 4], item_type=FloatModel(range_interval=Interval().from_string([-10.000,10.000]), digits=2), max_len=None)}))
 
+itertree link example
+-------------------------------------
+This example file should show the user how links can be used and how the links are stored.
+
+
 itertree performance example
 -------------------------------------
 
