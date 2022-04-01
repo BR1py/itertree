@@ -59,8 +59,12 @@ class TestiTDataModelMethods:
                   (False, None)]
 
     def test_clear_value(self, setup_fake_argument):
-        assert setup_fake_argument.clear_value() is None and \
+        assert setup_fake_argument.clear_value() is __argument__ and \
                setup_fake_argument.value is None
+
+    def test_clear_value_empty_value(self, setup_no_argument):
+        assert setup_no_argument.clear_value() is None and \
+               setup_no_argument.value is None
 
     def test__validator(self, setup_fake_argument):
         assert setup_fake_argument._validator(None) == (True, 'ok')
