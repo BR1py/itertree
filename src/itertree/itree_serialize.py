@@ -1,36 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-This code is taken from the itertree package:
-https://pypi.org/project/itertree/
-GIT Home:
-https://github.com/BR1py/itertree
-The documentation can be found here:
-https://itertree.readthedocs.io/en/latest/index.html
-
-The code is published under MIT license:
-
-The MIT License (MIT)
-Copyright © 2022 <copyright holders>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-documentation files (the “Software”), to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
-to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial
-portions of the Software.
-
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
-THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
-OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT
-OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-For more information see: https://en.wikipedia.org/wiki/MIT_License
-
-
-This part of code contains the standard iTree serializers (JSON and rendering)
-"""
-
 from __future__ import absolute_import
 
 import os
@@ -57,7 +25,7 @@ from .itree_helpers import *
 from .itree_filter import iTFilterItemType
 
 from .itree_data import iTData, iTDataReadOnly
-from .itree_main import iTree, iTreeReadOnly, iTreeLink, iTreeTemporary,iTreePlaceHolder
+from .itree_main import iTree, iTreeReadOnly, iTreeLink, iTreeTemporary
 
 DT_SERIALIZE_VERSION = "1.1.0"
 
@@ -73,15 +41,9 @@ class iTStdObjSerializer(object):
     DATA = 'DT'
     LINK = 'LK'
     TAG = 'TG'
-    IDX = 'IDX'
-
     DATA_MODELL = 'DM'
     DTYPE = 'TP'
     DATA_CONTAINER = 'DC'
-    ITREE_ITEMS_DECODE={'iT':iTree,'iTRO':iTreeReadOnly,'iTl':iTreeLink,'iTPH':iTreePlaceHolder,'iTI':TagIdx}
-    ITREE_ITEMS_ENCODE = {iTree:'iT', iTreeReadOnly:'iTRO', iTreeLink:'iTl' , iTreePlaceHolder:'iTPH',TagIdx:'iTI' }
-    OTHER_ITEMS_DECODE = {'d':dict ,'D': iTData , 'DR':iTDataReadOnly , 'OD':OrderedDict }
-    OTHER_ITEMS_ENCODE={dict:'d',iTData:'D',iTDataReadOnly:'DR',OrderedDict:'OD'}
 
     def encode(self, o):
         """
@@ -91,27 +53,34 @@ class iTStdObjSerializer(object):
         """
         encode = self.encode
         t = type(o)
-        dtype = self.ITREE_ITEMS_ENCODE.get(t)
+        dtype = None
+        if t is iTree:
+            dtype = 'iT'
+        elif t is iTreeReadOnly:
+            dtype = 'iTRO'
+        elif t is iTreeLink:
+            dtype = 'iTl'
         if dtype is not None:
-            if t is TagIdx:
-                return {self.DTYPE: dtype, self.TAG: encode(o.tag),self.IDX:o.idx}
-            dt_dict = {self.DTYPE: dtype, self.TAG: encode(o.tag)}
-            if t is not iTreePlaceHolder:
-                data = o._data
-                if not data.is_empty:
-                    dt_dict[self.DATA] = encode(data)
-                if t is iTreeLink:
-                    if o._link is not None:
-                        dt_dict[self.LINK] = (o._link.file_path, encode(o._link.key_path))
-                    result_list=[encode(item) for item in o.iter_locals(add_placeholders=True)]
-                else:
-                    result_list =[encode(item) for item in
-                                      o.iter_children(item_filter=iTFilterItemType(iTreeTemporary, invert=True))]
-                dt_dict[self.TREE] = result_list
+            dt_dict = {self.DTYPE: dtype, self.TAG: encode(o._tag)}
+            if t is iTreeLink:
+                if o._link is not None:
+                    dt_dict[self.LINK] = (o._link.file_path, o._link.key_path)
+            data = o._data
+            if not data.is_empty:
+                dt_dict[self.DATA] = encode(data)
+            dt_dict[self.TREE] = [encode(item) for item in
+                                  o.iter_children(item_filter=iTFilterItemType(iTreeTemporary, invert=True))]
             return dt_dict
         if (t is str) or (t is int) or (t is float) or (t is bool):
             return o
-        dtype=self.OTHER_ITEMS_ENCODE.get(t)
+        if t is dict:
+            dtype = 'd'
+        elif t is iTData:
+            dtype = 'D'
+        elif t is iTDataReadOnly:
+            dtype = 'DR'
+        elif t is OrderedDict:
+            dtype = 'OD'
         if dtype is not None:
             return {self.DTYPE: dtype,
                     self.DATA_CONTAINER: [(encode(k), encode(v)) for k, v in o.items()]}
@@ -124,7 +93,7 @@ class iTStdObjSerializer(object):
         except:
             return o
 
-    def decode(self, raw_o):
+    def decode(self, raw_o, load_links=True):
         """
         decode the given raw_object back to the original object
         :param raw_o: raw_object (dict or list)
@@ -137,29 +106,22 @@ class iTStdObjSerializer(object):
             o_type = raw_o.get(self.DTYPE)
             if o_type is None:
                 return {decode(key): decode(v) for key, v in raw_o}
-            elif o_type in self.ITREE_ITEMS_DECODE:
+            elif o_type == 'iT' or o_type == 'iTL' or o_type == 'iTRO':
                 tag = decode(raw_o.get(self.TAG))
-                if o_type == 'iTPH':
-                    return iTreePlaceHolder(tag)
-                elif o_type == 'iTI':
-                    return TagIdx(tag,raw_o.get(self.IDX))
+                data = raw_o.get(self.DATA)
+                if data is not None:
+                    data = decode(data)
+                link = raw_o.get(self.LINK)
+                if link is not None:
+                    new_item = iTreeLink(tag, data=data, link_file_path=link[0], link_key_path=link[1])
+                    if load_links:
+                        new_item.load_links()
                 else:
-                    data = raw_o.get(self.DATA)
-                    if data is not None:
-                        data = decode(data)
                     tree = raw_o.get(self.TREE)
-                    link = raw_o.get(self.LINK)
-                    if link is not None:
-                        new_item = iTreeLink(tag, data=data,
-                                             link_file_path=link[0],
-                                             link_key_path=decode(link[1]),
-                                             load_links=False,
-                                             subtree=[decode(i) for i in tree])
+                    if o_type == 'iT':
+                        new_item = iTree(tag, data=data, subtree=[decode(i) for i in tree])
                     else:
-                        if o_type == 'iT':
-                            new_item = iTree(tag, data=data, subtree=[decode(i) for i in tree])
-                        else:
-                            new_item = iTreeReadOnly(tag, data=data, subtree=[decode(i) for i in tree])
+                        new_item = iTreeReadOnly(tag, data=data, subtree=[decode(i) for i in tree])
                 return new_item
             elif o_type == 'OD':
                 return OrderedDict([(decode(i[0]), decode(i[1])) for i in raw_o[self.DATA_CONTAINER]])
@@ -298,10 +260,7 @@ class iTStdJSONSerializer(object):
             if hashlib.sha1(dt_str).hexdigest() != header_dict['HASH']:
                 raise PermissionError('Given DataTree data is corrupted (wrong hash)!')
         raw_o = JSON.loads(dt_str)
-        new_tree=self.obj_serializer.decode(raw_o)
-        if load_links:
-            new_tree.load_links()
-        return new_tree
+        return self.obj_serializer.decode(raw_o, load_links=load_links)
 
     def load(self, file_path, check_hash=True, load_links=True):
         """
@@ -359,8 +318,6 @@ class iTStdRenderer(object):
             class_name = 'iTreeLink'
             if item._link is not None:
                 link_str = ', link=%s' % repr(item._link)
-        elif t is iTreePlaceHolder:
-            class_name = 'iTreePlaceHolder'
         elif t is iTreeTemporary:
             class_name = 'iTreeTemporary'
         data = item._data

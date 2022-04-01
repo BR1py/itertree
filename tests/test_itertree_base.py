@@ -1,37 +1,3 @@
-"""
-This code is taken from the itertree package:
-https://pypi.org/project/itertree/
-GIT Home:
-https://github.com/BR1py/itertree
-The documentation can be found here:
-https://itertree.readthedocs.io/en/latest/index.html
-
-The code is published under MIT license:
-
-The MIT License (MIT)
-Copyright © 2022 <copyright holders>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-documentation files (the “Software”), to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
-to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial
-portions of the Software.
-
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
-THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
-OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT
-OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-For more information see: https://en.wikipedia.org/wiki/MIT_License
-
-
-This part of code contains
-the integration tests related to the base iTree functionalities
-"""
-
-
 import os
 # import sys
 import collections
@@ -50,8 +16,8 @@ from itertree import *
 root_path = os.path.dirname(__file__)
 print('ROOT_PATH', root_path)
 
-TEST_SELECTION = {1, 2, 3, 4, 5, 6, 7, 8, 10}
-# TEST_SELECTION={}
+TEST_SELECTION = {1, 2, 3, 4, 5, 6, 7, 8, 10, 11}
+#TEST_SELECTION={6,7}
 
 print('Test start')
 
@@ -159,12 +125,14 @@ class Test_iTreeBase:
         assert root[TagIdxStr('sub4#0')][40].data['level'] == 'n40'
         assert root[TagIdxStr('sub4#0')][TagIdxStr('sub4_n#80')].data['level'] == 'n80'
 
-        # test some properties
-        assert root[('sub2', 0)].pre_item.tag == 'sub1'
+        #test some properties
+        assert root[('sub2', 0)].pre_item.tag=='sub1'
         assert root[('sub2', 0)].post_item.tag == 'sub3'
-        assert root[('sub2', 0)].depth_up == 1
-        assert root[0][1].idx_path == [0, 1]
-        assert root[0][1].tag_idx_path == [TagIdx(tag='sub0', idx=0), TagIdx(tag='sub0_1', idx=0)]
+        assert root[('sub2', 0)].depth_up==1
+        assert root[0][1].idx_path==[0,1]
+        assert root[0][1].tag_idx_path == [TagIdx(tag='sub0', idx=0) , TagIdx(tag='sub0_1', idx=0)]
+
+
 
         # check for error in case item is already added
         item = root[-1][0]
@@ -182,7 +150,7 @@ class Test_iTreeBase:
         lookup = [-1, 0, 1, 2, 3, -1, -1, 0, 1, 2, 3, 4, -1, 0, 1, 2, -1]
         cnt = 0
 
-        #root.render()
+        root.render()
 
         for i, item in enumerate(root.iter_all()):
             # print(i,lookup[i],repr(item))
@@ -201,11 +169,9 @@ class Test_iTreeBase:
         a = repr(root)
 
         root2 = self._build_mix_tree()
-        #root2.render()
+        root2.render()
         assert root2[TagIdx((1,), 1)].d_get() == 6
         assert len(root2[TagIdx((0,), 0)][2]) == 14
-
-        print('PASSED')
 
     def test2_tree_manipulations(self):
         if not 2 in TEST_SELECTION:
@@ -285,8 +251,6 @@ class Test_iTreeBase:
         with pytest.raises(KeyError):
             assert root['replace2']
 
-        print('PASSED')
-
     def test3_base_operators(self):
         '''
         operator test
@@ -339,8 +303,6 @@ class Test_iTreeBase:
         assert len(root2) == 6
         assert root2[-1].tag == '7'
 
-        print('PASSED')
-
     def test4_base_find_iteration(self):
         if not 4 in TEST_SELECTION:
             return
@@ -383,13 +345,13 @@ class Test_iTreeBase:
 
         # index
         items = root.find_all(key_path=0)
-        item = next(items)
+        item=next(items)
         assert item.tag == 'sub0'
         item = root.find(0)
         assert item.tag == 'sub0'
 
         # one level index list -> go deeper
-        #items = root.find_all([0, 2])
+        items = root.find_all([0, 2])
         item = root.find([0, 2])
         assert item.tag == 'sub0_2'
 
@@ -407,7 +369,7 @@ class Test_iTreeBase:
         assert item.tag == 'sub0_2_0_x'
         assert item.d_get() == 1
 
-        item = root.find(iter([0, 2, 0, 1]))  # giving an iterator should work too!
+        item = root.find(iter([0, 2, 0, 1])) # giving an iterator should work too!
         assert item.tag == 'sub0_2_0_x'
         assert item.d_get() == 1
 
@@ -470,8 +432,6 @@ class Test_iTreeBase:
 
         # todo matches and items with hashed objects
 
-        print('PASSED')
-
     def test5_data_access(self):
         if not 5 in TEST_SELECTION:
             return
@@ -503,29 +463,27 @@ class Test_iTreeBase:
         assert root.d_pop('a') == 1
         assert len(root.data) == 1
 
-        print('PASSED')
-
     def test6_intervall_class(self):
         if not 6 in TEST_SELECTION:
             return
 
         print('\nRESULT OF TEST: Interval class')
 
-        # base interval
+        #base interval
         # open interval
-        i = iTInterval(1, 2)
+        i=iTInterval(1,2)
         assert not i.check(1)
         assert not i.check(2)
         assert i.check(1.0001)
         assert i.check(1.999)
-        assert str(i) == "iTInterval(str_def='(1,2)')"
-        assert repr(i) == 'iTInterval(lower_limit=1, upper_limit=2, lower_open=True, upper_open=True)'
-        i2 = eval(str(i))
-        # iterables
-        assert list(i2.check([1, 2, 1.001, 1.999], return_iterator=True)) == [False, False, True, True]
+        assert str(i)=="iTInterval(str_def='(1,2)')"
+        assert repr(i)=='iTInterval(lower_limit=1, upper_limit=2, lower_open=True, upper_open=True)'
+        i2=eval(str(i))
+        #iterables
+        assert list(i2.check([1,2,1.001,1.999],return_iterator=True))==[False,False,True,True]
 
         # close interval
-        i = iTInterval(-10, 20, False, False)
+        i = iTInterval(-10, 20,False,False)
         assert i.check(-10)
         assert i.check(20)
         assert not i.check(-10.0001)
@@ -535,26 +493,26 @@ class Test_iTreeBase:
             i) == 'iTInterval(lower_limit=-10, upper_limit=20, lower_open=False, upper_open=False)'
 
         i2 = eval(str(i))
-        # iterables
-        assert list(i2.check([-10, 20, -10.0001, 20.00001], return_iterator=True)) == [True, True, False, False]
+        #iterables
+        assert list(i2.check([-10,20,-10.0001,20.00001],return_iterator=True))==[True,True,False,False]
 
-        # mixed
+        #mixed
         i = iTInterval(-10, 20, True, False)
         assert not i.check(-10)
         assert i.check(20)
         i2 = eval(str(i))
         # iterables
-        assert list(i2.check([-10, 20], return_iterator=True)) == [False, True]
+        assert list(i2.check([-10, 20],return_iterator=True)) == [False,True]
 
         i = iTInterval(-10, 20, False, True)
         assert i.check(-10)
         assert not i.check(20)
         i2 = eval(str(i))
         # iterables
-        assert list(i2.check([-10, 20], return_iterator=True)) == [True, False]
+        assert list(i2.check([-10, 20],return_iterator=True)) == [True,False]
 
         # open interval not_in
-        i = iTInterval(-31, -20, not_in=True)
+        i = iTInterval(-31, -20,not_in=True)
         assert i.check(-31)
         assert i.check(-20)
         assert not i.check(-30.9999)
@@ -562,10 +520,10 @@ class Test_iTreeBase:
         assert str(i) == "iTInterval(str_def='!(-31,-20)')"
         i2 = eval(str(i))
         # iterables
-        assert list(i2.check([-31, -20, -30.999, -20.01], return_iterator=True)) == [True, True, False, False]
+        assert list(i2.check([-31,-20,-30.999,-20.01],return_iterator=True)) == [True,True,False ,False]
 
         # close interval not_in
-        i = iTInterval(1010, 2020, False, False, not_in=True)
+        i = iTInterval(1010, 2020, False, False,not_in=True)
         assert not i.check(1010)
         assert not i.check(2020)
         assert i.check(1009.999999)
@@ -573,92 +531,92 @@ class Test_iTreeBase:
         assert str(i) == "iTInterval(str_def='![1010,2020]')"
         i2 = eval(str(i))
         # iterables
-        it = i2.check([1010, 2020, 1009.9999, 2020.000001], return_iterator=True)
-        itl = list(it)
-        assert all(itl) == False
-        assert itl == [False, False, True, True]
+        it=i2.check([1010, 2020,1009.9999,2020.000001],return_iterator=True)
+        itl=list(it)
+        assert all(itl)==False
+        assert itl == [False,False,True,True]
 
         # infinity intervals
-        i = iTInterval(1010, iTInterval.INF, )
+        i = iTInterval(1010, iTInterval.INF,)
         assert not i.check(1010)
         assert i.check(2020)
         assert i.check(202000001)
         assert str(i) == "iTInterval(str_def='(1010,+inf)')"
         i2 = eval(str(i))
         # iterables
-        assert list(i2.check([1010, 2020, 2020000001], return_iterator=True)) == [False, True, True]
+        assert list(i2.check([1010, 2020, 2020000001],return_iterator=True)) == [False,True, True]
 
-        i = iTInterval(1010, 'inf', True, False)
+        i = iTInterval(1010, 'inf',True,False )
         assert i.check(202000001)
         assert str(i) == "iTInterval(str_def='(1010,+inf]')"
-        i = iTInterval(1010, '+inf')
+        i = iTInterval(1010, '+inf' )
         assert i.check(202000001)
         assert str(i) == "iTInterval(str_def='(1010,+inf)')"
-        i = iTInterval(iTInterval.INF, -10)
+        i = iTInterval(iTInterval.INF,-10 )
         assert not i.check(-10)
         assert i.check(-2020)
         assert i.check(-202000001)
         assert str(i) == "iTInterval(str_def='(-inf,-10)')"
-        i = iTInterval('inf', 0, False)
+        i = iTInterval('inf',0, False)
         assert i.check(-202000001)
         assert str(i) == "iTInterval(str_def='[-inf,0)')"
-        i = iTInterval('-inf', 10)
+        i = iTInterval('-inf',10)
         assert i.check(-202000001)
         assert str(i) == "iTInterval(str_def='(-inf,10)')"
         # not in inf
-        i = iTInterval('-inf', 10, not_in=True)
+        i = iTInterval('-inf', 10,not_in=True)
         assert not i.check(-202000001)
         assert i.check(10)
         # iterables
-        assert list(i.check([-202000001, 10], return_iterator=True)) == [False, True]
-        i = iTInterval(-33, 'inf', not_in=True)
+        assert list(i.check([-202000001, 10],return_iterator=True)) == [False,True]
+        i = iTInterval(-33,'inf', not_in=True)
         assert i.check(-33)
         assert not i.check(300000)
         # iterables
-        assert list(i.check([-33, 300000], return_iterator=True)) == [True, False]
+        assert list(i.check([-33, 300000],return_iterator=True)) == [True, False]
 
-        # check iterables
+        #check iterables
         # equal
-        i = iTInterval(10, None, False, True)
+        i = iTInterval(10,None,False,True)
         assert i.check(10)
         assert not i.check(11)
         assert str(i) == "iTInterval(str_def='==10')"
         # not equal
-        i = iTInterval(10, None, False, True, not_in=True)
-        assert list(i.check([9, 10, 11], return_iterator=True)) == [True, False, True]
+        i = iTInterval(10,None,False,True,not_in=True)
+        assert list(i.check([9,10,11],return_iterator=True)) == [True,False,True]
         assert str(i) == "iTInterval(str_def='!=10')"
         i2 = eval(str(i))
-        assert list(i2.check([9, 10, 11], return_iterator=True)) == [True, False, True]
+        assert list(i2.check([9,10,11],return_iterator=True)) == [True,False,True]
 
         # cascaded intervals
         i = iTInterval(-10, 10, True, False)
-        i2 = iTInterval(30, 100, False, False, pre_interval=i)
-        i3 = iTInterval(300, 'inf', False, False, pre_interval=i2)
+        i2 = iTInterval(30, 100, False, False,pre_interval=i)
+        i3 = iTInterval(300, 'inf', False, False,pre_interval=i2)
         i4 = iTInterval(-300, -200, False, False, pre_interval=i3)
-        assert list(i4.check([-301, -300, -200, -199,
-                              -10, -9, 10, 11,
-                              29, 30, 100, 101,
-                              299, 300, 10000], return_iterator=True)) == [False, True, True, False,
-                                                                           False, True, True, False,
-                                                                           False, True, True, False,
-                                                                           False, True, True]
-        i5 = eval(str(i4))
+        assert list(i4.check([-301,-300,-200,-199,
+                              -10,-9,10,11,
+                              29,30,100,101,
+                              299,300,10000],return_iterator=True)) == [False,True,True,False,
+                                                   False,True,True,False,
+                                                   False,True,True,False,
+                                                   False,True,True]
+        i5=eval(str(i4))
         assert list(i5.check([-301, -300, -200, -199,
                               -10, -9, 10, 11,
                               29, 30, 100, 101,
-                              299, 300, 10000], return_iterator=True)) == [False, True, True, False,
-                                                                           False, True, True, False,
-                                                                           False, True, True, False,
-                                                                           False, True, True]
+                              299, 300, 10000],return_iterator=True)) == [False, True, True, False,
+                                                     False, True, True, False,
+                                                     False, True, True, False,
+                                                     False, True, True]
 
         # negative test
         i = iTInterval(-10, 10, True, False)
-        # check some strings: (check should deliver False in this case!
-        assert False == i.check('aaa')
-        assert [True, True, True, False] == list(i.check([1, 2, 3, 'aaa'], return_iterator=True))
+        #check some strings: (check should deliver False in this case!
+        assert False==i.check('aaa')
+        assert [True,True,True,False] ==list(i.check([1,2,3,'aaa'],return_iterator=True))
         with pytest.raises(ValueError):
             # lower_limit>upper_limit
-            i = iTInterval(10, -10, True, False)
+            i = iTInterval(10,-10, True, False)
         with pytest.raises(ValueError):
             # lower_limit= +inf
             i = iTInterval('+inf', -10, True, False)
@@ -668,9 +626,8 @@ class Test_iTreeBase:
 
         with pytest.raises(ValueError):
             # equal to infinity
-            i = iTInterval('inf', None, True, False)
+            i = iTInterval('inf',None, True, False)
 
-        print('PASSED')
 
     def test7_filter_classes(self):
         if not 7 in TEST_SELECTION:
@@ -678,61 +635,61 @@ class Test_iTreeBase:
 
         print('\nRESULT OF TEST: base find operations')
         root = self._build_base_tree()
-        # we addd some items to be filtered out
-        root.insert(2, iTreeReadOnly('READONLY'))
+        #we addd some items to be filtered out
+        root.insert(2,iTreeReadOnly('READONLY'))
         root.insert(2, iTreeReadOnly('READONLY2'))
         root[0].insert(1, iTreeTemporary('TEMP'))
         root[0].insert(1, iTreeTemporary('TEMP2'))
         root[4].insert(1, iTreeTemporary('TEMP3'))
-        # add some more data
-        root[0][0].d_set('ev', 'n1')
+        #add some more data
+        root[0][0].d_set('ev','n1')
         root[-1][10].d_set('ev', 'extra')
 
-        #root.render()
+        root.render()
 
-        # test filter factory with primitive logic
-        # no item filter all combinations
-        assert Filter.iTFilterTrue(pre_item_filter=None, invert=False, use_and=False)(True) == True
-        assert Filter.iTFilterTrue(pre_item_filter=None, invert=False, use_and=True)(True) == True
-        assert Filter.iTFilterTrue(pre_item_filter=None, invert=True, use_and=False)(True) == False
-        assert Filter.iTFilterTrue(pre_item_filter=None, invert=True, use_and=True)(True) == False
-        # with item filter
-        assert Filter.iTFilterTrue(pre_item_filter=lambda item: False, invert=False, use_and=False)(True) == True
-        assert Filter.iTFilterTrue(pre_item_filter=lambda item: False, invert=False, use_and=True)(True) == False
-        assert Filter.iTFilterTrue(pre_item_filter=lambda item: True, invert=True, use_and=False)(True) == True
-        assert Filter.iTFilterTrue(pre_item_filter=lambda item: True, invert=True, use_and=True)(True) == False
+        #test filter factory with primitive logic
+        #no item filter all combinations
+        assert Filter.iTFilterTrue(pre_item_filter=None, invert=False, use_and=False)(True)==True
+        assert Filter.iTFilterTrue(pre_item_filter=None, invert=False, use_and=True)(True)==True
+        assert Filter.iTFilterTrue(pre_item_filter=None,invert=True, use_and=False)(True)==False
+        assert Filter.iTFilterTrue(pre_item_filter=None, invert=True, use_and=True)(True)==False
+        #with item filter
+        assert Filter.iTFilterTrue(pre_item_filter=lambda item: False, invert=False, use_and=False)(True)==True
+        assert Filter.iTFilterTrue(pre_item_filter=lambda item: False, invert=False, use_and=True)(True)==False
+        assert Filter.iTFilterTrue(pre_item_filter=lambda item: True, invert=True, use_and=False)(True)==True
+        assert Filter.iTFilterTrue(pre_item_filter=lambda item: True, invert=True,  use_and=True)(True)==False
 
         all = root.count_all()
 
-        # True Filter matches to Any item!
-        result = list(root.find_all('**', Filter.iTFilterTrue()))
-        assert len(result) == all
+        #True Filter matches to Any item!
+        result=list(root.find_all('**',Filter.iTFilterTrue()))
+        assert len(result)==all
 
-        # iTree item Type filtering
+        #iTree item Type filtering
         result = list(root.find_all('**', Filter.iTFilterItemType(iTreeTemporary)))
         assert len(result) == 3
-        # invert
-        result_inv = list(root.find_all('**', Filter.iTFilterItemType(iTreeTemporary, invert=True)))
-        assert len(result_inv) == all - len(result)
+        #invert
+        result_inv = list(root.find_all('**', Filter.iTFilterItemType(iTreeTemporary,invert=True)))
+        assert len(result_inv) == all-len(result)
 
         result = list(root.find_all('**', Filter.iTFilterItemType(iTreeReadOnly)))
         assert len(result) == 2
-        # invert
-        result_inv = list(root.find_all('**', Filter.iTFilterItemType(iTreeReadOnly, invert=True)))
-        assert len(result_inv) == all - len(result)
+        #invert
+        result_inv = list(root.find_all('**', Filter.iTFilterItemType(iTreeReadOnly,invert=True)))
+        assert len(result_inv) == all-len(result)
 
         # item match filter
         result = list(root.iter_all(Filter.iTFilterItemTagMatch(iTMatch('*sub0*'))))
         assert len(result) == 5
         # invert
-        result_inv = list(root.iter_all(Filter.iTFilterItemTagMatch(iTMatch('*sub0*'), invert=True)))
-        assert all - len(result) == len(result_inv)
+        result_inv = list(root.iter_all(Filter.iTFilterItemTagMatch(iTMatch('*sub0*'),invert=True)))
+        assert all-len(result) == len(result_inv)
 
         result = list(root.iter_all(Filter.iTFilterItemTagMatch(iTMatch('sub0_?'))))
         assert len(result) == 4
         # invert
-        result_inv = list(root.iter_all(Filter.iTFilterItemTagMatch(iTMatch('sub0_?'), invert=True)))
-        assert all - len(result) == len(result_inv)
+        result_inv = list(root.iter_all(Filter.iTFilterItemTagMatch(iTMatch('sub0_?'),invert=True)))
+        assert all-len(result) == len(result_inv)
 
         # data filter
         result = list(root.find_all('**', Filter.iTFilterData(data_key='ev')))
@@ -749,27 +706,21 @@ class Test_iTreeBase:
         assert len(list(root.find_all('**', Filter.iTFilterDataKeyMatch('*ev*', invert=True)))) == all - len(
             result1)
 
-        assert len(list(root.find_all('**', Filter.iTFilterData(data_key=iTMatch('*ev*'), invert=True)))) == all - len(
-            result1)
-        assert len(list(root.find_all('**', Filter.iTFilterData(data_value=iTMatch('n*'), invert=True)))) == all - len(
-            result2)
+        assert len(list(root.find_all('**', Filter.iTFilterData(data_key=iTMatch('*ev*'),invert=True))))==all-len(result1)
+        assert len(list(root.find_all('**', Filter.iTFilterData(data_value=iTMatch('n*'), invert=True)))) == all - len(result2)
 
         # combine filters (only a few examples)
         result = list(root.find_all('**', Filter.iTFilterItemTagMatch(iTMatch('sub4*'),
-                                                                      invert=True,
-                                                                      pre_item_filter=Filter.iTFilterData(
-                                                                          data_value=iTMatch('n*'))
-                                                                      )))
+                                                                       invert=True,
+                                                                       pre_item_filter=Filter.iTFilterData(data_value=iTMatch('n*'))
+                                                                       )))
         assert len(result) == 1
 
         result = list(root.find_all('**', Filter.iTFilterItemTagMatch(iTMatch('sub0*'),
-                                                                      use_and=False,
-                                                                      pre_item_filter=Filter.iTFilterData(
-                                                                          data_value=iTMatch('n*'))
-                                                                      )))
+                                                               use_and=False,
+                                                               pre_item_filter=Filter.iTFilterData(data_value=iTMatch('n*'))
+                                                               )))
         assert len(result) == 105
-
-        print('PASSED')
 
     def test10_std_save_load(self):
         if not 10 in TEST_SELECTION:
@@ -808,7 +759,7 @@ class Test_iTreeBase:
         root.dump(target_path, overwrite=True)
         root_loaded = root.load(target_path)
         assert not root.equal(root_loaded)
-        #root.render()
+        root.render()
 
         print('Outputfile2: %s' % os.path.abspath(target_path3))
         root2 = self._build_mix_tree()
@@ -818,4 +769,55 @@ class Test_iTreeBase:
 
         # print(root.renders())
 
-        print('PASSED')
+    def test11_linking(self):
+        if not 11 in TEST_SELECTION:
+            return
+        # first we create a file
+        root = self._build_base_tree()
+        root_data_path = get_relpath_to_root('tmp')
+        if not os.path.exists(root_data_path):
+            os.makedirs(root_data_path)
+        target_path = root_data_path + '/out.dtz'
+        root.dump(target_path=target_path, overwrite=True)
+
+        # we build a new tree
+        root = self._build_mix_tree()
+        # we add a linked element
+        linked_item = iTreeLink('LINKED', data=0, link_file_path=target_path, link_key_path=4, load_links=False)
+        root.insert(1, linked_item)
+        print()
+        # root.render()
+        assert len(linked_item) == 0
+        root.load_links()
+        assert len(linked_item) == 100
+        with pytest.raises(PermissionError):
+            linked_item += iTree('BASTARD')
+        with pytest.raises(PermissionError):
+            linked_item.insert(0, iTree('BASTARD'))
+        with pytest.raises(PermissionError):
+            del linked_item[0]
+        # data can be changed
+        linked_item.d_set('DATA', 'TEST')
+        # but not in the sub items!
+        with pytest.raises(PermissionError):
+            linked_item[1].d_set('DATA', 'TEST')
+        for i, item in enumerate(root.iter_all()):
+            if i == 0:
+                assert not item.is_linked
+            elif i == 1:
+                assert item.tag == 'LINKED'
+                assert item.is_linked
+            elif i > 2 and i <= 101:
+                assert item.is_linked
+            elif i == 101:
+                assert item.d_get('level') == 'n99'
+            elif i == 102:
+                assert not item.is_linked
+                assert item.tag == 'c2'
+            elif i > 102:
+                assert not item.is_linked
+
+        for i, item in enumerate(root.iter_all(Filter.iTFilterItemType(iTreeLink,invert=True))):
+            assert not item.is_linked
+        for i, item in enumerate(root.iter_all(Filter.iTFilterItemType(iTreeLink))):
+            assert item.is_linked

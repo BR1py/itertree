@@ -4,18 +4,6 @@ Changelog
 =============
 
 ************************************
-Version 0.8.0
-************************************
-
-Feature improvement related to linked iTrees (overloading of elements and internal links)
-
-Extended examples
-
-Still Beta SW -> but release canditate!
-
-************************************
-
-************************************
 Version 0.7.3
 ************************************
 
