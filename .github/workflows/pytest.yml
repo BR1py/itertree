@@ -10,4 +10,4 @@ jobs:
       - name: GitHub Action for pytest
         uses: cclauss/GitHub-Action-for-pytest@0.5.0
         with:
-          args: pytest ./tests/unit
+          args: pytest --verbose tests/unit
