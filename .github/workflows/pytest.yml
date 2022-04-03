@@ -1,7 +1,7 @@
 name: Pytest Demo
 on: [push]
 jobs:
-  Explore-Pytest Action:
+  Explore-Pytest-Action:
     runs-on: ubuntu-latest
     steps:
       - name: GitHub Action for pytest
