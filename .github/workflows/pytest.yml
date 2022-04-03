@@ -4,7 +4,10 @@ jobs:
   Explore-Pytest-Action:
     runs-on: ubuntu-latest
     steps:
+      - name: Going to project's root directory
+        run: |
+          cd ${{ github.workspace }}
       - name: GitHub Action for pytest
         uses: cclauss/GitHub-Action-for-pytest@0.5.0
         with:
-          args: pytest --rootdir ../.. tests/unit/test_itree_data.py
+          args: pytest ./tests/unit
