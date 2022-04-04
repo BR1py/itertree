@@ -12,6 +12,8 @@ jobs:
         run: |
           python setup.py install
           pip install pytest
+          pip install numpy 
+        # temporarily install numpy, bug in module's dependencies.
       - name: GitHub Action for pytest
         run: python -m pytest ./tests/unit
         #uses: cclauss/GitHub-Action-for-pytest@0.5.0
