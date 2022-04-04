@@ -6,6 +6,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v3
+      - name: Switch to Current Branch
+        run: git checkout ${{ env.BRANCH }}
       - name: Install the package
         run: python setup.py install
       - name: GitHub Action for pytest
