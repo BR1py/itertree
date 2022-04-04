@@ -44,9 +44,6 @@ class TestiTDataModelInit:
 
 class TestiTDataModelProperties:
 
-    def test_is_iTDataModel_property(self, setup_no_argument):
-        assert setup_no_argument.is_iTDataModel is True
-
     def test_is_empty_property(self, setup_no_argument, setup_fake_argument):
         assert setup_no_argument.is_empty is True and setup_fake_argument.is_empty is False
 
