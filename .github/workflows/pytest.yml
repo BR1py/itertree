@@ -13,7 +13,7 @@ jobs:
           python setup.py install
           pip install pytest
       - name: GitHub Action for pytest
-        run: python -m pytest
+        run: python -m pytest ./tests/unit
         #uses: cclauss/GitHub-Action-for-pytest@0.5.0
         #with:
         #  args: pytest --verbose --collect-only
