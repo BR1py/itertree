@@ -59,7 +59,7 @@ from .itree_filter import iTFilterItemType
 from .itree_data import iTData, iTDataReadOnly
 from .itree_main import iTree, iTreeReadOnly, iTreeLink, iTreeTemporary,iTreePlaceHolder
 
-DT_SERIALIZE_VERSION = "1.1.0"
+DT_SERIALIZE_VERSION = "1.1.1"
 
 
 class iTStdObjSerializer(object):
@@ -380,7 +380,7 @@ class iTStdRenderer(object):
         :param _level: internal parameter for recursive calls (do not use)
         :return: string containing the pretty print aoutput
         """
-        if not hasattr(itree_object, 'is_iTree'):
+        if not isinstance(itree_object, iTree):
             raise TypeError('Can only render iTree objects, got %s instead' % (type(itree_object)))
         if _level == 0:
             print(self.__create_item_string(itree_object))
@@ -404,7 +404,7 @@ class iTStdRenderer(object):
         :param _level: internal parameter for recursive calls (do not use)
         :return: string containing the pretty print aoutput
         """
-        if not hasattr(itree_object, 'is_iTree'):
+        if not isinstance(itree_object, iTree):
             raise TypeError('Can only render iTree objects, got %s instead' % (type(itree_object)))
         if _level == 0:
             output = self.__create_item_string(itree_object)
@@ -421,7 +421,7 @@ class iTStdRenderer(object):
 
     def render(self, itree_object, item_filter=None):
         """
-         creates a pretty print from iTree object
+         creates a pretty print from iTree object and prints it stdout
 
          Note:: Filtered renderings contains always the root object and the added children might have
                confusing indentation levels because the parent elements might be filtered out
@@ -457,7 +457,7 @@ class iTStdRenderer(object):
         :param _only_print_tree: True/False print or create return string
         :return: string containing the pretty print a output
         """
-        if not hasattr(itree_object, 'is_iTree'):
+        if not isinstance(itree_object, iTree):
             raise TypeError('Can only render iTree objects, got %s instead' % (type(itree_object)))
         output=[]
         items=[itree_object]

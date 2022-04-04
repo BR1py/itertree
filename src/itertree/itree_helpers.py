@@ -37,12 +37,6 @@ import fnmatch
 import operator
 import itertools
 from collections import namedtuple
-# We are testing here if numpy is available
-import numpy as np
-try:
-    np_object=np.object_
-except TypeError:
-    np_object=np.object
 
 
 #CONSTANTS used as parameters of methods in DataTree and related classes

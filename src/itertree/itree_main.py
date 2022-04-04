@@ -136,14 +136,19 @@ class iTree(blist):
                                           be made.
     """
 
-    __slots__ = (
-        '_tag', '_parent', '_map', '_coupled', '_data', '_cache', '_def_serializer', '_get_return','_link')
+    # we define some static private variables:
+    _is_read_only=False
+    _is_temporary=False
+    _is_placeholder=False
+    _is_linked=False
+    # make global local
+    _get_return = __GETITEM_RETURN__
+
+    __slots__ = ('_tag', '_parent', '_map', '_coupled', '_data', '_cache', '_def_serializer', '_link')
 
     def __init__(self, tag, data=None, subtree=None):
-        global __GETITEM_RETURN__
         super().__init__()
-        # make global local
-        self._get_return = __GETITEM_RETURN__
+
         t = type(tag)
         if (t is int) or (t is TagIdx):
             raise TypeError('Given tag cannot be used in iTree wrong type (int or TagIdx)')
@@ -153,11 +158,16 @@ class iTree(blist):
         self._link=None
         self._cache = (0, 0)
 
-        (subtree is None) or self._load_subtree(subtree)
+        if subtree is not None:
+            self._load_subtree(subtree)
 
-        t = type(data)
-        self._data = (data is None) and iTData() or \
-                     ((t is iTData or t is iTDataReadOnly) and data or iTData(data_items=data))
+        if data is None:
+            self._data =iTData()
+        #elif hasattr(data,'is_iTData'):
+        elif isinstance(data,iTData):
+            self._data =  data
+        else:
+            self._data = iTData(data_items=data)
 
     def init_serializer(self, force=False, exporter=None, importer=None, serializer=None, renderer=None) -> None:
         """
@@ -238,7 +248,7 @@ class iTree(blist):
                 tidx = self.__get_family_insertion_idx(family, idx)
                 value._cache = (idx, tidx)
                 family.insert(tidx, value)
-            except:
+            except (KeyError,IndexError):
                 m.__setitem__(v_tag, blist((value,)))
         return value
 
@@ -296,7 +306,7 @@ class iTree(blist):
                 del family[del_item.tag_idx[1]]
             del_item._parent = None
             return del_item
-        elif ((t is TagIdx) or (t is TagIdxStr) or (t is TagIdxBytes)):
+        elif isinstance(key,TagIdx):
             family = m[key[0]]
             del_item = family.pop(key[1])
             if len(family) == 0:
@@ -324,7 +334,7 @@ class iTree(blist):
                     m.pop(tag_idx.tag)
                 del_item._parent = None
             return iter(del_list)
-        elif hasattr(key, 'is_iTree'):
+        elif isinstance(key, iTree):
             idx = key.idx
             super().__delitem__(idx)
             tag_idx = key.tag_idx
@@ -372,8 +382,8 @@ class iTree(blist):
         :param factor: integer to multiply with
         :return: iTree object containing multiplied children
         """
-        if type(factor) is int:
-            return iTree(self._tag, data=self._data, subtree=[self.copy() for _ in range(factor)])
+        return iTree(self._tag, data=self._data, subtree=[self.__copy__() for _ in range(factor)])
+
 
     def __add__(self, other):
         """
@@ -615,15 +625,6 @@ class iTree(blist):
         return self._data.__delitem__(*args, **kwargs)
 
     @property
-    def is_iTree(self):
-        """
-        This property is used to quick identify the iTree objects (much quicker than isinstance())
-
-        :return: True
-        """
-        return True
-
-    @property
     def parent(self):
         """
         property contains the parent item
@@ -663,7 +664,7 @@ class iTree(blist):
 
         :return: False
         """
-        return False
+        return self._is_read_only
 
     @property
     def is_temporary(self):
@@ -672,7 +673,7 @@ class iTree(blist):
 
         :return: False
         """
-        return False
+        return self._is_temporary
 
     @property
     def is_placeholder(self):
@@ -681,7 +682,7 @@ class iTree(blist):
 
         :return: False
         """
-        return False
+        return self._is_placeholder
 
     @property
     def is_linked(self):
@@ -690,7 +691,7 @@ class iTree(blist):
 
         :return: False
         """
-        return False
+        return self._is_linked
 
     @property
     def link_item(self):
@@ -964,7 +965,7 @@ class iTree(blist):
         """
         new = iTree(self._tag,
                     data=self._data.__copy__(),
-                    subtree=[i.__copy__() for i in self.iter_children()]
+                    subtree=[i.__copy__() for i in super(iTree, self).__iter__()]
                     # here we create a recursion -> subtree is copied!!
                     )
 
@@ -997,7 +998,7 @@ class iTree(blist):
         """
         new = iTree(self._tag,
                     data=self._data.__deepcopy__(),
-                    subtree=[i.__deepcopy__() for i in self.iter_children()]  # here we create a recursion!
+                    subtree=[i.__deepcopy__() for i in super(iTree, self).__iter__()]  # here we create a recursion!
                     )
         return new
 
@@ -1090,23 +1091,22 @@ class iTree(blist):
             if item._parent is not None:
                 raise RecursionError('Given item has already a parent iTree!')
         except AttributeError:
-            if type(item) is not iTree:
+            if not isinstance(item,iTree):
                 raise TypeError('In iTree only children of type iTree can be integrated')
             raise
-        t = type(insert_key)
-        if t is int:
+        if type(insert_key) is int:
             idx = insert_key
             if idx < 0:
                 idx = super().__len__() - idx
-        elif (t is TagIdx) or (t is TagIdxStr) or (t is TagIdxBytes):
+        elif isinstance(insert_key, TagIdx):
             idx = self.__getitem__(insert_key).idx
         else:
             raise TypeError('In iTree only children of type iTree can be integrated')
         item._parent = self
         super().insert(idx, item)
         tag = item._tag
-        m = self._map
         try:
+            m = self._map
             if m.__contains__(tag):
                 family = m.__getitem__(tag)
                 tidx = self.__get_family_insertion_idx(family, idx)
@@ -1114,7 +1114,7 @@ class iTree(blist):
             else:
                 m.__setitem__(tag, blist((item,)))
                 tidx = 0
-        except AttributeError:
+        except (AttributeError,IndexError):
             self._map={tag: blist((item,))}
             tidx = 0
         item._cache = (idx, tidx)
@@ -1133,7 +1133,7 @@ class iTree(blist):
             if item._parent is not None:
                 raise RecursionError('Given item has already a parent iTree!')
         except AttributeError:
-            if type(item) is not iTree:
+            if not isinstance(item,iTree):
                 raise TypeError('In iTree only children of type iTree can be integrated')
             raise
         # append item:
@@ -1143,9 +1143,9 @@ class iTree(blist):
         idx = sl.__len__()
         sl.append(item)
         # append to map
-        m = self._map
         tag = item._tag
-        try:
+        if idx:
+            m = self._map
             if m.__contains__(tag):
                 family = m.__getitem__(tag)
                 tidx = family.__len__()
@@ -1154,8 +1154,8 @@ class iTree(blist):
                 # first time tag is used!
                 tidx = 0
                 m.__setitem__(tag, blist((item,)))
-        except AttributeError:
-            self._map={tag: blist((item,))}
+        else:
+            self._map = {tag: blist((item,))}
             tidx = 0
         item._cache = (idx, tidx)
         return True
@@ -2151,7 +2151,7 @@ class iTree(blist):
         :param item_filter: filter
         :return: final result
         """
-        if hasattr(result,'is_iTree'):
+        if isinstance(result,iTree):
             if item_filter is None:
                 return iter((result,))
             elif item_filter(result):
@@ -2201,6 +2201,15 @@ class iTree(blist):
 
 
 class iTreeReadOnly(iTree):
+    """
+    This iTree object is read only the initial parameters given cannot be changed the object remains
+    static in the tree and can only be changed when deleted and replaced
+    """
+    _is_read_only=True
+    _is_temporary=False
+    _is_placeholder=False
+    _is_linked=False
+
     __slots__ = (
         '_tag', '_parent', '_map', '_coupled', '_data', '_cache', '_def_serializer')
 
@@ -2297,24 +2306,6 @@ class iTreeReadOnly(iTree):
         """
         raise PermissionError('The iTreeReadOnly element is read_only (linked or read_only flag)!')
 
-    @property
-    def is_iTreeReadOnly(self):
-        """
-        identifies iTreeReadOnly objects
-
-        :return: True
-        """
-        return True
-
-    @property
-    def is_read_only(self):
-        """
-        flag marks the object as read only
-
-        :return: True
-        """
-        return True
-
     def __repr__(self):
         """
         create representation string from which the object can be reconstructed via eval (might not work in case of
@@ -2337,15 +2328,13 @@ class iTreeReadOnly(iTree):
 
 
 class iTreeTemporary(iTree):
-
-    @property
-    def is_temporary(self):
-        """
-        flag marks the object as temporary (will not be stored in a file)
-
-        :return: True
-        """
-        return True
+    """
+    This is a temporary item that will not be considered if the iTree is saved into a file.
+    """
+    _is_read_only=False
+    _is_temporary=True
+    _is_placeholder=False
+    _is_linked=False
 
     def __repr__(self):
         """
@@ -2384,6 +2373,12 @@ class iTreeLink(iTree):
     item will come back into the iTree.
 
     """
+
+    _is_read_only=False
+    _is_temporary=False
+    _is_placeholder=False
+    _is_linked=True
+
     __slots__ = (
         '_tag', '_parent', '_map',  '_data', '_cache', '_def_serializer', '_link')
 
@@ -2416,15 +2411,15 @@ class iTreeLink(iTree):
 
         """
         if self._parent is not None:
-            if self._parent.is_linked:
+            if self._parent._is_linked:
                 raise PermissionError('The parent is read_only (linked)!')
-        if item.is_temporary:
+        if item._is_temporary:
             raise TypeError('Given item is temporary and we cannot add temporary items as locals in a linked tree')
         try:
             old_item=super().__getitem__(key)
         except (KeyError,IndexError):
             return super().__setitem__(key, item)
-        if old_item.is_linked:
+        if old_item._is_linked:
             raise PermissionError('The target element is read_only (linked)!')
         else:
             return super().__setitem__(key,item)
@@ -2440,11 +2435,11 @@ class iTreeLink(iTree):
         :return: deleted item will be returned
         """
         if self._parent is not None:
-            if self._parent.is_linked:
+            if self._parent._is_linked:
                 raise PermissionError('The parent is read_only (linked)!')
         item=self.__getitem__(key)
-        if hasattr(item,'is_iTree'):
-            if item.is_linked:
+        if isinstance(item,iTree):
+            if item._is_linked:
                 raise PermissionError('The target element is read_only (linked)!')
             else:
                 # maybe the deleted local item must be replaced by a linked item:
@@ -2466,11 +2461,11 @@ class iTreeLink(iTree):
 
     def __iadd__(self, other):
         if self._parent is not None:
-            if self._parent.is_linked:
+            if self._parent._is_linked:
                 raise PermissionError('The parent is read_only (linked)!')
-        if other.is_temporary:
+        if other._is_temporary:
             raise TypeError('Given item is temporary and we cannot add temporary items as locals in a linked tree')
-        if other.is_linked:
+        if other._is_linked:
             raise PermissionError('__iadd__ operation is not possible with a linked element!')
         return super().__iadd__(other)
 
@@ -2493,9 +2488,9 @@ class iTreeLink(iTree):
         :return:
         """
         if self._parent is not None:
-            if self._parent.is_linked:
+            if self._parent._is_linked:
                 raise PermissionError('The parent is read_only (linked)!')
-        if item.is_temporary:
+        if item._is_temporary:
             raise TypeError('Given item is temporary and we cannot add temporary items as locals in a linked tree')
         if item._link is not None:
             if item._link._file_path is None and item._link._key_path is None:
@@ -2544,10 +2539,10 @@ class iTreeLink(iTree):
         :return: popped out item (parent set to None)
         """
         if self._parent is not None:
-            if self._parent.is_linked:
+            if self._parent._is_linked:
                 raise PermissionError('The parent is read_only (linked)!')
         item=super().__getitem__(key)
-        if item.is_linked:
+        if item._is_linked:
             raise PermissionError('The target element is read_only (linked)!')
         else:
             # maybe the deleted local item must be replaced by a linked item:
@@ -2591,18 +2586,6 @@ class iTreeLink(iTree):
 
 
     @property
-    def is_linked(self):
-        """
-        give info about we have a linked element
-
-        :return:
-
-                * True - linked
-                * False - not linked
-        """
-        return True
-
-    @property
     def is_link_root(self):
         """
         Is this item the highest level linked element?
@@ -2619,9 +2602,9 @@ class iTreeLink(iTree):
 
         :return: highest level linked item found in the parents
         '''
-        if self.is_linked:
+        if self._is_linked:
             parent = self._parent
-            if (parent is not None) and parent.is_linked:
+            if (parent is not None) and parent._is_linked:
                 return self._parent.link_root
             else:
                 return self
@@ -2645,7 +2628,7 @@ class iTreeLink(iTree):
 
         :return: converted item
         """
-        if item.is_linked:
+        if item._is_linked:
             return item
         data = item._data
         if type(data) is not iTDataReadOnly:
@@ -2661,7 +2644,7 @@ class iTreeLink(iTree):
 
         :return: result of the conversion
         """
-        if not item.is_linked:
+        if not item._is_linked:
             return item
         try:
             data=iTData(copy.deepcopy(item._data.data))
@@ -2681,7 +2664,7 @@ class iTreeLink(iTree):
 
         :return: None
         """
-        if self._parent is None or not self.is_linked:
+        if self._parent is None or not self._is_linked:
             raise SyntaxError('Item is not linked or has no parent, invalid operation!')
         return self._parent.make_child_local(self)
 
@@ -2695,16 +2678,16 @@ class iTreeLink(iTree):
         :param key: identification key for the child item that should be converted in a local item
         :return: None
         """
-        if hasattr(key,'is_iTree'):
+        if isinstance(key,iTree):
             item=key
         else:
             item=self.__getitem__(key)
-        if not item.is_linked:
+        if not item._is_linked:
             raise TypeError('The addressed item is already local!')
         parent=self._parent
         if parent is None:
             raise SyntaxError('The item has no valid parent we cannot change to local!')
-        if parent.is_linked:
+        if parent._is_linked:
             raise TypeError('The item parent is linked we cannot make this item local!')
         local_item=self._convert_to_local_item(item)
         # keep the link to the overloaded element
@@ -2728,7 +2711,7 @@ class iTreeLink(iTree):
                     tags[tag] = self.get_last_local_idx(tag)
                 if tags[tag] is None:
                     continue
-                if not i.is_linked and not i.is_placeholder and not i.is_temporary:
+                if not i._is_linked and not i._is_placeholder and not i._is_temporary:
                     yield i
                 else:
                     idx=tags.get(tag)
@@ -2739,7 +2722,7 @@ class iTreeLink(iTree):
                             tags[tag]=None
         else:
             for i in self.iter_children():
-                if not i.is_linked:
+                if not i._is_linked:
                     yield i
 
     def get_last_local_idx(self,tag):
@@ -2754,7 +2737,7 @@ class iTreeLink(iTree):
         :return: last local item idx in tag family or None (no local item found)
         """
         for item in reversed(self._map[tag]):
-            if not item.is_linked and not item.is_placeholder and not item.is_temporary:
+            if not item._is_linked and not item._is_placeholder and not item._is_temporary:
                 return item.tag_idx[1]
         return None
 
@@ -2809,7 +2792,7 @@ class iTreeLink(iTree):
                             return False
                         else:
 
-                            if load_item.is_linked:
+                            if load_item._is_linked:
                                 raise TypeError('Given key_path is already linked (circular protection); '
                                                 'loading of linked items is stopped at item %s!'%self.tag_idx_path)
                             else:
@@ -2817,12 +2800,12 @@ class iTreeLink(iTree):
                                           'loading of linked items is stopped at item %s!'%self.tag_idx_path)
                 sl = super(iTree, self)
                 # now we take over the tree
-                local_items={i.tag_idx:i for i in self.iter_children() if not i.is_linked}
+                local_items={i.tag_idx:i for i in self.iter_children() if not i._is_linked}
                 sl.clear()
                 # here we run a special extend (we don't care about parents and is_linked flag)
                 m = self._map={}
                 for item in load_item:
-                    if item.is_linked:
+                    if item._is_linked:
                         if not item.load_links(force=force,delete_invalid_items=delete_invalid_items):
                             load_ok=False
                             continue
@@ -2835,7 +2818,7 @@ class iTreeLink(iTree):
                         new_item = local_items.pop(tag_idx)
                         new_item._parent = None
                         new_item._link = iTLink(link_item=item)
-                        if new_item.is_placeholder:
+                        if new_item._is_placeholder:
                             new_item = self._convert_to_linked_item(item)
                     new_item._parent = self
                     idx = sl.__len__()
@@ -2942,6 +2925,12 @@ class iTreePlaceHolder(iTreeReadOnly):
     """
     place holder item that helps to keep items name in the overloading mechanism
     """
+
+    _is_read_only=False
+    _is_temporary=False
+    _is_placeholder=True
+    _is_linked=False
+
     __slots__ = (
         '_tag', '_parent', '_map', '_coupled', '_data', '_cache', '_def_serializer', '_link')
 
@@ -2952,15 +2941,6 @@ class iTreePlaceHolder(iTreeReadOnly):
         else:
             self._tag=tag
         super().__init__(tag)
-
-    @property
-    def is_placeholder(self):
-        """
-        flag tells that this is a placeholder object
-
-        :return: True
-        """
-        return True
 
     def __repr__(self):
         """

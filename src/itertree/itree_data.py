@@ -30,8 +30,10 @@ For more information see: https://en.wikipedia.org/wiki/MIT_License
 This part of code contains the helper functions related to the iTree data attribute
 """
 
+import abc
 import copy
 from collections import OrderedDict
+
 
 # special internal constant used for the item that is stored without giving a key
 __NOKEY__ = ('__iTree_NOKEY__',)
@@ -71,14 +73,6 @@ class iTDataModel(object):
         self._formatter_cache = None
 
     @property
-    def is_iTDataModel(self):
-        """
-        class identifier used in hasattr() method
-        :return: True
-        """
-        return True
-
-    @property
     def is_empty(self):
         """
         tells if the iTreeDataModel is empty or contains a value
@@ -92,7 +86,7 @@ class iTDataModel(object):
         the stored value
         :return: object stored in value
         """
-        if self.is_empty:
+        if self._value == __NOVALUE__:
             return None
         return self._value
 
@@ -101,7 +95,7 @@ class iTDataModel(object):
         clears (deletes) the current value content and sets the state to "empty"
         :return: returns the value object that was stored in the iTreeDataModel
         """
-        v = self._value
+        v = self.value
         self._value = __NOVALUE__
         return v
 
@@ -145,7 +139,7 @@ class iTDataModel(object):
         :return:
         """
         state,text=self._validator(value)
-        if state !=0:
+        if state !=True:
             raise TypeError(text)
         self._value = value
         self._formatter_cache = None
@@ -194,7 +188,6 @@ class iTData(dict):
     """
     Standard itertree Data management object might be overloaded or changed by the user
     """
-    __slots__=()
 
     def __init__(self, data_items=None):
         """
@@ -208,18 +201,16 @@ class iTData(dict):
         if data_items is None:
             super().__init__()
         else:
-            t = type(data_items)
-            if (t is dict) or (t is OrderedDict) or (t is list) or (t is iTData) or (t is iTDataReadOnly):
-                # we can instance the whole data set via these types
+            try:
                 super().__init__(data_items)
-            else:
+            except (TypeError,ValueError):
                 super().__init__([(__NOKEY__, data_items)])
 
     def __copy__(self):
         return iTData(super().copy())
 
     def __deepcopy__(self):
-        iTData(copy.deepcopy(super().copy()))
+        iTData(copy.deepcopy(super()))
 
     def __setitem__(self, key, value=__NOKEY__):
         """
@@ -233,12 +224,12 @@ class iTData(dict):
         if value == __NOKEY__:
             value = key
             key = __NOKEY__
-        if hasattr(value, 'is_iTDataModel'):
+        if isinstance(value,iTDataModel):
             return super(iTData, self).__setitem__(key, value)
         else:
             if super(iTData, self).__contains__(key):
                 old_item = super(iTData, self).__getitem__(key)
-                if hasattr(old_item, 'is_iTDataModel'):
+                if isinstance(old_item, iTDataModel):
                     old_item.set(value)
                     return super(iTData, self).__setitem__(key, old_item)
             return super(iTData, self).__setitem__(key, value)
@@ -255,13 +246,21 @@ class iTData(dict):
         for k, v in update_dict.items():
             if super(iTData, self).__contains__(k):
                 i = super(iTData, self).__getitem__(k)
-                if hasattr(i, 'is_iTDataModel'):
-                    if not hasattr(v, 'is_iTDataModel'):
+                if isinstance(i, iTDataModel):
+                    if not isinstance(v, iTDataModel):
                         back = i.check(v)
                         if back[0] != 0:
                             raise TypeError('Item (%s,%s): %s' % (repr(k), repr(v), back[1]))
         for k, v in update_dict.items():
             self.__setitem__(k,v)
+
+    @property
+    def is_iTData(self):
+        """
+        used for class identification
+        :return: True
+        """
+        return True
 
     @property
     def data(self):
@@ -270,14 +269,6 @@ class iTData(dict):
         :return: dict
         """
         return super(iTData, self).copy()
-
-    @property
-    def is_iTData(self):
-        """
-        used for identification of this class
-        :return: True
-        """
-        return True
 
     @property
     def is_empty(self):
@@ -312,7 +303,7 @@ class iTData(dict):
             return default_value
         if return_type == FULL:
             return item
-        if hasattr(item, 'is_iTDataModel'):
+        if isinstance(item,iTDataModel):
             if return_type == STR:
                 return format(item)
             return item.value
@@ -333,7 +324,7 @@ class iTData(dict):
         """
         if value_only:
             item = super(iTData, self).__getitem__(key)
-            if hasattr(item, 'is_iTreeDataModel'):
+            if isinstance(item, iTDataModel):
                 return item.clear_value()
         return super(iTData, self).__delitem__(key)
 
@@ -349,7 +340,7 @@ class iTData(dict):
         except KeyError:
             # nothing to check item does not exist
             return True, 'ok'
-        if hasattr(item, 'is_iTreeDataModel'):
+        if isinstance(item, iTDataModel):
             return item.check(value)
         return True, 'ok'
 
@@ -363,7 +354,7 @@ class iTData(dict):
         """
         if value_only:
             item = super(iTData, self).__getitem__(key)
-            if hasattr(item, 'is_iTreeDataModel'):
+            if isinstance(item, iTDataModel):
                 return item.clear_value()
         return super(iTData, self).pop(key)
 
@@ -414,11 +405,10 @@ class iTDataReadOnly(iTData):
     def __deepcopy__(self):
         iTDataReadOnly(copy.deepcopy(super(iTData,self).copy()))
 
-
     @property
     def is_iTDataReadOnly(self):
         """
-        used for identification of this class
+        # used for class identification
         :return: True
         """
         return True
@@ -431,4 +421,3 @@ class iTDataReadOnly(iTData):
         :return: dict
         """
         return super(iTDataReadOnly, self).data
-
