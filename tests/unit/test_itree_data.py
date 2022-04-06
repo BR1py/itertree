@@ -105,9 +105,11 @@ class TestiTDataModelMethods:
        assert None not in setup_fake_argument
 
     def test_contains_empty(self, setup_no_argument):
-        # Failing, need to define what happens here.
-        # When calling None in an empty list we get False.
-       assert None in setup_no_argument
+       assert Data.__NOVALUE__ in setup_no_argument
+
+    def test_contains_none(self):
+        object_under_test = Data.iTDataModel(value=None)
+        assert None in object_under_test
 
     def test_not_contains_empty(self, setup_no_argument):
        assert __argument__ not in setup_no_argument
