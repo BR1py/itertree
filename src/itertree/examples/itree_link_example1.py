@@ -37,66 +37,63 @@ import shutil
 import tempfile
 from itertree import *
 
-#We create a small iTree:
+# We create a small iTree:
 root = iTree('root')
 root += iTree('A')
 root += iTree('B')
-B=iTree('B')
-B +=iTree('Ba')
-B +=iTree('Bb')
-B +=iTree('Bb') #we create multiple 'Bb' elements to show how the placeholders are used during save and load
-B +=iTree('Bc')
+B = iTree('B')
+B += iTree('Ba')
+B += iTree('Bb')
+B += iTree('Bb')  # we create multiple 'Bb' elements to show how the placeholders are used during save and load
+B += iTree('Bc')
 root += B
 
-#Now we create a internal link:
-linked_element=iTreeLink('internal_link',link_key_path=['/',TagIdx('B',1)],load_links=False)
+# Now we create a internal link:
+linked_element = iTreeLink('internal_link', link_key_path=['/', TagIdx('B', 1)], load_links=False)
 root.append(linked_element)
 print('iTree with linked element but no links loaded:')
 print(root.render())
 root.load_links()
 print('iTree with linked element with links loaded:')
 print(root.render())
-#changes in "B" are only considered after reloading the links
-B +=iTree('B_post_append')
-print('iTree with updated linked element but no reload of the links:\n',root.render())
+# changes in "B" are only considered after reloading the links
+B += iTree('B_post_append')
+print('iTree with updated linked element but no reload of the links:\n', root.render())
 print(root.render())
 
 root.load_links(force=True)
 print('iTree with updated linked element and with links reloaded:')
 print(root.render())
-#get the linked element
-il=root[TagIdx('internal_link',0)]
-#append an item
+# get the linked element
+il = root[TagIdx('internal_link', 0)]
+# append an item
 il.append(iTree('new'))
-#we make second element local
-local=il.make_child_local(2)
-local+=iTree('sublocal')
+# we make second element local
+local = il.make_child_local(2)
+local += iTree('sublocal')
 print('iTree with linked element and additional local items:')
 print(root.render())
 
-#we store the iTree in a file for later usage:
-temp_dir=tempfile.mkdtemp()
-target_path = os.path.join(temp_dir,'out_linked.dt')
+# we store the iTree in a file for later usage:
+temp_dir = tempfile.mkdtemp()
+target_path = os.path.join(temp_dir, 'out_linked.dt')
 root.dump(target_path=target_path, overwrite=True, pack=False)
 
 # if we delete the local object the linked object will come back in the tree:
-del il[TagIdx('Bb',1)]
+del il[TagIdx('Bb', 1)]
 print('iTree with linked element and the overloading local item deleted:')
 print(root.render())
 
-#we load without loading the links
-reload_tree=iTree('root').load(target_path,load_links=False)
-#we do not need the stored data anymore:
+# we load without loading the links
+reload_tree = iTree('root').load(target_path, load_links=False)
+# we do not need the stored data anymore:
 shutil.rmtree(temp_dir)
 print('iTree load from file with load_links parameter disabled (to make internal structure visible):')
 print('-> See the placeholder element that was added to keep the TagIdx of the local item Bb[1]')
 
 print(reload_tree.render())
 
-#finally we load the links again and we expect the result before we saved the tree in the file
+# finally we load the links again and we expect the result before we saved the tree in the file
 print('iTree load from file with load_links() executed:')
 reload_tree.load_links()
 print(reload_tree.render())
-
-
-

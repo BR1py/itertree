@@ -142,6 +142,7 @@ class Test_iTreeBase:
 
         a = TagMultiIdx('aaa', slice(1, 2, 3))
         assert hasattr(a, 'is_TagMultiIdx')
+        print('PASSED')
 
     def test1_dt_base_test(self):
         ''''
@@ -480,28 +481,32 @@ class Test_iTreeBase:
 
         root = iTree('root')
         assert len(root.data) == 0
+        assert root.data.is_empty
 
-        # we just check to reach the chack here for deeper data testing seet test_dt_data.py
-        assert root.d_chk('TEST')[0] == True
+        # we just check to reach the check here for deeper data testing we have mor eunit tests
+        assert root.d_check('TEST')=='TEST'
 
         # no key data:
         root.d_set('TEST')
         assert len(root.data) == 1
         assert root.d_get() == 'TEST'
+        assert root.d_check('TEST') == 'TEST'
 
         # key based data
         assert len(root.data) == 1
-        root.d_set('a', 1)
+        root.d_set('a', Data.iTDataModelAny(1))
         root.d_set('b', 2)
         assert len(root.data) == 3
         assert root.d_get('a') == 1
+        assert root.d_check(2,'a') == 2
+
         assert root.d_get('b') == 2
         assert root.d_get() == 'TEST'
 
         assert root.d_pop() == 'TEST'
         assert len(root.data) == 2
         assert root.d_pop('a') == 1
-        assert len(root.data) == 1
+        assert len(root.data) == 2
 
         print('PASSED')
 

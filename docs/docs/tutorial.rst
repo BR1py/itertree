@@ -18,20 +18,20 @@ Using the itertree package
 
 To understand the full functionality of itertree the user should have a look on the related examples which can be found in the example folder of itertree.
 
-In this chapter we try to dive in the functions of itertree in a clear structured way. The user might look in the class description of the modules too. But the huge number of methods in the iTree class might be very confusing. And we hope this chapter orders the things in a much better way.
+In this chapter we try to dive in the functions of itertree in a clear structured way. The user might look in the class description of the modules too. But the huge number of methods in the `iTree` class might be very confusing. And we hope this chapter orders the things in a much better way.
 
 ***************************
 Construction of an itertree
 ***************************
 
 
-The first step in the construction of a itertree is to instance the :ref:`itertree iTree class`.
+The first step in the construction of a itertree is to instance the :ref:`itertree `iTree` class`.
 
 
 .. autoclass:: itertree.iTree
     :members: __init__
 
-Instance the iTree object:
+Instance the `iTree` object:
 ::
    >>> item1=iTree('item1') # itertree item with the tag 'item1'
    >>> item2=iTree('item2', data={'mykey':1}) # instance a iTree-object with data content (defined as a dict)
@@ -39,9 +39,9 @@ Instance the iTree object:
    >>> item4=iTreeLink('linked_item', data={'mykey':2}, link_file_path='dt.itz',link_key_path=iTreeTagIdx(child',0),load_links=True) # instance a iTree-object containing a link
    
 
-iTreeTemporary objects can be filtered out and when dumping the whole iTree into a file the iTreeTemporary items are ignored and not stored.
+iTreeTemporary objects can be filtered out and when dumping the whole `iTree` into a file the iTreeTemporary items are ignored and not stored.
 
-In case a link is set by using the iTreeLink class will integrate the childs of the linked iTree-objects as it's own childs into the tree. The iTree object can have own properties like temporary or own data. But it can also contain own, local children ( see `iTree linked sub-trees`_ ).
+In case a link is set by using the iTreeLink class will integrate the childs of the linked iTree-objects as it's own childs into the tree. The `iTree` object can have own properties like temporary or own data. But it can also contain own, local children ( see `iTree linked sub-trees`_ ).
 
 
 To add or manipulate the children of an item we have several possibilities. The following direct operations are recommended for structural manipulations in the tree:
@@ -84,11 +84,11 @@ The addition of iTrees is possible the result contains always the properties of 
     >>> c
     iTree("'a'", data="{'mykey': 1}", subtree=[iTree("'a1'"), iTree("'a2'"), iTree("'b1'"), iTree("'b2'")])
 
-Multiplication of a iTree is possible too the result is a list of iTree copies of the original one.
+Multiplication of a `iTree` is possible too the result is a list of `iTree` copies of the original one.
 ::
     itree_list=iTree('a')*1000 # creates a list of 1000 copies of the original iTree
     >>> root=iTree('root')
-    >>> root.extend(itree_list) # we can extend an existing iTree with the list (add 1000 identical children)
+    >>> root.extend(itree_list) # we can extend an existing `iTree` with the list (add 1000 identical children)
     True
 
 
@@ -96,7 +96,7 @@ Multiplication of a iTree is possible too the result is a list of iTree copies o
 item access
 ***************************
 
-The items in the iTree can be accessed via __getitem__() method:
+The items in the `iTree` can be accessed via __getitem__() method:
 
 .. autofunction:: itertree.iTree.__getitem__()
 
@@ -163,7 +163,7 @@ Because the __eq__() method (== operator) is internally used for same item objec
 
 .. autofunction:: itertree.iTree.__len__()
 
-Based on the iTree length the comparison operators <; <=; >; >= are available too.
+Based on the `iTree` length the comparison operators <; <=; >; >= are available too.
 
 .. autofunction:: itertree.iTree.count()
 
@@ -171,10 +171,10 @@ Based on the iTree length the comparison operators <; <=; >; >= are available to
 iTree properties
 ***************************
 
-As we will see later on some properties of the iTree object can be modified by the related methods. 
-Warning:: The user should NEVER modify any of the given properties directly. Especially the not discussed private properties (marked with the beginning underline). Direct modifications will normally lead into inconsistencies of the iTree object!
+As we will see later on some properties of the `iTree` object can be modified by the related methods.
+Warning:: The user should NEVER modify any of the given properties directly. Especially the not discussed private properties (marked with the beginning underline). Direct modifications will normally lead into inconsistencies of the `iTree` object!
 
-The iTree object contains the following general properties:
+The `iTree` object contains the following general properties:
 
 .. autofunction:: itertree.iTree.root
 
@@ -236,15 +236,15 @@ Item identification properties:
     >>> root[-1].tag_idx
     TagIdx((1, 2), 1)
 
-As shown in the last example hashable objects can be used as tags for the itertree items to be stored in the iTree object. Even for those kind of tag objects it is possible to store multiple items with the same tag. In the example the enumeration inside the tag family can be seen in the index enumeration in the TagIdx object.
+As shown in the last example hashable objects can be used as tags for the itertree items to be stored in the `iTree` object. Even for those kind of tag objects it is possible to store multiple items with the same tag. In the example the enumeration inside the tag family can be seen in the index enumeration in the TagIdx object.
 
-Beside those structural properties the iTree objects contains some more properties that might be modified by the related methods.
+Beside those structural properties the `iTree` objects contains some more properties that might be modified by the related methods.
 
 .. autofunction:: itertree.iTree.coupled_object
 
 .. autofunction:: itertree.iTree.set_coupled_object()
 
-Different than the data the coupled_obj is just a pointer to another python object. E.g. by this you might couple the iTree to a graphical user interface object e.g. an item in a hypertreelist or it can be used to couple the iTree object to an item in a mapping dictionary. The property couple_obj is not managed by the iTree object it's just a place to store a pointer. In file exports or string exports this information will not be considered.
+Different than the data the coupled_obj is just a pointer to another python object. E.g. by this you might couple the `iTree` to a graphical user interface object e.g. an item in a hypertreelist or it can be used to couple the `iTree` object to an item in a mapping dictionary. The property couple_obj is not managed by the `iTree` object it's just a place to store a pointer. In file exports or string exports this information will not be considered.
 
 ***************************
 iTree data related methods
@@ -254,9 +254,9 @@ iTree data related methods
 
 This is the data property. The property contains the iData objects which behaves in general like a dict. But there are two excepetions that must be considered: 
 * The (__NOKEY__) key is an implizit key that will be used in case the user gives only one value (no_key) to the d_set() method. Then the given parameter will be stored in the (__NOKEY__) item of the dict.
-* In case a dict item contains a iDataModel object the given value in iTree.d_set() will be checked against the data model.
+* In case a dict item contains a iDataModel object the given value in `iTree`.d_set() will be checked against the data model.
 
-To manipulate data you can use the functions of the iTree.data object or can use the quick access functions in iTree object ( methods related to data access have all the prefix *d_* ):
+To manipulate data you can use the functions of the `iTree`.data object or can use the quick access functions in `iTree` object ( methods related to data access have all the prefix *d_* ):
 
 .. autofunction:: itertree.iTree.d_get
 
@@ -282,7 +282,7 @@ To manipulate data you can use the functions of the iTree.data object or can use
 
 .. autofunction:: itertree.Data.iTData.check()
 
-Do not replace the iTree.data object with another object (iTree.data is just a property which is linking into the internal structure). You will destroy a part of the functionality, use iTree.data.clear() and iTree.data.update() instead.
+Do not replace the `iTree`.data object with another object (iTree.data is just a property which is linking into the internal structure). You will destroy a part of the functionality, use `iTree`.data.clear() and `iTree`.data.update() instead.
 
 ***************************
 iTree iterators and queries
@@ -322,11 +322,11 @@ For filter creation we have some helper classes (itree_filter.py)
 
 .. autofunction:: itertree.Filter.iTFilterDataValueMatch()
 
-Depending on the data stored in the iTree.data object the user might create own filters. In general just a method must be created that takes the item as an argument and that delivers True in case of a match and False in case of no match. We have also a base class (super-class) of the given filters available which might be used for own filters too.
+Depending on the data stored in the `iTree`.data object the user might create own filters. In general just a method must be created that takes the item as an argument and that delivers True in case of a match and False in case of no match. We have also a base class (super-class) of the given filters available which might be used for own filters too.
 
 .. autofunction:: itertree.Filter.iTFilterBase()
 
-The fitering in iTree is very effective and quick. As an example one might execute the example script itree_usage_example1.py where the itertree.Filter.iTFilterData object is used.
+The fitering in `iTree` is very effective and quick. As an example one might execute the example script itree_usage_example1.py where the itertree.Filter.iTFilterData object is used.
 
 ***************************
 iTree formatted output
@@ -353,23 +353,23 @@ The file storage methods and the rendering methods are initialized by:
 
 .. autofunction:: itertree.iTree.init_serializer()
 
-This method is implicit executed and set to the default serializing functions of itertree. The user might load his own functionalities explicit by using this method or he might overload the iTree class and the init_serializer() method with his own functionality (e.g. an xml export/import might be realized by this).
+This method is implicit executed and set to the default serializing functions of itertree. The user might load his own functionalities explicit by using this method or he might overload the `iTree` class and the init_serializer() method with his own functionality (e.g. an xml export/import might be realized by this).
 
 ***************************
 iTree linked sub-trees
 ***************************
 
-The iTree objects can be merged to one main tree from different source files by using the iTreeLink class. The result is a merged iTree that contains all the linked subtrees. Beside the linking from different files links inside a iTree structure (internal links) can be defined too. 
+The `iTree` objects can be merged to one main tree from different source files by using the iTreeLink class. The result is a merged `iTree` that contains all the linked subtrees. Beside the linking from different files links inside a `iTree` structure (internal links) can be defined too.
 
 Additionally the user can manipulate the linked items by making them local (covering) or by appending local items. The functionalities given here are limited to operations that do not imply a reordering of the elements in the tree. The reason for this is that the linked items cannot be reordered furthermore they gave the tree a fixed, static structure.  E.g. mainly we have `append()` and `make_self_local()` functions and we cannot `appendleft()` or `insert()` because this would mean we have to reorder the other elements. A change of a linked structure can only be made by manipulating the original source structure. We allow only the localization of items that are a child of the linked root element, in deeper levels this is not possible.
 
-The local items in a linked iTree are integrated in the tree during the load process of the linked elements. The identification is always made via the TagIdx of the item. The local storage of the tree contains iTreePlaceholder elements which will be replaced by the linked in elements during the load process. Those placeholders are needed to create the matching tag-idx combination for the real elements that should be kept after reload. In case the loaded structure is changed and and no matching item is found the iTreePlaceHolder items will remain in the iTree. All appended local items which are outside of the linked structure will be found at the end of the itertree.
+The local items in a linked `iTree` are integrated in the tree during the load process of the linked elements. The identification is always made via the TagIdx of the item. The local storage of the tree contains iTreePlaceholder elements which will be replaced by the linked in elements during the load process. Those placeholders are needed to create the matching tag-idx combination for the real elements that should be kept after reload. In case the loaded structure is changed and and no matching item is found the iTreePlaceHolder items will remain in the `iTree`. All appended local items which are outside of the linked structure will be found at the end of the itertree.
 
-Local items can be manipuplated as normal iTree items with one exception. In case a local item is deleted and a matching linked item is available (was covered by the local item) the linked item will replace the local element after deletion. This means in this case a delete of an item will not reduce the numbers of the elements. If the local item has no corresponding linked item the number of children will decrease as usual.
+Local items can be manipuplated as normal `iTree` items with one exception. In case a local item is deleted and a matching linked item is available (was covered by the local item) the linked item will replace the local element after deletion. This means in this case a delete of an item will not reduce the numbers of the elements. If the local item has no corresponding linked item the number of children will decrease as usual.
 
-The linked items must be loaded by an explizit operation. They are not loaded automatically. The links must be loaded via the `load_links()` method which can be executed at any level of the tree and it will start loading all links in the subtree (use `load_links()` on the iTree root to be sure to load all links). The behavior in case of load erros can be switched between Exceptions or deleting invalid elements (delete_invalid_items parameter). In case of exceptions the iTree is in an incomplete load state and if the exception is kept this must be handled (e.g. copy original tree before loading and replace back). The commands for loading iTree files can be influenced by the `load_links` parameter (to activate or deactivate the link loading) during file load.
+The linked items must be loaded by an explizit operation. They are not loaded automatically. The links must be loaded via the `load_links()` method which can be executed at any level of the tree and it will start loading all links in the subtree (use `load_links()` on the `iTree` root to be sure to load all links). The behavior in case of load erros can be switched between Exceptions or deleting invalid elements (delete_invalid_items parameter). In case of exceptions the `iTree` is in an incomplete load state and if the exception is kept this must be handled (e.g. copy original tree before loading and replace back). The commands for loading `iTree` files can be influenced by the `load_links` parameter (to activate or deactivate the link loading) during file load.
 
-.. warning:: The user must be aware that changing the source structure and local items in parallel might lead to unexpected results. **The identification of local items is always done via the TagIdx.** If we miss items during load placeholders are used to keep the TagIdx of the "real" local items. Normally those artefacts will be replaced during the load with linked items (if found) but in case of missmatches they will stay in the tree. Using wild linking in between different iTree elements can lead into very confusing situations especially if the user removes local items. We recommend to use the feature only in special cases where the source architecture is clearly defined and remains structural relative stable. For stability reasons we have also functional limitations in iTreeLink objects (e.g. we do allow only linking on not already linked elements (protection for circular definitions); local items cannot be linked items or temporary items). 
+.. warning:: The user must be aware that changing the source structure and local items in parallel might lead to unexpected results. **The identification of local items is always done via the TagIdx.** If we miss items during load placeholders are used to keep the TagIdx of the "real" local items. Normally those artefacts will be replaced during the load with linked items (if found) but in case of missmatches they will stay in the tree. Using wild linking in between different `iTree` elements can lead into very confusing situations especially if the user removes local items. We recommend to use the feature only in special cases where the source architecture is clearly defined and remains structural relative stable. For stability reasons we have also functional limitations in iTreeLink objects (e.g. we do allow only linking on not already linked elements (protection for circular definitions); local items cannot be linked items or temporary items).
 
 .. autofunction:: itertree.iTreeLink
 
@@ -498,7 +498,7 @@ The toplevel iTreeLink object allows manipulations of the subtree. We can append
              └──iTreeLink('B_post_append')
              └──iTree('new')
 
-The element 'Bb' in the linked subtree is now no more an iTreeLink object, its a normal iTree object. The identification of the covering item is internally always done via the TagIdx of the item. We can do all iTree related operations on this object. But there is one exception: if we delete the object the linked object will come back into the tree!
+The element 'Bb' in the linked subtree is now no more an iTreeLink object, its a normal `iTree` object. The identification of the covering item is internally always done via the TagIdx of the item. We can do all `iTree` related operations on this object. But there is one exception: if we delete the object the linked object will come back into the tree!
 
     >>> del il[TagIdx('Bb',1)]
     >>> print(root.render())
@@ -519,13 +519,13 @@ The element 'Bb' in the linked subtree is now no more an iTreeLink object, its a
              └──iTreeLink('B_post_append')
              └──iTree('new')
 
-The link functionality in iTrees can be understood like the overloading mechanism of classes. By linking a subtree in the tree this is like defining a superclass for a specific tree section. By making a subitem local this part of the linked iTree is covered (overloaded). But we should not stress this analogy to much because the functionalities in this covered data structures are much less then we have it for the class concept.
+The link functionality in iTrees can be understood like the overloading mechanism of classes. By linking a subtree in the tree this is like defining a superclass for a specific tree section. By making a subitem local this part of the linked `iTree` is covered (overloaded). But we should not stress this analogy to much because the functionalities in this covered data structures are much less then we have it for the class concept.
 
 ***************************
 iTree helpers classes
 ***************************
 
-In the itertree helper module we have some helper classes that can be used to construct specific iTree objects.
+In the itertree helper module we have some helper classes that can be used to construct specific `iTree` objects.
 
 We have the following helper classes available:
 
@@ -541,7 +541,7 @@ We have the following helper classes available:
 
 .. autofunction:: itertree.itree_helpers.TagIdxBytes()
 
-The other classes in itree_helpers are used internally in the iTree object and might be less interesting for the user.
+The other classes in itree_helpers are used internally in the `iTree` object and might be less interesting for the user.
 
 Addinionally the user might have also a look in the other itertree modules like itertree_data.py or itertree_filter.py. Especially the class iTDataModel might be a good starting point for own data model definitions as it is also shown in  examples/itertree_data_model.py.
 

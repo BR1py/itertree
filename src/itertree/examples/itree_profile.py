@@ -31,10 +31,14 @@ This part of code contains a profiling analysis of iTree objects and functions
 """
 
 import cProfile
+import sys
 from itertree import *
 import itertree
 
 max_items = 100000
+if len(sys.argv)==2:
+    max_items = int(sys.argv[1])
+
 root=None
 print('Running on itertree version:',itertree.__version__)
 

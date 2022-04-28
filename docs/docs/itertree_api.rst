@@ -21,7 +21,7 @@ Indices and tables
 Modules
 ----------
 
-.. _itertree iTree class:
+.. _itertree `iTree` class:
 
 The main itertree class
 -----------------------
