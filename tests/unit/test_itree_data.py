@@ -158,6 +158,14 @@ def iTData_setup_no_key_model():
     yield object_under_test
 
 @pytest.fixture
+def iTData_setup_key_with_model():
+    object_under_test = Data.iTData()
+    fake_model = ObservableiDataModel()
+    fake_model.value = 10
+    object_under_test.__setitem__(key='ten',value=fake_model)
+    yield object_under_test
+
+@pytest.fixture
 def iTData_setup_nokey():
     object_under_test = Data.iTData()
     object_under_test.__setitem__(key='one')
@@ -167,6 +175,35 @@ def iTData_setup_nokey():
 def iTData_as_dict():
     object_under_test = Data.iTData({'one': 1, 'two': 2, 'three': 3})
     yield object_under_test
+
+@pytest.fixture
+def iterable_fixture():
+    return [('one', 1),('two', 2), ('three', 3)]
+
+@pytest.fixture
+def dictionary_fixture():
+    return {'one': 1,'two': 2, 'three': 3}
+
+@pytest.fixture
+def model_dictionary_fixture():
+    fake_model = ObservableiDataModel()
+    fake_model.value = 1
+    fake_model_2 = ObservableiDataModel()
+    fake_model_2.value = 2
+    fake_model_3 = ObservableiDataModel()
+    fake_model_3.value = 3
+    return {'one': fake_model,'two': fake_model_2, 'three': fake_model_3}
+
+@pytest.fixture
+def model_iterable_fixture():
+    fake_model = ObservableiDataModel()
+    fake_model.value = 1
+    fake_model_2 = ObservableiDataModel()
+    fake_model_2.value = 2
+    fake_model_3 = ObservableiDataModel()
+    fake_model_3.value = 3
+    return [('one', fake_model),('two', fake_model_2), ('three', fake_model_3)]
+
 
 
 class TestiTDataInit:
@@ -367,6 +404,104 @@ class TestRepr:
             string_repr = "\'"+str(key) + "\'"+': ' + str(item)
             assert string_repr in representation
         assert object_under_test.__class__.__name__ in representation
+
+
+class TestUpdate:
+
+    def test_update_with_nothing(self, iTData_setup_no_argument):
+        object_under_test = iTData_setup_no_argument
+        object_under_test.update()
+        assert len(object_under_test) == 0
+
+    def test_update_with_keyword(self, iTData_setup_no_argument):
+        object_under_test = iTData_setup_no_argument
+        object_under_test.update(nine=9, ten=10)
+        assert 'nine' in object_under_test
+        assert 'ten' in object_under_test
+        assert len(object_under_test) == 2
+
+    def test_update_with_dictionary(self, iTData_setup_no_argument, dictionary_fixture):
+        object_under_test = iTData_setup_no_argument
+        object_under_test.update(dictionary_fixture)
+        assert object_under_test['one'] == 1
+        assert object_under_test['two'] == 2
+        assert object_under_test['three'] == 3
+        assert len(object_under_test) == 3
+
+    def test_update_with_dictionary_and_keyword(self, iTData_setup_no_argument, dictionary_fixture):
+        object_under_test = iTData_setup_no_argument
+        object_under_test.update(dictionary_fixture, ten=70)
+        assert object_under_test['one'] == 1
+        assert object_under_test['two'] == 2
+        assert object_under_test['three'] == 3
+        assert object_under_test['ten'] == 70
+        assert len(object_under_test) == 4
+
+    def test_update_with_iterable(self, iTData_setup_no_argument, iterable_fixture):
+        object_under_test = iTData_setup_no_argument
+        object_under_test.update(iterable_fixture)
+        assert object_under_test['one'] == 1
+        assert object_under_test['two'] == 2
+        assert object_under_test['three'] == 3
+        assert len(object_under_test) == 3
+
+    def test_update_with_iterable_and_keyword(self, iTData_setup_no_argument, iterable_fixture):
+        object_under_test = iTData_setup_no_argument
+        object_under_test.update(iterable_fixture, ten=70)
+        assert object_under_test['one'] == 1
+        assert object_under_test['two'] == 2
+        assert object_under_test['three'] == 3
+        assert object_under_test['ten'] == 70
+        assert len(object_under_test) == 4
+
+    def test_mode_update_with_nothing(self, iTData_setup_no_key_model):
+        object_under_test = iTData_setup_no_key_model
+        object_under_test.update()
+        assert len(object_under_test) == 1
+
+    def test_mode_update_with_keyword(self, iTData_setup_key_with_model):
+        object_under_test = iTData_setup_key_with_model
+        object_under_test.update(ten=70, nine=9)
+        assert object_under_test['ten'] == 70
+        assert object_under_test['nine'] == 9
+        assert len(object_under_test) == 2
+
+    def test_model_update_with_dictionary(self, iTData_setup_no_argument, model_dictionary_fixture):
+        object_under_test = iTData_setup_no_argument
+        object_under_test.update(model_dictionary_fixture)
+        assert object_under_test['one'] == 1
+        assert object_under_test['two'] == 2
+        assert object_under_test['three'] == 3
+        assert len(object_under_test) == 3
+
+    def test_model_update_with_dictionary_and_keyword(self, iTData_setup_key_with_model, model_dictionary_fixture):
+        object_under_test = iTData_setup_key_with_model
+        object_under_test.update(model_dictionary_fixture, ten=70)
+        assert object_under_test['one'] == 1
+        assert object_under_test['two'] == 2
+        assert object_under_test['three'] == 3
+        assert object_under_test['ten'] == 70
+        assert len(object_under_test) == 4
+
+    def test_model_update_with_iterable(self, iTData_setup_no_argument, model_iterable_fixture):
+        object_under_test = iTData_setup_no_argument
+        object_under_test.update(model_iterable_fixture)
+        assert object_under_test['one'] == 1
+        assert object_under_test['two'] == 2
+        assert object_under_test['three'] == 3
+        assert len(object_under_test) == 3
+
+    def test_model_update_with_iterable_and_keyword(self, iTData_setup_key_with_model, model_iterable_fixture):
+        object_under_test = iTData_setup_key_with_model
+        object_under_test.update(model_iterable_fixture, ten=70)
+        assert object_under_test['one'] == 1
+        assert object_under_test['two'] == 2
+        assert object_under_test['three'] == 3
+        assert object_under_test['ten'] == 70
+        assert len(object_under_test) == 4
+
+
+
 
 
 class TestiTDataDictionaryConsistency:
