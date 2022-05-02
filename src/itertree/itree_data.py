@@ -110,7 +110,7 @@ class iTDataModel(abc.ABC):
             return super(iTDataModel, self).__format__(format_spec)
 
     def __repr__(self):
-        if self.is_empty():
+        if self.is_empty:
             return '%s()'%self.__class__.__name__
         return '%s(value= %s)' % (self.__class__.__name__,self._value)
 
@@ -198,7 +198,7 @@ class iTDataModel(abc.ABC):
         """
         # place specific formatting here:
         if value is None:
-            if self.is_empty():
+            if self.is_empty:
                 return 'None'
             value = self._value
         return str(value)
