@@ -114,6 +114,12 @@ class iTDataModel(abc.ABC):
             return '%s()'%self.__class__.__name__
         return '%s(value= %s)' % (self.__class__.__name__,self._value)
 
+    def __eq__(self, other):
+        return self.value == other.value
+
+    def __ne__(self, other):
+        return self.value != other.value
+
     @property
     def is_empty(self):
         """

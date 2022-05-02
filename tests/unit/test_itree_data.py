@@ -126,6 +126,21 @@ class TestiTDataModelMethods:
     def test_no_format_spec(self, setup_fake_argument):
         assert format(setup_fake_argument) is __argument__
 
+    def test_inequality(self, setup_no_argument, setup_fake_argument):
+        assert setup_no_argument != setup_fake_argument
+
+    def test_equality(self, setup_fake_argument):
+        object_under_test = ObservableiDataModel(value=__argument__)
+        assert object_under_test == setup_fake_argument
+
+    def test_inequality_2(self, setup_fake_argument):
+        object_under_test = ObservableiDataModel(value=__argument__)
+        assert not (object_under_test != setup_fake_argument)
+
+    def test_equality_2(self, setup_fake_argument):
+        object_under_test = ObservableiDataModel()
+        assert not(object_under_test == setup_fake_argument)
+
     @pytest.mark.xfail(reason='Issue in formatter')
     def test_format_spec(self):
         # Failing here.
