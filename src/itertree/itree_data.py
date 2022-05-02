@@ -250,7 +250,10 @@ class iTData(dict):
             if seq is None:
                 super().__init__(**kwargs)
             else:
-                super().__init__(seq,**kwargs)
+                try:
+                    super().__init__(seq,**kwargs)
+                except TypeError:
+                    super().__init__([(__NOKEY__, seq)], **kwargs)
 
     def __setitem__(self, key, value=__NOKEY__):
         """
