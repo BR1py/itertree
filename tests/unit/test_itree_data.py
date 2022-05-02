@@ -193,7 +193,6 @@ class TestiTDataInit:
         object_under_test = Data.iTData(one=1)
         assert object_under_test['one'] == 1
 
-    @pytest.mark.xfail(reason='Bug in init method for values with no key.')
     def test_init_no_key_and_keyword(self):
         object_under_test = Data.iTData((1, 2, 3), nine=9)
         assert not object_under_test.is_no_key_only
@@ -213,7 +212,6 @@ class TestiTDataProperties:
         object_under_test = Data.iTData((1,2,3))
         assert object_under_test.is_no_key_only
 
-    @pytest.mark.xfail(reason='Bug in init method for values with no key.')
     def test_is_no_key_only_2(self):
         object_under_test = Data.iTData((1, 2, 3), nine=9)
         assert not object_under_test.is_no_key_only
