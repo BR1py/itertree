@@ -36,7 +36,7 @@ import abc
 from collections import deque
 
 # special internal constant used for the item that is stored without giving a key
-__NOKEY__=('__iTree_NOKEY__',)
+__NOKEY__ = ('__iTree_NOKEY__',)
 __NOVALUE__ = ('__iTree_NOVALUE__',)
 
 # return_types
@@ -51,11 +51,13 @@ class iTDataValueError(ValueError):
     """
     pass
 
+
 class iTDataTypeError(ValueError):
     """
     Exception to be raised in case a validator finds a non matching value type related to the iDataModel
     """
     pass
+
 
 class iTDataModel(abc.ABC):
     """
@@ -104,10 +106,10 @@ class iTDataModel(abc.ABC):
             # as long as the value is not changed we cache the result for quicker reuse:
             if self._formatter_cache is None:
                 # run the formatter
-                self._formatter_cache = self.formatter()
+                self._formatter_cache = self.formatter(self.value)
             return self._formatter_cache
         else:
-            return super(iTDataModel, self).__format__(format_spec)
+            return self.value.__format__(format_spec)
 
     def __repr__(self):
         if self.is_empty:
@@ -115,10 +117,12 @@ class iTDataModel(abc.ABC):
         return '%s(value= %s)' % (self.__class__.__name__,self._value)
 
     def __eq__(self, other):
-        return self.value == other.value
+        if isinstance(other,iTDataModel):
+            return self.value == other.value
+        return self.value == other
 
     def __ne__(self, other):
-        return self.value != other.value
+        return not self.__eq__(other)
 
     @property
     def is_empty(self):
@@ -127,6 +131,10 @@ class iTDataModel(abc.ABC):
         :return:
         """
         return self._value == __NOVALUE__
+
+    @property
+    def is_iTDataModel(self):
+        return True
 
     def get(self):
         """
@@ -153,7 +161,7 @@ class iTDataModel(abc.ABC):
 
     value = property(get, set)
 
-    def clear(self,_it_data_model_identifier=None):
+    def clear(self, _it_data_model_identifier=None):
         """
         clears (deletes) the current value content and sets the state to "empty"
 
@@ -210,7 +218,6 @@ class iTDataModel(abc.ABC):
         return str(value)
 
 
-
 class iTDataModelAny(iTDataModel):
     """
     Example iDataModel class that accepts any kind of value
@@ -230,10 +237,10 @@ class iTData(dict):
     Standard itertree Data management object might be overloaded or changed by the user
     """
 
-    GET_LOOK_UP_METHOD={STR: lambda item: isinstance(item,iTDataModel) and format(item) or str(item),
-                        FULL: lambda item: item,
-                        VALUE:lambda item: isinstance(item,iTDataModel) and item.value or item
-                       }
+    GET_LOOK_UP_METHOD = {STR: lambda item: (isinstance(item, iTDataModel) and (format(item),) or (str(item),))[0],
+                          FULL: lambda item: item,
+                          VALUE: lambda item: (isinstance(item, iTDataModel)  and (item.value,) or (item,0))[0]
+                          }
 
     def __init__(self, seq=None, **kwargs):
         """
@@ -257,7 +264,7 @@ class iTData(dict):
                 super().__init__(**kwargs)
             else:
                 try:
-                    super().__init__(seq,**kwargs)
+                    super().__init__(seq, **kwargs)
                 except TypeError:
                     super().__init__([(__NOKEY__, seq)], **kwargs)
 
@@ -316,7 +323,7 @@ class iTData(dict):
         if _value_only:
             try:
                 return super(iTData, self).__getitem__(key).clear(_it_data_model_identifier=0)
-            except (AttributeError,TypeError):
+            except (AttributeError, TypeError):
                 # AttributeError raised if clear() is not known
                 # TypeError raised if _it_data_model_identifier is not accepted
                 pass
@@ -334,7 +341,7 @@ class iTData(dict):
             return '%s()' % (self.__class__.__name__)
         if self.is_no_key_only:
             return '%s(%s)' % (self.__class__.__name__, repr(super(iTData, self).__getitem__(__NOKEY__)))
-        return '%s(%s)' % (self.__class__.__name__,super(iTData, self).__repr__())
+        return '%s(%s)' % (self.__class__.__name__, super(iTData, self).__repr__())
 
     def __hash__(self):
         """
@@ -366,38 +373,28 @@ class iTData(dict):
 
         :return: None
         """
-        if hasattr(E, 'keys'):
-            # we iter two times over the items  (but we can consume iterator only one time)
-            # and deque is quicker then list in this case!
-            items = deque(itertools.chain(E.items(), F.items()))
-        elif E is None:
-            items = deque(F.items())
-        else:
-            # we iter two times over the items  (but we can consume iterator only one time)
-            # and deque is quicker then list in this case!
-            items = deque(itertools.chain(E, F.items()))
+        # we first create a helper iTData object
+        helper = iTData(E, **F)
         # check if we have just valid items will raise an exception if not matching!
-        # precheck:
-        i=0
-        super_class=super(iTData,self)
+        # pre-check and model identification:
+        i = 0
+        super_class = super(iTData, self)
         try:
-            models=deque()
-            for i, (k, v) in enumerate(items):
-                append=False
-                try:
-                    super_class.__getitem__(k).validator(v)
-                    append = True
-                except (KeyError,AttributeError):
-                    pass
-                models.append(append)
+            models = deque()
+            for i, (k, v) in enumerate(helper.items()):
+                m_flag = False
+                if not isinstance(v, iTDataModel):
+                    try:
+                        super_class.__getitem__(k).validator(v)
+                        m_flag = True
+                    except (KeyError, AttributeError):
+                        pass
+                models.append(m_flag)
         except Exception as e:
-            raise e.__class__('Input item %s raises: %s'%(str(items[i]),str(e)))
-        #finally fill the data
-        for (k, v), m in zip(items, models):
-            if m:
-                super_class.__getitem__(k).set(v)
-            else:
-                super_class.__setitem__(k, v)
+            raise e.__class__('Input item %s raises: %s' % (str(list(helper.items())[i]), str(e)))
+        # after pre check ran with success we finally fill in the data
+        [m and super_class.__getitem__(k).set(v) or super_class.__setitem__(k, v) for (k, v), m in
+         zip(helper.items(), models)]
 
     def copy(self):
         """
@@ -408,13 +405,13 @@ class iTData(dict):
         return self.__copy__()
 
     def clear(self, values_only=False) -> None:
-        models=[]
+        models = []
         if values_only:
-            models=[((k,v),v.clear()) for k, v in super(iTData,self).items() if isinstance(v,iTDataModel)]
+            models = [((k, v), v.clear()) for k, v in super(iTData, self).items() if isinstance(v, iTDataModel)]
         super().clear()
-        super().update([(k,v) for (k,v),_ in models])
+        super().update([(k, v) for (k, v), _ in models])
 
-    def pop(self, key=__NOKEY__, default=__NOKEY__,value_only=True):
+    def pop(self, key=__NOKEY__, default=__NOKEY__, value_only=True):
         """
         delete a stored value
 
@@ -433,17 +430,16 @@ class iTData(dict):
         try:
             item = super(iTData, self).__getitem__(key).clear(_it_data_model_identifier=0)
         except KeyError:
-            if default!=__NOKEY__:
+            if default != __NOKEY__:
                 return default
             raise
-        except (AttributeError,TypeError):
+        except (AttributeError, TypeError):
             # AttributeError raised if clear() is not known
             # TypeError raised if _it_data_model_identifier is not accepted
             return super(iTData, self).pop(key)
         return item
 
-
-    def get(self,key=__NOKEY__,default=None,return_type=VALUE):
+    def get(self, key=__NOKEY__, default=None, return_type=VALUE):
         """
         get a specific data item by key
 
@@ -460,18 +456,18 @@ class iTData(dict):
         :return: requested value
         """
         try:
-            return self.__getitem__(key,_return_type=return_type)
+            return self.__getitem__(key, _return_type=return_type)
         except KeyError:
             return default
 
     # not supported methods:
-    def fromkeys(self, *args,**kwargs):
+    def fromkeys(self, *args, **kwargs):
         """
         create a new iData object based on given keys and optional value
 
         - real signature unknown
         """
-        return iTData(dict.fromkeys(self,*args,**kwargs))
+        return iTData(dict.fromkeys(self, *args, **kwargs))
 
     def __or__(*args, **kwargs):
         """
@@ -490,7 +486,7 @@ class iTData(dict):
         raise AttributeError('__ior__() method not supported by iData object')
 
     # additional methods (not available in normal dict)
-    def delete_item(self,key,value_only=True):
+    def delete_item(self, key, value_only=True):
         """
         delete a item by key
 
@@ -504,7 +500,7 @@ class iTData(dict):
         :return: deleted value
         """
 
-        return self.__delitem__(key,value_only)
+        return self.__delitem__(key, value_only)
 
     def model_values(self):
         """
@@ -513,8 +509,8 @@ class iTData(dict):
 
         :return: iterator
         """
-        for v in super(iTData,self).values():
-            if isinstance(v,iTDataModel):
+        for v in super(iTData, self).values():
+            if isinstance(v, iTDataModel):
                 yield v.value
             else:
                 yield v
@@ -526,11 +522,11 @@ class iTData(dict):
 
         :return: iterator
         """
-        for k,v in super(iTData,self).items():
-            if isinstance(v,iTDataModel):
-                yield k,v.value
+        for k, v in super(iTData, self).items():
+            if isinstance(v, iTDataModel):
+                yield k, v.value
             else:
-                yield k,v
+                yield k, v
 
     @property
     def is_empty(self):
@@ -539,7 +535,7 @@ class iTData(dict):
         :return: True
         """
         return not self
-        #return super(iTData, self).__len__()==0
+        # return super(iTData, self).__len__()==0
 
     @property
     def is_no_key_only(self):
@@ -548,6 +544,10 @@ class iTData(dict):
         :return: True
         """
         return super(iTData, self).__len__() == 1 and super(iTData, self).__contains__(__NOKEY__)
+
+    @property
+    def is_iTData(self):
+        return True
 
     def deepcopy(self):
         """
@@ -558,7 +558,6 @@ class iTData(dict):
         :return: new object deep copied from self
         """
         return self.__deepcopy__()
-
 
 
 class iTDataReadOnly(iTData):
@@ -581,7 +580,7 @@ class iTDataReadOnly(iTData):
     def clear(self, *arg, **kwargs):
         raise PermissionError('The iTDataReadOnly() object data can not be changed')
 
-    def delete_item(self,key,value_only=True):
+    def delete_item(self, key, value_only=True):
         raise PermissionError('The iTDataReadOnly() object data can not be changed')
 
     def __repr__(self):
