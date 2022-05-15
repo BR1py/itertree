@@ -28,24 +28,27 @@ class FilesystemToItertree:
     def get_items(self, source_dir, root_item):
         try:
             for fd in os.listdir(source_dir):
-                fd_path = os.path.join(source_dir, fd)
-                if os.path.isfile(fd_path):
-                    data = {'SIZE': os.path.getsize(fd_path),
-                            'ATIME': os.path.getatime(fd_path),
-                            'CTIME': os.path.getctime(fd_path),
-                            'MTIME': os.path.getmtime(fd_path),
-                            'EXT': os.path.splitext(fd_path)[-1].replace('.', ''),
-                            'FULL_PATH': fd_path,
-                            'TYPE': 'FILE',
-                            'ACCESS': True
-                            }
-                    root_item.append(iTree(fd, data))
-                elif os.path.isdir(fd_path):
-                    dir_etree = iTree(fd, data={'TYPE': 'DIR', 'ACCESS': True})
-                    root_item.append(dir_etree)
-                    self.get_items(fd_path, dir_etree)
-                else:
-                    root_item.append(iTree(fd, data={'TYPE', 'UNKNOWN'}))
+                try:
+                    fd_path = os.path.join(source_dir, fd)
+                    if os.path.isfile(fd_path):
+                        data = {'SIZE': os.path.getsize(fd_path),
+                                'ATIME': os.path.getatime(fd_path),
+                                'CTIME': os.path.getctime(fd_path),
+                                'MTIME': os.path.getmtime(fd_path),
+                                'EXT': os.path.splitext(fd_path)[-1].replace('.', ''),
+                                'FULL_PATH': fd_path,
+                                'TYPE': 'FILE',
+                                'ACCESS': True
+                                }
+                        root_item.append(iTree(fd, data))
+                    elif os.path.isdir(fd_path):
+                        dir_etree = iTree(fd, data={'TYPE': 'DIR', 'ACCESS': True})
+                        root_item.append(dir_etree)
+                        self.get_items(fd_path, dir_etree)
+                    else:
+                        root_item.append(iTree(fd, data={'TYPE', 'UNKNOWN'}))
+                except:
+                    pass
         except PermissionError:
             root_item.d_set('ACCESS', False)
 
