@@ -117,7 +117,7 @@ It exists a huge set of methods to change the treestructure by appending, extend
 
 ### Tags
 
-Each iTree-object must have a tag. For tags you can use any hashable object except integers and iTreeTagIdx objects (These objects are used for adressing in access operations and can therefore not be used as tags). When using string tags more search functionalities are available.
+Each iTree-object must have a tag. For tags you can use any hashable object except integers and TagIdx objects (These objects are used for adressing in access operations and can therefore not be used as tags). When using string tags more search functionalities are available.
 
 Different than the keys in dictionairies the given tags must not be unique:
 
@@ -126,14 +126,14 @@ Different than the keys in dictionairies the given tags must not be unique:
 >>>root+=iTree(tag='child',data=2)
 ```
     
-Internally the equal tags are enumerated and collected in a tag-family. They can be reached and addressed by the iTreeTagIdx-object.
+Internally the equal tags are enumerated and collected in a tag-family. They can be reached and addressed by the TagIdx-object.
 
 ```python
->>>print(root[iTreeTagIdx('child',1)])
+>>>print(root[TagIdx('child',1)])
 iTree(tag='child', data=1)
 ```
 
-Beside the iTreeTagIdx the items can be reached also by index. In the next example we add a sub-item to the index addressed item:
+Beside the TagIdx the items can be reached also by index. In the next example we add a sub-item to the index addressed item:
 
 ```python
 >>>print(root[2])
@@ -143,7 +143,7 @@ iTree(tag='child2', data={})
 ITree(tag='subchild')
 ```
 
-HINT: The addressing via index and via iTreeTagIdx objects are the quickest ways to reach a single item in the itertree.
+HINT: The addressing via index and via TagIdx objects are the quickest ways to reach a single item in the itertree.
 
 ### Iterators
 
@@ -193,9 +193,9 @@ At least the itertree can be stored in a file and reconstructed from a file. We 
 ```python
 >>>root.dump('data.dtz') # itz is the recommended file ending for the zipped itertree file
 >>>root2=root.load('data.itz') # any available iTree object can be used for creating a new iTree containing the loaded file data
->>>print(rrot2==root)
+>>>print(root2==root)
 True
->>>root+=iTree('link',link=iTreeLink(data.itz',iTreeTagIdx(child',0))) # From the given target node all children will be integrated
+>>>root+=iTree('link',link=iTreeLink(data.itz',TagIdx(child',0))) # From the given target node all children will be integrated
 ```
 
 The standard serialization is done into a zipped JSON format and can handle an extended  set of datatypes that might be stored in the data structure of iTree (e.g. numpy.ndarray objects can be serialized too). The serializer can be additionally extended by the user by overloading the standard classes. Also the output format can be modified by same mechanism. The default files created are zipped and secured by a checksum (default ending is ".itz").
