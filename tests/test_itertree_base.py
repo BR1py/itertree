@@ -508,6 +508,43 @@ class Test_iTreeBase:
         assert root.d_pop('a') == 1
         assert len(root.data) == 2
 
+        subitem=iTree('subitem')
+        root+=subitem
+        #checking emoty states
+        assert subitem.data.is_empty
+        assert not subitem.data.is_no_key_only
+        assert subitem.data.is_key_empty()
+
+        subitem.d_set(Data.__NOKEY__,Data.__NOVALUE__) #we set __NOVALUE__ which will not be taken in the dict
+        assert subitem.data.is_empty
+        assert not subitem.data.is_no_key_only
+        assert subitem.data.is_key_empty()
+
+        subitem.d_set(Data.__NOVALUE__) #we set __NOVALUE__ in __NOKEY__ which will not be taken in the dict
+        assert subitem.data.is_empty
+        assert not subitem.data.is_no_key_only
+        assert subitem.data.is_key_empty()
+
+        subitem.d_set('TEST',Data.__NOVALUE__)  # we set __NOVALUE__
+        assert not subitem.data.is_empty
+        assert not subitem.data.is_no_key_only
+        assert subitem.data.is_key_empty()
+        assert subitem.data.is_key_empty('TEST')
+        assert 'TEST' in subitem.data
+        subitem.d_del('TEST')
+        assert subitem.data.is_empty
+        assert not subitem.data.is_no_key_only
+        assert subitem.data.is_key_empty('TEST')
+        assert 'TEST' not in subitem.data
+
+        subitem.d_set(key='TEST')  # we set __NOVALUE__
+        assert not subitem.data.is_empty
+        assert not subitem.data.is_no_key_only
+        assert subitem.data.is_key_empty()
+        assert subitem.data.is_key_empty('TEST')
+        assert 'TEST' in subitem.data
+        subitem.d_del('TEST')
+
         print('PASSED')
 
     def test6_intervall_class(self):
@@ -786,9 +823,9 @@ class Test_iTreeBase:
         root_data_path = get_relpath_to_root('tmp')
         if not os.path.exists(root_data_path):
             os.makedirs(root_data_path)
-        target_path = root_data_path + '/out.dtz'
-        target_path2 = root_data_path + '/out.dtr'
-        target_path3 = root_data_path + '/out2.dtz'
+        target_path = root_data_path + '/out.itz'
+        target_path2 = root_data_path + '/out.itr'
+        target_path3 = root_data_path + '/out2.itz'
 
         print('Outputfile: %s' % os.path.abspath(target_path))
 
