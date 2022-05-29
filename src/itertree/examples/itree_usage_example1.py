@@ -111,11 +111,8 @@ if __name__ == '__main__':
 
     print('\nIt follows another example of a bigger tree:')
 
-    if sys.platform == 'linux':
-        root_dir = '/usr/lib'
-    else:
-        # Windows
-        root_dir = "c:/ProgramData"
+    root_dir=os.path.dirname(sys.executable)
+
     print('We read a part of the filesystem (%s) into an itertree' % repr(root_dir))
     file_2_itree = FilesystemToItertree()
     file_2_itree.load_from_path(root_dir)
