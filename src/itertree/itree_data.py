@@ -33,7 +33,7 @@ This part of code contains the helper functions related to the iTree data attrib
 import copy
 import itertools
 import abc
-from collections import deque
+from collections import deque,namedtuple
 
 # special internal constant used for the item that is stored without giving a key
 __NOKEY__ = ('__iTree_NOKEY__',)
@@ -268,7 +268,7 @@ class iTData(dict):
                 except TypeError:
                     super().__init__([(__NOKEY__, seq)], **kwargs)
 
-    def __setitem__(self, key, value=__NOKEY__):
+    def __setitem__(self, *args,key=__NOKEY__, value=__NOVALUE__):
         """
         setter for the iTreeData object
         HINT: If no value is given the key item will be interpreted as value
@@ -277,13 +277,34 @@ class iTData(dict):
         :param value: object that should be stored
         :return: None
         """
-        if value == __NOKEY__:
-            value = key
-            key = __NOKEY__
+        l = len(args)
+        if key==__NOKEY__:
+            if value==__NOVALUE__:
+                if l==1:
+                    value=args[0]
+                else:
+                    try:
+                        key,value=args
+                    except:
+                        raise AttributeError('Wrong number of positional arguments')
+            else:
+                if l==1:
+                    key = args[0]
+                elif l!=0:
+                    raise AttributeError('Wrong arguments given')
+        else:
+            if l!=0:
+                raise AttributeError('Wrong number of positional arguments')
+        if isinstance(value,iTDataModel):
+            return super().__setitem__(key, value)
         try:
             return super().__getitem__(key).set(value, _it_data_model_identifier=0)
         except (KeyError, AttributeError, TypeError):
-            return super().__setitem__(key, value)
+            if key==__NOKEY__ and value==__NOVALUE__:
+                if super().__contains__(key):
+                    super().__delitem__(key)
+            else:
+                return super().__setitem__(key, value)
 
     def __getitem__(self, key=__NOKEY__, _return_type=VALUE):
         """
@@ -535,7 +556,7 @@ class iTData(dict):
         :return: True
         """
         return not self
-        # return super(iTData, self).__len__()==0
+
 
     @property
     def is_no_key_only(self):
@@ -545,9 +566,22 @@ class iTData(dict):
         """
         return super(iTData, self).__len__() == 1 and super(iTData, self).__contains__(__NOKEY__)
 
+
     @property
     def is_iTData(self):
         return True
+
+    def is_key_empty(self,key=__NOKEY__):
+        '''
+        Function delivers a key empty state (it delivers True in case key is absent or
+        value is __NOVALUE__
+        :param key: key to be check (delault is __NOKEY__
+        :return: True/False
+        '''
+        try:
+            return super(iTData, self).__getitem__(key) == __NOVALUE__
+        except KeyError:
+            return True
 
     def deepcopy(self):
         """
