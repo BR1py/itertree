@@ -486,16 +486,16 @@ class iTree(blist):
         data that do not have a working repr method)
         :return: representation string
         """
-        repr_str = '%s("%s"' % (self.__class__.__name__,repr(self._tag))
+        repr_str = '%s(%s' % (self.__class__.__name__,repr(self._tag))
         if not self._data.is_empty:
             if self._data.is_no_key_only:
                 repr_str = repr_str + ', data=%s' % repr(self.d_get())
             else:
                 repr_str = repr_str + ', data=%s' % repr(self._data)
-            subtree = super(iTree, self).__repr__()
-            if subtree[0] == 'b':
-                # we shorten blist from definition
-                subtree = subtree[6:-1]
+        subtree = super(iTree, self).__repr__()
+        if subtree[0] == 'b':
+            # we shorten blist from definition
+            subtree = subtree[6:-1]
             return repr_str + ', subtree=%s)' % subtree
         else:
             return repr_str + ')'
@@ -1279,8 +1279,6 @@ class iTree(blist):
             target_idx = insert_key
         src_idx = self.idx
         move_item = parent.__delitem__(src_idx)
-        if target_idx > src_idx:
-            target_idx -= 1
         parent.insert(target_idx, move_item)
 
     def rename(self, new_tag):
