@@ -295,8 +295,6 @@ class iTData(dict):
         else:
             if l!=0:
                 raise AttributeError('Wrong number of positional arguments')
-        if isinstance(value,iTDataModel):
-            return super().__setitem__(key, value)
         try:
             return super().__getitem__(key).set(value, _it_data_model_identifier=0)
         except (KeyError, AttributeError, TypeError):
@@ -392,7 +390,6 @@ class iTData(dict):
 
         :param **F: we run: for k in F:  D[k] = F[k]
 
-        :return: None
         """
         # we first create a helper iTData object
         helper = iTData(E, **F)
@@ -416,6 +413,26 @@ class iTData(dict):
         # after pre check ran with success we finally fill in the data
         [m and super_class.__getitem__(k).set(v) or super_class.__setitem__(k, v) for (k, v), m in
          zip(helper.items(), models)]
+
+    def model_update(self,E=None, **F):
+        """
+        Different from the normal update we exchange here also the models not only the values of the given items
+
+        Parameters taken from builtin dict:
+
+        Update D from dict/iterable E and F.
+        If E is present and has a .keys() method, then does:
+        If E is present and lacks a .keys() method, then does:
+        In either case, this is followed by:
+
+        :param E:
+                  * with .keys() method: for k in E: D[k] = E[k]
+                  * without .keys() method: for k, v in E: D[k] = v
+
+        :param **F: we run: for k in F:  D[k] = F[k]
+        """
+        helper = iTData(E, **F)
+        super(iTData, self).update(super(helper))
 
     def copy(self):
         """

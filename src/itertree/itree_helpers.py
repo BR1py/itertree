@@ -476,7 +476,7 @@ class iTLink(object):
     '''
     Definition of a link to an element in another DataTree
     '''
-    __slots__ = ("_file_path", "_key_path",'_loaded','_link_data','_link_tag','_link_item','_load_from_path')
+    __slots__ = ("_file_path", "_key_path",'_loaded','_link_data','_link_tag','_link_item','_source_path')
 
     def __init__(self, file_path=None, key_path=None,link_item=None):
         self._file_path = file_path
@@ -484,7 +484,7 @@ class iTLink(object):
         self._loaded = None
         self._link_tag=None
         self._link_data=None
-        self._load_from_path=None
+        self._source_path=None
         self._link_item = link_item
 
     @property
@@ -521,17 +521,17 @@ class iTLink(object):
         return self._link_data
 
     @property
-    def load_from_path(self):
-        return self._load_from_path
+    def source_path(self):
+        return self._source_path
 
+    def set_source_path(self,path):
+        self._source_path=path
 
     def set_loaded(self,tag=None,data=None):
         self._loaded=time.time()
         self._link_tag=tag
         self._link_data=data
 
-    def set_load_from_path(self,path):
-        self._load_from_path=path
 
     def dict_repr(self):
         return {'path':self._file_path,'key':self._key_path}

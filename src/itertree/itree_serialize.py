@@ -279,7 +279,7 @@ class iTStdJSONSerializer(object):
             with open(file_path, 'wb') as fh:
                 fh.write(data)
 
-    def loads(self, source_str, check_hash=True, load_links=True):
+    def loads(self, source_str, check_hash=True, load_links=True,_source=None):
         """
         create an iTree object by loading from a string.
 
@@ -287,6 +287,8 @@ class iTStdJSONSerializer(object):
         :param check_hash: True the hash of the file will be checked and the loading will be stopped if it doesn't match
                            False - do not check the iTree hash
         :param load_links: True - linked iTree objects will be loaded
+        :param _source: Path of a loaded source file (for internal use)
+
         :return: iTree object loaded from file
         """
         header_str, dt_str = source_str.split(b'}***DT***')
@@ -299,6 +301,13 @@ class iTStdJSONSerializer(object):
                 raise PermissionError('Given DataTree data is corrupted (wrong hash)!')
         raw_o = JSON.loads(dt_str)
         new_tree=self.obj_serializer.decode(raw_o)
+        if _source is not None:
+            if new_tree._link is None:
+                link_obj=iTLink()
+                link_obj._source_path=_source
+                new_tree._link = link_obj
+            else:
+                new_tree._link._source_path=_source
         if load_links:
             new_tree.load_links()
         return new_tree
@@ -327,9 +336,11 @@ class iTStdJSONSerializer(object):
             # we might have an already unzipped file!
             pass
         # data=data.decode(decode)
-        return self.loads(data, check_hash=check_hash, load_links=load_links)
-
-
+        try:
+            file_path=os.path.abspath(file_path)
+        except:
+            pass
+        return self.loads(data, check_hash=check_hash, load_links=load_links,_source=file_path)
 
 
 class iTStdRenderer(object):

@@ -129,7 +129,7 @@ class Test_iTreeBase:
         for i in range(len(s4)):
             s4[i].d_set('level', 'n%i' % i)
 
-        # Serializer.DTRenderer().render(root)
+        # Serializer.itrRenderer().render(root)
         return root
 
     def test1_linking(self):
@@ -143,7 +143,7 @@ class Test_iTreeBase:
         root_data_path = get_relpath_to_root('tmp')
         if not os.path.exists(root_data_path):
             os.makedirs(root_data_path)
-        target_path = root_data_path + '/out.dtz'
+        target_path = root_data_path + '/out.itz'
         root.dump(target_path=target_path, overwrite=True)
 
         # we build a new tree
@@ -211,7 +211,7 @@ class Test_iTreeBase:
         root_data_path = get_relpath_to_root('tmp')
         if not os.path.exists(root_data_path):
             os.makedirs(root_data_path)
-        target_path = root_data_path + '/out.dtz'
+        target_path = root_data_path + '/out.itz'
         root.dump(target_path=target_path, overwrite=True)
         # we build a second tree
         root = iTree('local_root')
@@ -268,7 +268,7 @@ class Test_iTreeBase:
         root_data_path = get_relpath_to_root('tmp')
         if not os.path.exists(root_data_path):
             os.makedirs(root_data_path)
-        target_path = root_data_path + '/out_linked.dt'
+        target_path = root_data_path + '/out_linked.itr'
         root.dump(target_path=target_path, overwrite=True, pack=False)
 
         root2 = iTree('root').load(target_path, load_links=False)
@@ -395,7 +395,7 @@ class Test_iTreeBase:
         root_data_path = get_relpath_to_root('tmp')
         if not os.path.exists(root_data_path):
             os.makedirs(root_data_path)
-        target_path = root_data_path + '/out_linked.dt'
+        target_path = root_data_path + '/out_linked.itr'
         root.dump(target_path=target_path, overwrite=True, pack=False)
 
         # now we check if we can delete the local and the old linked item appears again:

@@ -169,7 +169,7 @@ def iTData_setup_no_key_model():
     object_under_test = Data.iTData()
     fake_model = ObservableiDataModel()
     fake_model.value = 10
-    object_under_test.__setitem__(key=fake_model)
+    object_under_test.__setitem__(fake_model)
     yield object_under_test
 
 @pytest.fixture
@@ -183,7 +183,7 @@ def iTData_setup_key_with_model():
 @pytest.fixture
 def iTData_setup_nokey():
     object_under_test = Data.iTData()
-    object_under_test.__setitem__(key='one')
+    object_under_test.__setitem__('one')
     yield object_under_test
 
 @pytest.fixture
@@ -278,13 +278,13 @@ class TestiTDataSetItemMethod:
 
     def test_idata__setitem___no_value(self, iTData_setup_no_argument):
         object_under_test = iTData_setup_no_argument
-        al = object_under_test.__setitem__(key='one')
+        al = object_under_test.__setitem__('one')
         assert 'one' in object_under_test.values()
 
     def test_idata__setitem___no_value_with_model(self, iTData_setup_no_argument):
         fake_model = ObservableiDataModel()
         object_under_test = iTData_setup_no_argument
-        object_under_test.__setitem__(key=fake_model)
+        object_under_test.__setitem__(fake_model)
         assert fake_model in object_under_test.values()
 
     def test__setitem___model(self, iTData_setup):
@@ -327,27 +327,27 @@ class TestiTDataGetItemMethod:
         object_under_test = iTData_setup_no_argument
         fake_model = ObservableiDataModel()
         fake_model.value = 10
-        object_under_test.__setitem__(key=fake_model)
+        object_under_test.__setitem__(fake_model)
         assert object_under_test.__getitem__(Data.__NOKEY__ , _return_type=return_type) == value
 
     def test___get_item_no_key_model_value_2(self, iTData_setup_no_argument):
         object_under_test = iTData_setup_no_argument
         fake_model = ObservableiDataModel()
         fake_model.value = 10
-        object_under_test.__setitem__(key=fake_model)
+        object_under_test.__setitem__(fake_model)
         assert object_under_test.__getitem__(Data.__NOKEY__ , _return_type=Data.FULL).value == 10
 
     @pytest.mark.parametrize("return_type, value", none_values)
     def test___get_item_no_key_none_model_value(self, iTData_setup_no_argument, return_type, value):
         object_under_test = iTData_setup_no_argument
         fake_model = ObservableiDataModel()
-        object_under_test.__setitem__(key=fake_model)
+        object_under_test.__setitem__(fake_model)
         assert object_under_test.__getitem__(Data.__NOKEY__, _return_type=return_type) == value
 
     def test___get_item_no_key_none_model_value_2(self, iTData_setup_no_argument):
         object_under_test = iTData_setup_no_argument
         fake_model = ObservableiDataModel()
-        object_under_test.__setitem__(key=fake_model)
+        object_under_test.__setitem__(fake_model)
         assert object_under_test.__getitem__(Data.__NOKEY__, _return_type=Data.FULL).value is None
 
 
@@ -368,14 +368,14 @@ class TestiTDataDelItemMethod:
     def test_del_item_model_value_only_true(self, iTData_setup):
         object_under_test = iTData_setup
         object_under_test.__delitem__(__raw_data__)
-        assert object_under_test.__getitem__(__raw_data__)
+        assert object_under_test.__getitem__(__raw_data__) is None
 
     def test_del_item_model_no_key_value_only_true(self, iTData_setup_no_key_model):
         object_under_test = iTData_setup_no_key_model
         object_under_test.__delitem__()
         # Is this correct? If value is None the return value changes from the
-        # value to the container.
-        assert object_under_test[Data.__NOKEY__].value is None
+        # value to the container. No it should deliver directly None Adapted the test-case
+        assert object_under_test[Data.__NOKEY__] is None
 
     def test_del_item_exception(self, iTData_setup):
         with pytest.raises(KeyError):
