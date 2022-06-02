@@ -2244,8 +2244,10 @@ class iTreeReadOnly(iTree):
                 data = iTDataReadOnly()
             else:
                 data = iTDataReadOnly(data)
-
-        super(iTreeReadOnly, self).__init__(tag, data, [iTreeReadOnly(item.tag,item.data,subtree=item) for item in subtree])
+        if subtree is None:
+            super(iTreeReadOnly, self).__init__(tag, data)
+        else:
+            super(iTreeReadOnly, self).__init__(tag, data, [iTreeReadOnly(item.tag,item.data,subtree=item) for item in subtree])
 
     # block all setting commands
     def __setitem__(self, *args, **kwargs):
