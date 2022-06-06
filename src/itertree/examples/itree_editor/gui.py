@@ -253,7 +253,7 @@ class PopupMenuCommands():
 
             else:
                 self.log('Old value put in new model')
-            item.d_set(key, model)
+            item.data.update([(key,model)],replace_models=True)
             self._parent.update_tree(item)
 
     def set_data_value(self):
@@ -366,6 +366,10 @@ class PopupMenuCommands():
     def make_writeable_item(self):
         items = self._active_popup.data.get('sel_items')
         self._controller.items_make_writeable(items)
+
+    def make_writeable_item_all(self):
+        items = self._active_popup.data.get('sel_items')
+        self._controller.items_make_writeable(items,all=True)
 
     def make_read_only_item(self):
         items = self._active_popup.data.get('sel_items')
@@ -480,6 +484,14 @@ class iTreeEditorGUI():
         ('iTree files', '*.it*'),
         ('All files', '*.*')
     )
+    FILETYPES_SAVE1 = (
+        ('iTree file', '*.itr'),
+        ('All files', '*.*')
+    )
+    FILETYPES_SAVE2 = (
+        ('iTree file', '*.itz'),
+        ('All files', '*.*')
+    )
 
     def __init__(self, controller):
         self._controller = controller
@@ -487,11 +499,13 @@ class iTreeEditorGUI():
         self._tree_to_item_dict = {}
         self._active_popup = None
 
+
         self._tk_main = root = tk.Tk()
-        mb=simpledialog.messagebox.showwarning('DISCLAIMER:' ,'This is just a demo program please do not report issues found in this application')
 
         root.title('iTreeEditor')
         root.geometry('800x600')
+        mb = simpledialog.messagebox.showwarning('DISCLAIMER:',
+                                                 'This is just a demo program please do not report issues found in this application')
 
         baseFont = tkfont.nametofont("TkDefaultFont")
         size = baseFont.cget("size")  # -ve is pixels +ve is points
@@ -722,6 +736,9 @@ class iTreeEditorGUI():
         if it_item is None:
             for child in self._tree.get_children():
                 self._tree.delete(child)
+                it_item=self._tree_to_item_dict.get(child)
+                if it_item is not None:
+                    it_item.set_coupled_object(None)
             self._tree_to_item_dict = {}
         else:
             if type(it_item) is str:
@@ -740,7 +757,7 @@ class iTreeEditorGUI():
         if not type(items) is list:
             items=[items]
         for itree in items:
-            t_item = None
+            t_item=None
             if data_key is None:
                 t_item = itree.coupled_object
             else:
@@ -756,10 +773,12 @@ class iTreeEditorGUI():
                         if k == data_key:
                             t_item = i
                             break
-            if t_item is not None:
+            try:
                 self._tree.see(t_item)
                 if select:
                     self._tree.selection_set([t_item])
+            except:
+                pass
 
     def edit_data_item(self, item, key):
         pass
@@ -794,7 +813,7 @@ class iTreeEditorGUI():
 
     def on_save(self, evt=None):
         filename = filedialog.asksaveasfilename(title='Save a iTree File',
-                                                filetypes=self.FILETYPES)
+                                                filetypes=self.FILETYPES_SAVE1)
         if filename is not None:
             if len(self._tree_to_item_dict) > 0:
                 root = list(self._tree_to_item_dict.values())[0].root
@@ -802,7 +821,7 @@ class iTreeEditorGUI():
 
     def on_save_zip(self, evt=None):
         filename = filedialog.asksaveasfilename(title='Save a iTree File',
-                                                filetypes=self.FILETYPES)
+                                                filetypes=self.FILETYPES_SAVE2)
         if filename is not None:
             if len(self._tree_to_item_dict) > 0:
                 root = list(self._tree_to_item_dict.values())[0].root

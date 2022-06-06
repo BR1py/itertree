@@ -256,6 +256,22 @@ Please compare the output with the code executed:
              └──iTreeLink('B_post_append')
              └──iTree('new')
 
+itertree editor example
+-------------------------------------
+
+This program is using Tkinter to create a GUI to create and manipulate `itertree` objects. The program should show
+how an 'iTree'-item can be coupled with an item in a tree structure of the GUI (use the coupled_object
+functionality of `iTree`). THe editor allows diffrent manipulations on the tree structure from renaming and ordering to
+manipulations of the data (add some models, etc) and the creation of additional items ( `iTree` / `iTreeLink` ,
+`iTreeReadOnly` ).
+The context menus are also created via a defintions based on `iTree` objects.
+The GUI code example is splittet in an controller and the GUI itself. This allows better testing of the
+functionalities if required and brings a lot more advantages. But we should not dive in the discussions of GUI
+related architecture here, as long we have here just another example for the usage of itertree.
+
+.. note:: Please do not report issues related to the editor on GIT. We know that a lot of corner-cases are not covered
+and that the editor functionalities are incomplete. It's just an example and not an application we provide here.
+
 
 itertree performance example
 -------------------------------------

@@ -19,7 +19,7 @@ tuple containing the error information.
 Second we focused for this release on the extension of functionalities related to linked iTrees:
 
     * create internal links (reference to another tree part of the current tree)
-    * `localize`and `cover`of linked elements
+    * `localize` and `cover`of linked elements
     * an example file related to the usage of links is available now
 
 Beside this we started to extend the unit testing for the package and we fixed a lot of smaller bugs.

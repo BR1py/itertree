@@ -76,7 +76,7 @@ print(root.render())
 
 # we store the iTree in a file for later usage:
 temp_dir = tempfile.mkdtemp()
-target_path = os.path.join(temp_dir, 'out_linked.dt')
+target_path = os.path.join(temp_dir, 'out_linked.itr')
 root.dump(target_path=target_path, overwrite=True, pack=False)
 
 # if we delete the local object the linked object will come back in the tree:

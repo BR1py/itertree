@@ -374,6 +374,8 @@ class iTData(dict):
         function update of multiple items
         if one item is invalid the whole update will be skipped and an iDataValueError exception will thrown!
 
+        In case the replace_model flag is set the model will be exchanged.
+
         Parameters taken from builtin dict:
 
         Update D from dict/iterable E and F.
@@ -390,7 +392,15 @@ class iTData(dict):
 
         :param **F: we run: for k in F:  D[k] = F[k]
 
+        :param replace_models:
+                  * True - Will replace the whole key related value (also iTDataModels are replaced)
+                  * False (default) - All values are replaced in case of iTDataModel object the internal value will
+                                      be replaced
         """
+        if F.get('replace_models') is True:
+            del F['replace_models']
+            helper = iTData(E, **F)
+            return super(iTData, self).update(helper.items())
         # we first create a helper iTData object
         helper = iTData(E, **F)
         # check if we have just valid items will raise an exception if not matching!
@@ -413,26 +423,6 @@ class iTData(dict):
         # after pre check ran with success we finally fill in the data
         [m and super_class.__getitem__(k).set(v) or super_class.__setitem__(k, v) for (k, v), m in
          zip(helper.items(), models)]
-
-    def model_update(self,E=None, **F):
-        """
-        Different from the normal update we exchange here also the models not only the values of the given items
-
-        Parameters taken from builtin dict:
-
-        Update D from dict/iterable E and F.
-        If E is present and has a .keys() method, then does:
-        If E is present and lacks a .keys() method, then does:
-        In either case, this is followed by:
-
-        :param E:
-                  * with .keys() method: for k in E: D[k] = E[k]
-                  * without .keys() method: for k, v in E: D[k] = v
-
-        :param **F: we run: for k in F:  D[k] = F[k]
-        """
-        helper = iTData(E, **F)
-        super(iTData, self).update(super(helper))
 
     def copy(self):
         """

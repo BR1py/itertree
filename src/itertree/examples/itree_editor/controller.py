@@ -189,7 +189,7 @@ class PopupMenuBuilder():
         context_menu.append(title)
 
         title.append(iTree('item', data={'name': 'Show item representations:'}))
-        title.append(iTree('separator'))
+        title+=iTree('separator')
         title.append(iTree('item', data={'name': 'Short repr() (no subtree)',
                                          'tooltip': 'print item repr in the log',
                                          'action': 'log_item_repr_short'}))
@@ -252,7 +252,7 @@ class PopupMenuBuilder():
             context_menu.append(
                 iTree('item', data={'name': 'delete selected item',
                                     'tooltip': 'delete the selected item',
-                                    'action': 'on_delete_item'}))
+                                    'action': 'delete_item'}))
         context_menu.append(iTree('separator'))
         if not item.is_root:
             move_item = iTree('item',
@@ -378,14 +378,18 @@ class PopupMenuBuilder():
             context_menu.append(new2_menu)
 
             context_menu.append(
-                iTree('item', data={'name': 'make item write_able',
+                iTree('item', data={'name': 'make item writeable',
                                     'action': 'make_writeable_item'}))
+
+            context_menu.append(
+                iTree('item', data={'name': 'make item and all sub children writeable',
+                                    'action': 'make_writeable_item_all'}))
 
             context_menu.append(
                 iTree('item', data={'name': 'delete selected item',
                                     'tooltip': 'delete the selected item',
-                                    'action': 'on_delete_item'}))
-            context_menu.append(iTree('separator'))
+                                    'action': 'delete_item'}))
+            context_menu+=iTree('separator')
             move_item = iTree('item',
                               data={'name': 'Move selected item:'})
             set=False
@@ -456,6 +460,7 @@ class PopupMenuBuilder():
 
 
     def _create_itreelink_popup(self, context_menu, item, detail,clp_data):
+        is_link_root=item.link_root==item
         if item.is_root:
             title = iTree('item', data={'name': 'Tag: ' + item.tag})
         else:
@@ -476,8 +481,7 @@ class PopupMenuBuilder():
                                          'action': 'log_item_render'}))
 
         context_menu.append(iTree('separator'))
-        if item.link_root:
-
+        if is_link_root:
             item_edit=iTree('item', data={'name': 'edit item'})
             context_menu.append(item_edit)
             item_edit.append(iTree('item', data={'name': 'edit item tag',
@@ -519,16 +523,18 @@ class PopupMenuBuilder():
             new2_menu.append(
                 iTree('item', data={'name': 'append sibling', 'action': 'append_new_link_sibling_after'}))
         context_menu.append(new2_menu)
-        if not item.link_root:
+        context_menu.append(
+            iTree('item', data={'name': 'load/relaod reference', 'action': 'load_links'}))
+        if not is_link_root:
             context_menu.append(
                     iTree('item', data={'name': 'make local', 'action': 'make_item_local'}))
-        if not item.is_root:
+            if is_link_root:
                 context_menu.append(
                     iTree('item', data={'name': 'delete selected item',
                                         'tooltip': 'delete the selected item',
-                                        'action': 'on_delete_item'}))
+                                        'action': 'delete_item'}))
 
-        if item.link_root:
+        if is_link_root:
 
             new2_menu = iTree('item', data={'name': 'Load/Reload Links',
                                             'action': 'load_links'})
@@ -752,7 +758,7 @@ class iTreeEditorController():
 
     def item_set_data_value(self,item,key,raw_value):
         try:
-            value = literal_eval(raw_value)
+            value = eval(raw_value)
         except:
             value=raw_value
         try:
@@ -767,7 +773,7 @@ class iTreeEditorController():
 
     def item_set_link_value(self,item,key,raw_value):
         try:
-            value = literal_eval(raw_value)
+            value = eval(raw_value)
         except:
             value=raw_value
         try:
@@ -944,17 +950,21 @@ class iTreeEditorController():
         action = ActionItem('make_visible_itree_item', items,True)
         self.distribute(action)
 
-    def items_make_writeable(self, items):
+    def _get_writeable_sub_items(self,parent):
+        return [iTree(item.tag,data=item.data, subtree=self._get_writeable_sub_items(item)) for item in parent.iter_children()]
+
+    def items_make_writeable(self, items,all=False):
         for item in items:
             if isinstance(item, iTree) and item.is_read_only and not item.is_linked:
-                idx=item.idx
-                new_item=iTree(item.tag,subtree=item)
-                item.parent[idx]=new_item
+                if all:
+                    new_item = iTree(item.tag, data=item.data,subtree=self._get_writeable_sub_items(item))
+                else:
+                    new_item=iTree(item.tag,data=item.data,subtree=item)
+                item.parent[item.idx]=new_item
         action = ActionItem('update_tree')
         self.distribute(action)
         action = ActionItem('make_visible_itree_item', items,True)
         self.distribute(action)
-
 
     def items_delete(self,items):
         removed=[]

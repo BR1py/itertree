@@ -904,21 +904,21 @@ class iTree(blist):
 
         :return: pointer to coupled object
         """
-        if hasattr(self, '_coupled'):
+        try:
             return self._coupled
-        else:
+        except AttributeError:
             return None
 
     # set properties
-
-    def set_coupled_object(self, couple_object):
+    def set_coupled_object(self, coupled_object):
         """
         User can couple this object with others with the help of this attribute
         .. note:: E.g. this might be an object in a GUI that are related to this item
 
         :param couple_object: object pointer to the object that should be coupled with this iTree item
         """
-        self._coupled = couple_object
+        self._coupled = coupled_object
+
 
     def equal(self, other, check_parent=False, check_coupled=False):
         """
@@ -978,7 +978,7 @@ class iTree(blist):
 
         :return: copied iTree object
         """
-        new = iTree(self._tag,
+        new = self.__class__(self._tag,
                     data=self._data.__copy__(),
                     subtree=[i.__copy__() for i in super(iTree, self).__iter__()]
                     # here we create a recursion -> subtree is copied!!
@@ -1011,7 +1011,7 @@ class iTree(blist):
 
         :return: deep copied new iTree object
         """
-        new = iTree(self._tag,
+        new = self.__class__(self._tag,
                     data=self._data.__deepcopy__(),
                     subtree=[i.__deepcopy__() for i in super(iTree, self).__iter__()]  # here we create a recursion!
                     )
@@ -1082,7 +1082,7 @@ class iTree(blist):
             item = item.__getitem__(key)
         return item
 
-    # structure manipulations
+    # structural manipulations
 
     def clear(self):
         """
