@@ -51,7 +51,7 @@ except:
 
 DECODE=False
 
-test=JSON.dumps({'test':'123','HASH':hashlib.sha1('asjhdahsdh').hexdigest()})
+test=JSON.dumps({'test':'123','HASH':hashlib.sha1(b'asjhdahsdh').hexdigest()})
 try:
     JSON.loads(test)
 except TypeError:
