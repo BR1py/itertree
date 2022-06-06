@@ -1,4 +1,5 @@
 """# -*- coding: utf-8 -*-#"""
+from __future__ import absolute_import
 """
 This code is taken from the itertree package:
 https://pypi.org/project/itertree/
@@ -30,7 +31,6 @@ For more information see: https://en.wikipedia.org/wiki/MIT_License
 
 This part of code contains the profiling of nested iTree structures
 """
-from __future__ import absolute_import
 
 import os
 import sys
