@@ -362,25 +362,25 @@ class iTStdRenderer(object):
         :return: string containing the item information
         """
         t = type(item)
-        link_str = ''
-        class_name = 'iTree'
+        link_str = u''
+        class_name = u'iTree'
         if t is iTreeReadOnly:
-            class_name = 'iTreeReadOnly'
+            class_name = u'iTreeReadOnly'
         elif t is iTreeLink:
-            class_name = 'iTreeLink'
+            class_name = u'iTreeLink'
             if item._link is not None:
-                link_str = ', link=%s' % repr(item._link)
+                link_str = u', link=%s' % repr(item._link)
         elif t is iTreePlaceHolder:
-            class_name = 'iTreePlaceHolder'
+            class_name = u'iTreePlaceHolder'
         elif t is iTreeTemporary:
-            class_name = 'iTreeTemporary'
+            class_name = u'iTreeTemporary'
         data = item._data
         if data.is_empty:
-            return '%s(%s%s)' % (class_name, repr(item.tag), link_str)
+            return u'%s(%s%s)' % (class_name, repr(item.tag), link_str)
         if data.is_no_key_only:
-            return '%s(%s%s, data=%s)' % (class_name, repr(item.tag), link_str, repr(item.d_get()))
+            return u'%s(%s%s, data=%s)' % (class_name, repr(item.tag), link_str, repr(item.d_get()))
         else:
-            return '%s(%s%s, data=%s)' % (class_name, repr(item.tag), link_str, repr(item._data))
+            return u'%s(%s%s, data=%s)' % (class_name, repr(item.tag), link_str, repr(item._data))
 
     def render2(self, itree_object, item_filter=None, _level=0):
         """
