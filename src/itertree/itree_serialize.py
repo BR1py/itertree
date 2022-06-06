@@ -50,10 +50,11 @@ except:
     import json as JSON
 
 DECODE=False
-test=JSON.dumps({'test':'123'})
+
+test=JSON.dumps({'test':'123','HASH':hashlib.sha1('asjhdahsdh').hexdigest()})
 try:
     JSON.loads(test)
-except:
+except TypeError:
     DECODE=True
 
 try:
