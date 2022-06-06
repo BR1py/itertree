@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 This code is taken from the itertree package:
 https://pypi.org/project/itertree/
@@ -33,7 +34,7 @@ This part of code contains the initialization and publishing of the iTree relate
 from __future__ import absolute_import
 
 __package__ = 'itertree'
-__version__ = '1.0.0'
+__version__ = '0.8.0'
 __licence__ = 'MIT'
 __author__ = 'B.R.'
 __url__ = 'https://github.com/BR1py/itertree'

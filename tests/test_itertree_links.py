@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 This code is taken from the itertree package:
 https://pypi.org/project/itertree/

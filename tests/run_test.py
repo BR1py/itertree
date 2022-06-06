@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-#
+# -*- coding: utf-8 -*-
 '''
 start local unittest (pytest)
 '''
@@ -11,6 +11,4 @@ if os.getenv('JOB_NAME') is None:
     #pytest.main(['-v', '../..'])
     #pytest.main(['--pep8', '../..'])
     #pytest.main(['-pylint', '../..'])
-    if 'LINUX_UNIT_TEST_ACTIVE' not in sys.path:
-        sys.path.append('LINUX_UNIT_TEST_ACTIVE')
-        pytest.main(['-s', '..'])
+    pytest.main(['-s', '..'])
