@@ -1,4 +1,4 @@
-name: Pytest Demo
+name: Pytest Package with recommended installations
 on: [push]
 jobs:
   Explore-Pytest-Action:
