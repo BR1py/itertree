@@ -19,8 +19,6 @@ jobs:
         run: |
           python setup.py install
           pip install pytest
-          pip install ojson
-          pip install blist
           pip install numpy 
         # temporarily install numpy, bug in module's dependencies.
       - name: GitHub Action for pytest
