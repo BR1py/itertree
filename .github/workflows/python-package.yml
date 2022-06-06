@@ -1,0 +1,30 @@
+name: Pytest Demo
+on: [push]
+jobs:
+  Explore-Pytest-Action:
+      runs-on: ubuntu-latest
+      strategy:
+        fail-fast: false
+        matrix:
+          python-version: ["3.5", "3.6", "3.7","3.8", "3.9"] #blist compile not working on python 3.10
+      steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Switch to Current Branch
+        run: git checkout ${{ env.BRANCH }}
+      - name: Install the package
+        run: |
+          python setup.py install
+          pip install pytest
+          pip install ojson
+          pip install blist
+          pip install numpy 
+        # temporarily install numpy, bug in module's dependencies.
+      - name: GitHub Action for pytest
+        run: python -m pytest ./tests
+        #uses: cclauss/GitHub-Action-for-pytest@0.5.0
+        #with:
+        #  args: pytest --verbose --collect-only
