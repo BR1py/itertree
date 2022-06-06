@@ -1,4 +1,4 @@
-name: Pytest Package with standard installation
+name: Pytest Package WINDOWS with standard installation
 on: [push]
 jobs:
   Explore-Pytest-Action:

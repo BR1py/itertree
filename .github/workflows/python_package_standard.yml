@@ -1,4 +1,4 @@
-name: Pytest Package with standard installation
+name: Pytest Package UBUNTU with standard installation
 on: [push]
 jobs:
   Explore-Pytest-Action:
