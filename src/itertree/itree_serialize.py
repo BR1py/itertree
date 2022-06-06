@@ -49,13 +49,12 @@ try:
 except:
     import json as JSON
 
-DECODE=False
-
-test=JSON.dumps({'test':'123','HASH':hashlib.sha1(b'asjhdahsdh').hexdigest()})
-try:
-    JSON.loads(test)
-except TypeError:
-    DECODE=True
+    DECODE=False
+    test=bytes(JSON.dumps({'test':'123','HASH':hashlib.sha1(b'asjhdahsdh').hexdigest()}).encode('utf8', errors='backslashreplace'))
+    try:
+        JSON.loads(test)
+    except TypeError:
+        DECODE=True
 
 try:
     import numpy as np
