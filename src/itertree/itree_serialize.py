@@ -34,11 +34,13 @@ This part of code contains the standard iTree serializers (JSON and rendering)
 from __future__ import absolute_import
 
 import os
+import sys
 import gzip
 import hashlib
 from collections import OrderedDict
 
 # For serializing we (try) to import some modules:
+
 IS_ORJSON=False
 try:
     import orjson as JSON
@@ -46,6 +48,14 @@ try:
     # orjson is much faster then standard json but might not be available
 except:
     import json as JSON
+
+DECODE=False
+test=JSON.dumps({'test':'123'})
+try:
+    JSON.loads(test)
+except:
+    DECODE=True
+
 try:
     import numpy as np
     # only needed in case of numpy arrays in data
@@ -292,14 +302,20 @@ class iTStdJSONSerializer(object):
         :return: iTree object loaded from file
         """
         header_str, dt_str = source_str.split(b'}***DT***')
-        header_dict = JSON.loads(header_str + b'}')
+        if DECODE:
+            header_dict = JSON.loads((header_str + b'}').decode('utf-8'))
+        else:
+            header_dict = JSON.loads(header_str + b'}')
         if header_dict['VERSION'] != DT_SERIALIZE_VERSION:
             raise PermissionError('Wrong version of DataTree data please convert first!')
         if check_hash and ('HASH' in header_dict):
             a = hashlib.sha1(dt_str).hexdigest()
             if hashlib.sha1(dt_str).hexdigest() != header_dict['HASH']:
                 raise PermissionError('Given DataTree data is corrupted (wrong hash)!')
-        raw_o = JSON.loads(dt_str)
+        if DECODE:
+            raw_o = JSON.loads(dt_str.decode('utf-8'))
+        else:
+            raw_o = JSON.loads(dt_str)
         new_tree=self.obj_serializer.decode(raw_o)
         if _source is not None:
             if new_tree._link is None:
