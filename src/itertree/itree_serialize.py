@@ -44,11 +44,6 @@ from collections import OrderedDict
 IS_ORJSON=False
 DECODE = False
 
-DECODE_PRINT='utf-16'
-
-if platform.system()!='Linux':
-    DECODE_PRINT='cp1252'
-
 try:
     import orjson as JSON
     IS_ORJSON=True
@@ -499,9 +494,10 @@ class iTStdRenderer(object):
         if item_filter is not None:
             if _only_print_tree:
                 out=u''.join([self.__create_item_string(itree_object)])
-                if DECODE_PRINT != 'utf-16':
-                    out.encode(errors='backslashreplace').decode(DECODE_PRINT)
-                print(out)
+                try:
+                    print(out)
+                except UnicodeEncodeError:
+                    print(out.encode().decode('cp1252'))
             else:
                 output.append(
                     u''.join([self.__create_item_string(itree_object), '\n']))
@@ -527,9 +523,10 @@ class iTStdRenderer(object):
             if item_filter is None or item_filter(item):
                 if _only_print_tree:
                     out=u''.join([u' ' * (self._identation * level), heading, self.__create_item_string(item)])
-                    if DECODE_PRINT!='utf-16':
-                        out.encode(errors='backslashreplace').decode(DECODE_PRINT)
-                    print(out)
+                    try:
+                        print(out)
+                    except UnicodeEncodeError:
+                        print(out.encode().decode('cp1252'))
                 else:
                     output.append(u''.join([u' ' * (self._identation * level), heading, self.__create_item_string(item),'\n']))
             if level==0:

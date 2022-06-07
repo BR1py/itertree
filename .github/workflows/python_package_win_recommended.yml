@@ -2,7 +2,7 @@ name: Pytest Package WINDOWS with recommended installations
 on: [push]
 jobs:
   Explore-Pytest-Action:
-      runs-on: windows_latest
+      runs-on: windows-latest
       strategy:
         fail-fast: false
         matrix:
@@ -26,7 +26,8 @@ jobs:
         # temporarily install numpy, bug in module's dependencies.
       - name: GitHub Action for pytest
         run: |
-          set PYTHONIOENCODING=utf-8:replace
+          set PYTHONIOENCODING=utf-8
+          set PYTHONLEGACYWINDOWSSTDIO=utf-8
           python -mrun pytest ./tests
         #uses: cclauss/GitHub-Action-for-pytest@0.5.0
         #with:
