@@ -71,7 +71,7 @@ class Test_iTree_Examples:
         target_file=os.path.join(rel_example_dir,file)
         print('We ran: %s'%target_file)
         assert os.path.exists(target_file)
-        error_code=os.system(sys.executable+' '+target_file+'>> %s'%temp_file_path)
+        error_code=os.system(sys.executable+' '+target_file+' > %s'%temp_file_path)
         if error_code!=0:
             with open(temp_file_path,'r') as fh:
                 output=fh.read()
