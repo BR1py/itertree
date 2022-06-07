@@ -42,6 +42,8 @@ from collections import OrderedDict
 # For serializing we (try) to import some modules:
 
 IS_ORJSON=False
+DECODE = False
+
 try:
     import orjson as JSON
     IS_ORJSON=True
@@ -49,7 +51,6 @@ try:
 except:
     import json as JSON
 
-    DECODE=False
     test=bytes(JSON.dumps({'test':'123','HASH':hashlib.sha1(b'asjhdahsdh').hexdigest()}).encode('utf8', errors='backslashreplace'))
     try:
         JSON.loads(test)
