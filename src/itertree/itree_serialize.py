@@ -392,12 +392,14 @@ class iTStdRenderer(object):
         elif t is iTreeTemporary:
             class_name = u'iTreeTemporary'
         data = item._data
+        out=u''
         if data.is_empty:
-            return u'%s(%s%s)' % (class_name, repr(item.tag), link_str)
+            out= u'%s(%s%s)' % (class_name, repr(item.tag), link_str)
         if data.is_no_key_only:
-            return u'%s(%s%s, data=%s)' % (class_name, repr(item.tag), link_str, repr(item.d_get()))
+            out= u'%s(%s%s, data=%s)' % (class_name, repr(item.tag), link_str, repr(item.d_get()))
         else:
-            return u'%s(%s%s, data=%s)' % (class_name, repr(item.tag), link_str, repr(item._data))
+            out= u'%s(%s%s, data=%s)' % (class_name, repr(item.tag), link_str, repr(item._data))
+        return out
 
     def render2(self, itree_object, item_filter=None, _level=0):
         """
@@ -419,7 +421,7 @@ class iTStdRenderer(object):
         if type(itree_object) is iTreeLink:
             header = self._link_heading
         for item in itree_object.iter_children(item_filter=item_filter):
-            print(''.join([' ' * (self._identation * _level), header, self.__create_item_string(item)]))
+            print(u''.join([u' ' * (self._identation * _level), header, self.__create_item_string(item)]))
             self.render(item, item_filter=item_filter, _level=_level + 1)
 
     def renders2(self, itree_object, item_filter=None, _level=0):
@@ -437,13 +439,13 @@ class iTStdRenderer(object):
         if _level == 0:
             output = self.__create_item_string(itree_object)
         else:
-            output = ''
+            output = u''
         if (item_filter is not None) and (not item_filter(itree_object)):
             return ''
         sub_tree = None
         for item in itree_object.iter_children(item_filter=item_filter):
-            output = ''.join(
-                [output, '\n', ' ' * (self._identation * _level), self._heading, self.__create_item_string(item),
+            output = u''.join(
+                [output, u'\n', u' ' * (self._identation * _level), self._heading, self.__create_item_string(item),
                  self.renders(item, item_filter=item_filter, _level=_level + 1)])
         return output
 
@@ -491,11 +493,11 @@ class iTStdRenderer(object):
         items=[itree_object]
         if item_filter is not None:
             if _only_print_tree:
-                print(''.join([self.__create_item_string(itree_object)]))
+                print(u''.join([self.__create_item_string(itree_object)]))
             else:
                 output.append(
-                    ''.join([self.__create_item_string(itree_object), '\n']))
-        heading = ''
+                    u''.join([self.__create_item_string(itree_object), '\n']))
+        heading = u''
         while 1:
             if len(items)==0:
                 break
@@ -516,9 +518,9 @@ class iTStdRenderer(object):
                 continue
             if item_filter is None or item_filter(item):
                 if _only_print_tree:
-                    print(''.join([' ' * (self._identation * level), heading, self.__create_item_string(item)]))
+                    print(u''.join([u' ' * (self._identation * level), heading, self.__create_item_string(item)]))
                 else:
-                    output.append(''.join([' ' * (self._identation * level), heading, self.__create_item_string(item),'\n']))
+                    output.append(u''.join([u' ' * (self._identation * level), heading, self.__create_item_string(item),'\n']))
             if level==0:
                 heading = self._heading
             new_items=list(item.iter_children())
@@ -527,5 +529,5 @@ class iTStdRenderer(object):
             else:
                 # replace the original item with the children
                 parent_list[0]=new_items
-        return ''.join(output)
+        return u''.join(output)
 
