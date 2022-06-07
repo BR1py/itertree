@@ -499,7 +499,8 @@ class iTStdRenderer(object):
         if item_filter is not None:
             if _only_print_tree:
                 out=u''.join([self.__create_item_string(itree_object)])
-                out.encode(DECODE_PRINT,'backslashreplace').decode(DECODE_PRINT)
+                if DECODE_PRINT != 'utf-16':
+                    out.encode(errors='backslashreplace').decode(DECODE_PRINT)
                 print(out)
             else:
                 output.append(
@@ -526,7 +527,8 @@ class iTStdRenderer(object):
             if item_filter is None or item_filter(item):
                 if _only_print_tree:
                     out=u''.join([u' ' * (self._identation * level), heading, self.__create_item_string(item)])
-                    out.encode(errors='backslashreplace').decode(DECODE_PRINT)
+                    if DECODE_PRINT!='utf-16':
+                        out.encode(errors='backslashreplace').decode(DECODE_PRINT)
                     print(out)
                 else:
                     output.append(u''.join([u' ' * (self._identation * level), heading, self.__create_item_string(item),'\n']))
