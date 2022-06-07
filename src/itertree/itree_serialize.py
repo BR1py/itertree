@@ -518,7 +518,9 @@ class iTStdRenderer(object):
                 continue
             if item_filter is None or item_filter(item):
                 if _only_print_tree:
-                    print(u''.join([u' ' * (self._identation * level), heading, self.__create_item_string(item)]))
+                    out=u''.join([u' ' * (self._identation * level), heading, self.__create_item_string(item)])
+                    out.encode('UTF-16','backslashescape').decode('UTF16')
+                    print(out)
                 else:
                     output.append(u''.join([u' ' * (self._identation * level), heading, self.__create_item_string(item),'\n']))
             if level==0:
