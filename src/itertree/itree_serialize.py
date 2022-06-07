@@ -34,7 +34,7 @@ This part of code contains the standard iTree serializers (JSON and rendering)
 from __future__ import absolute_import
 
 import os
-import sys
+import platform
 import gzip
 import hashlib
 from collections import OrderedDict
@@ -43,6 +43,11 @@ from collections import OrderedDict
 
 IS_ORJSON=False
 DECODE = False
+
+DECODE_PRINT='utf-16'
+
+if platform.system()!='Linux':
+    DECODE_PRINT='cp1252'
 
 try:
     import orjson as JSON
@@ -493,7 +498,9 @@ class iTStdRenderer(object):
         items=[itree_object]
         if item_filter is not None:
             if _only_print_tree:
-                print(u''.join([self.__create_item_string(itree_object)]))
+                out=u''.join([self.__create_item_string(itree_object)])
+                out.encode(DECODE_PRINT,'backslashreplace').decode(DECODE_PRINT)
+                print(out)
             else:
                 output.append(
                     u''.join([self.__create_item_string(itree_object), '\n']))
@@ -519,7 +526,7 @@ class iTStdRenderer(object):
             if item_filter is None or item_filter(item):
                 if _only_print_tree:
                     out=u''.join([u' ' * (self._identation * level), heading, self.__create_item_string(item)])
-                    out.encode('UTF-16','backslashescape').decode('UTF16')
+                    out.encode(DECODE_PRINT, 'backslashreplace').decode(DECODE_PRINT)
                     print(out)
                 else:
                     output.append(u''.join([u' ' * (self._identation * level), heading, self.__create_item_string(item),'\n']))
