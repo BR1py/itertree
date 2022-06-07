@@ -26,8 +26,6 @@ jobs:
         # temporarily install numpy, bug in module's dependencies.
       - name: GitHub Action for pytest
         run: |
-          set PYTHONIOENCODING=utf-8
-          set PYTHONLEGACYWINDOWSSTDIO=utf-8
           python -mrun pytest ./tests
         #uses: cclauss/GitHub-Action-for-pytest@0.5.0
         #with:
