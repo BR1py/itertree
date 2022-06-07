@@ -50,7 +50,7 @@ print('Test start')
 def out_file(tmpdir_factory):
     i=0
     while 1:
-        fn = tmpdir_factory.mktemp("data").join("test_%i.out"%i)
+        fn = str(tmpdir_factory.mktemp("data").join("test_%i.out"%i))
         if not os.path.exists(fn):
             break
         i+=1
