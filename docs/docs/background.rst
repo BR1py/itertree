@@ -46,30 +46,30 @@ A free to use couple_object can be used to combine an `iTree` object with any ot
 
 The profiling of the package done by running over 100000 base operations gives the following result based on blist:
 ::
-    Running on itertree version: 0.6.1
-    100003    0.161    0.000    0.342    0.000 itree_main.py:111(__init__)
-    100000    0.044    0.000    0.059    0.000 itree_main.py:269(__getitem__)
-    100000    0.090    0.000    0.383    0.000 itree_main.py:302(__delitem__)
-    100000    0.239    0.000    0.258    0.000 itree_main.py:870(append)
-    100000    0.269    0.000    0.286    0.000 itree_main.py:829(insert)
-    100000    0.160    0.000    0.891    0.000 itree_main.py:725(__copy__)
-    1         0.154    0.154    0.977    0.977 itree_main.py:919(extend)
-    100000    0.067    0.000    0.089    0.000 itree_main.py:622(idx)
-   
+Running on itertree version: 0.6.1
+100003    0.161    0.000    0.342    0.000 itree_main.py:111(__init__)
+100000    0.044    0.000    0.059    0.000 itree_main.py:269(__getitem__)
+100000    0.090    0.000    0.383    0.000 itree_main.py:302(__delitem__)
+100000    0.239    0.000    0.258    0.000 itree_main.py:870(append)
+100000    0.269    0.000    0.286    0.000 itree_main.py:829(insert)
+100000    0.160    0.000    0.891    0.000 itree_main.py:725(__copy__)
+1         0.154    0.154    0.977    0.977 itree_main.py:919(extend)
+100000    0.067    0.000    0.089    0.000 itree_main.py:622(idx)
+
 We can see that creating copies is the most time consuming operation and it is the reason why the one extend()
 operation takes so long.
 
 Running the same profiling actions without blist package (using normal list) we get:
 ::
-    100003    0.161    0.000    0.320    0.000 itree_main.py:111(__init__)
-    100000    0.052    0.000    0.060    0.000 itree_main.py:269(__getitem__)
-    100000    0.094    0.000    1.266    0.000 itree_main.py:302(__delitem__)
-    100000    0.140    0.000    0.161    0.000 itree_main.py:870(append)
-    100000    0.228    0.000    1.895    0.000 itree_main.py:829(insert)
-    100000    0.129    0.000    0.701    0.000 itree_main.py:725(__copy__)
-    1         0.149    0.149    0.914    0.914 itree_main.py:919(extend)
-    100000    0.082    0.000    0.097    0.000 itree_main.py:622(idx)
-    
+100003    0.161    0.000    0.320    0.000 itree_main.py:111(__init__)
+100000    0.052    0.000    0.060    0.000 itree_main.py:269(__getitem__)
+100000    0.094    0.000    1.266    0.000 itree_main.py:302(__delitem__)
+100000    0.140    0.000    0.161    0.000 itree_main.py:870(append)
+100000    0.228    0.000    1.895    0.000 itree_main.py:829(insert)
+100000    0.129    0.000    0.701    0.000 itree_main.py:725(__copy__)
+1         0.149    0.149    0.914    0.914 itree_main.py:919(extend)
+100000    0.082    0.000    0.097    0.000 itree_main.py:622(idx)
+
 Especially the index based searches in the lists are take much longer. And especially the `insert()` take exceptionally
 much longer but one may see this as a corner case only because the filling of a huge tree will normally always be done
 by appending or even better by extending elements. Inserting a single item is absolutely no issue! Please consider we
@@ -79,9 +79,9 @@ operation nobody will delete all the items step by step it's much easier to dele
 We can summarize: Except from the told corner cases the itertree package runs with the same speed
 (sometimes a bit faster) even that the blist package is not installed.
 
-*********************
+************************
 Special `iTree` objects
-*********************
+************************
 
 In an itertree person might need temporary items or they like to combine the tree from different sources (files).
 Or they might like to protect specific items from writing (read only). For this proposes we can integrate special iTree
@@ -175,6 +175,6 @@ E.g. we can define the following data models:
 If a data model is stored in the data structure we can put only values into the related attribute that are matching
 to the model. In case of no matching values the set command will raise an `iDataValueError` exception.
 
-.. note:: If define your own data_models and or `iData`classes ensure that you create a matching interface! E.g. the
-           `check()`and `_validator()`methods must deliver the value as return (needed for recursive operations).
+.. note:: If define your own data_models and or `iData` classes ensure that you create a matching interface! E.g. the
+          `check()` and `_validator()` methods must deliver the value as return (needed for recursive operations).
 

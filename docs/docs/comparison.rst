@@ -65,6 +65,7 @@ imported in the code, this should be ignored.
 
 Running the test on a tree with 5000 items delivers the following result on my PC under python 3.9.
 ::
+
     >>>python iter_performance.py
     We run for treesizes: 5000 with 4 repetitions
     Python:  3.9.2 (tags/v3.9.2:1a79785, Feb 19 2021, 13:44:55) [MSC v.1928 64 bit (AMD64)]
@@ -113,6 +114,7 @@ Running the test on a tree with 5000 items delivers the following result on my P
 
 Running the test on a tree with a depth of 150 levels and 22500 items delivers the following result on my PC under python 3.5.
 ::
+
     >>>python iter_performance2.py
     We run for deep tree sizes: depth of 150 with 22500 items and 4 repetitions
     Python:  3.9.2 (tags/v3.9.2:1a79785, Feb 19 2021, 13:44:55) [MSC v.1928 64 bit (AMD64)]
@@ -152,6 +154,7 @@ I have following comments on the findings:
 
 On a large tree of 500000 we have the following findings:
 ::
+
     We run for treesizes: 500000 with 4 repetitions
     Python:  3.9.2 (tags/v3.9.2:1a79785, Feb 19 2021, 13:44:55) [MSC v.1928 64 bit (AMD64)]
     blist package is available and used

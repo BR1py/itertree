@@ -33,11 +33,13 @@ The first step in the construction of a itertree is to instance the :ref:`itertr
 
 Instance the `iTree` object:
 ::
-   >>> item1=iTree('item1') # itertree item with the tag 'item1'
-   >>> item2=iTree('item2', data={'mykey':1}) # instance a iTree-object with data content (defined as a dict)
-   >>> item3=iTreeTemporary('temp_item') # instance a temporary iTree-object 
-   >>> item4=iTreeLink('linked_item', data={'mykey':2}, link_file_path='dt.itz',link_key_path=iTreeTagIdx(child',0),load_links=True) # instance a iTree-object containing a link
-   
+
+>>> item1=iTree('item1') # itertree item with the tag 'item1'
+>>> item2=iTree('item2', data={'mykey':1}) # instance a iTree-object with data content (defined as a dict)
+>>> item3=iTreeTemporary('temp_item') # instance a temporary iTree-object 
+>>> # instance a iTree-object containing a link:
+>>> item4=iTreeLink('linked_item', data={'mykey':2}, link_file_path='dt.itz', link_key_path=iTreeTagIdx('child',0), load_links=True) 
+
 
 iTreeTemporary objects can be filtered out and when dumping the whole `iTree` into a file the iTreeTemporary items are ignored and not stored.
 
@@ -46,11 +48,12 @@ In case a link is set by using the iTreeLink class will integrate the childs of 
 
 To add or manipulate the children of an item we have several possibilities. The following direct operations are recommended for structural manipulations in the tree:
 ::
-   >>> root=iTree('root')
-   >>> root.append(iTree('child')) # append a child
-   >>> root[0]=iTree('newchild') # replace the child with index 0
-   >>> del root[iTreeTagIdx('newchild',0)] # deletes the child with matching iTreeTagIdx
-    
+
+>>> root=iTree('root')
+>>> root.append(iTree('child')) # append a child
+>>> root[0]=iTree('newchild') # replace the child with index 0
+>>> del root[iTreeTagIdx('newchild',0)] # deletes the child with matching iTreeTagIdx
+
 
 Additionally a huge set of methods is available for structural manipulations related to the children of a item.
 
@@ -78,18 +81,20 @@ Additionally a huge set of methods is available for structural manipulations rel
 
 The addition of iTrees is possible the result contains always the properties of the first added item and the children of the second added item are appended by creating a copy. 
 ::
-    >>> a=iTree('a',data={'mykey':1},subtree=[iTree('a1'),iTree('a2')])
-    >>> b=iTree('b',subtree=[iTree('b1'),iTree('b2')])
-    >>> c=a+b
-    >>> c
-    iTree("'a'", data="{'mykey': 1}", subtree=[iTree("'a1'"), iTree("'a2'"), iTree("'b1'"), iTree("'b2'")])
+
+ >>> a=iTree('a',data={'mykey':1},subtree=[iTree('a1'),iTree('a2')])
+ >>> b=iTree('b',subtree=[iTree('b1'),iTree('b2')])
+ >>> c=a+b
+ >>> c
+ iTree("'a'", data="{'mykey': 1}", subtree=[iTree("'a1'"), iTree("'a2'"), iTree("'b1'"), iTree("'b2'")])
 
 Multiplication of a `iTree` is possible too the result is a list of `iTree` copies of the original one.
 ::
-    itree_list=iTree('a')*1000 # creates a list of 1000 copies of the original iTree
-    >>> root=iTree('root')
-    >>> root.extend(itree_list) # we can extend an existing `iTree` with the list (add 1000 identical children)
-    True
+
+ >>> itree_list=iTree('a')*1000 # creates a list of 1000 copies of the original iTree
+ >>> root=iTree('root')
+ >>> root.extend(itree_list) # we can extend an existing `iTree` with the list (add 1000 identical children)
+ True
 
 
 ***************************
