@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 performance comparison with deep trees
 """
@@ -12,6 +13,9 @@ import sys
 
 max_items = 150
 #max_items=20
+if len(sys.argv)==2:
+    max_items = int(sys.argv[1])
+
 itree_only=False
 
 if len(sys.argv)==2:
@@ -25,10 +29,20 @@ if len(sys.argv)==3:
 repeat = 4
 
 
-print('We run for deep tree sizes: depth of %i with %i items and %i repetitions'%(max_items,max_items*max_items,repeat))
+
+print('We run for deep tree-size: depth of %i with %i items and %i repetitions'%(max_items,max_items*max_items,repeat))
 
 from itertree import iTree, __version__,TagIdx
+print('Python: ',sys.version)
+try:
+    import blist
+    print('blist package is available and used')
+except:
+    print('blist package is not available (normal list is used)')
+    blist=None
+
 print('itertree version: %s'%__version__)
+print('A relative values >1 related to iTree means the other object is faster\n(relative values <1 means iTree is faster)')
 
 root=None
 dt_root=None
@@ -123,23 +137,23 @@ def performance_it_load():
     fh.seek(0)
     load_root=iTree('tmp').load(fh)
 
-a = timeit.timeit(performance_it_build_insert, number=repeat)
-print('Exectime time itertree build (with insert): {}'.format(a / repeat))
-a = timeit.timeit(performance_it_build, number=repeat)
-print('Exectime time itertree build append: {}'.format(a / repeat))
-a = timeit.timeit(performance_it_get_max_children_depth, number=1) # we run this only one time
-print('Exectime time itertree get max_depth_down~iter_all(): {}'.format(a / repeat))
-a = timeit.timeit(performance_it_get_deep_by_idx, number=repeat)
-print('Exectime time itertree get deep indexes access (all items iterated): {}'.format(a / repeat))
-a = timeit.timeit(performance_it_find_all_by_idx, number=repeat)
-print('Exectime time itertree get find_all by indexes access (all items iterated): {}'.format(a / repeat))
-a = timeit.timeit(performance_it_find_all_by_tag, number=repeat)
-print('Exectime time itertree find all by deep tag list (one deep search last item): {}'.format(a / repeat))
+it_append = timeit.timeit(performance_it_build, number=repeat)/ repeat
+print('Execution time itertree build append: {}'.format(it_append ))
+it_insert = timeit.timeit(performance_it_build_insert, number=repeat)/ repeat
+print('Execution time itertree build (with insert): {}'.format(it_insert ))
+it_depth_down = timeit.timeit(performance_it_get_max_children_depth, number=1) # we run this only one time
+print('Execution time itertree get max_depth_down~iter_all(): {}'.format(it_depth_down))
+it_get_deep_idx = timeit.timeit(performance_it_get_deep_by_idx, number=repeat)/ repeat
+print('Execution time itertree get deep indexes access (all items iterated): {}'.format(it_get_deep_idx))
+it_find_all_by_idx = timeit.timeit(performance_it_find_all_by_idx, number=repeat)/ repeat
+print('Execution time itertree get find_all by indexes access (all items iterated): {}'.format(it_find_all_by_idx))
+it_find_all_by_tag = timeit.timeit(performance_it_find_all_by_tag, number=repeat)/ repeat
+print('Execution time itertree find all by deep tag list (one deep search last item): {}'.format(it_find_all_by_tag))
 if max_items <=60:
-    a = timeit.timeit(performance_it_dump, number=repeat)
-    print('Exectime time itertree save to file: {}'.format(a / repeat))
-    a = timeit.timeit(performance_it_load, number=repeat)
-    print('Exectime time itertree load from file: {}'.format(a / repeat))
+    it_dump = timeit.timeit(performance_it_dump, number=repeat)/ repeat
+    print('Execution time itertree save to file: {}'.format(it_dump ))
+    it_load = timeit.timeit(performance_it_load, number=repeat)/ repeat
+    print('Execution time itertree load from file: {}'.format(it_load))
     print('Loaded iTree is equal: %s'%(str(dt_root.equal(load_root))))
 
 if itree_only:
@@ -184,15 +198,15 @@ try:
         global dt_root, max_items
         new_dict=dt_root.create_from_file(TMP_FOLDER + '/perfomance1.cf2')
 
-    a = timeit.timeit(performance_lldict_build, number=repeat)
-    print('Exectime time llDict build: {}'.format(a / repeat))
-    a = timeit.timeit(performance_lldict_get_key, number=repeat)
-    print('Exectime time llDict key access: {}'.format(a / repeat))
+    a = timeit.timeit(performance_lldict_build, number=repeat)/ repeat
+    print('Execution time llDict build: {} ~ {:.3f}x faster as iTree'.format(a,(it_append/a)))
+    a = timeit.timeit(performance_lldict_get_key, number=repeat)/ repeat
+    print('Execution time llDict key access: {} ~ {:.3f}x faster as iTree'.format(a,(it_find_all_by_tag/a)))
     if max_items<=60:
-        a = timeit.timeit(performance_lldict_save, number=repeat)
-        print('Exectime time llDict save: {}'.format(a / repeat))
-        a = timeit.timeit(performance_lldict_load, number=repeat)
-        print('Exectime time llDict load: {}'.format(a / repeat))
+        a = timeit.timeit(performance_lldict_save, number=repeat)/ repeat
+        print('Execution time llDict save: {} ~ {:.3f}x faster as iTree'.format(a,(it_dump/a)))
+        a = timeit.timeit(performance_lldict_load, number=repeat)/ repeat
+        print('Execution time llDict load: {} ~ {:.3f}x faster as iTree'.format(a,(it_load/a)))
 
 except ImportError:
     pass
@@ -267,15 +281,15 @@ def performance_list_get_idx():
             if type(a) is not list and type(a) is not str:
                 raise TypeError('%s is no str/list (key_list = %s)' % (repr(a),repr(key_list)))
 
-a = timeit.timeit(performance_dict_build, number=repeat)
-print('Exectime time dict build: {}'.format(a / repeat))
-a = timeit.timeit(performance_dict_get_keys, number=repeat)
-print('Exectime time dict key access: {}'.format(a / repeat))
-a = timeit.timeit(performance_list_build, number=repeat)
-print('Exectime time list build (via comprehension): {}'.format(a / repeat))
+a = timeit.timeit(performance_dict_build, number=repeat) / repeat
+print('Execution time dict build: {} ~ {:.3f}x faster as iTree'.format(a,(it_append/a)))
+a = timeit.timeit(performance_dict_get_keys, number=repeat) / repeat
+print('Execution time dict key access: {} ~ {:.3f}x faster as iTree'.format(a,(it_find_all_by_tag/a)))
+a = timeit.timeit(performance_list_build, number=repeat) / repeat
+print('Execution time list build (via comprehension): {} ~ {:.3f}x faster as iTree'.format(a,(it_append/a)))
 
-a = timeit.timeit(performance_list_get_idx, number=repeat)
-print('Exectime time list index access: {}'.format(a / repeat))
+a = timeit.timeit(performance_list_get_idx, number=repeat) / repeat
+print('Execution time list index access: {} ~ {:.3f}x faster as iTree'.format(a,(it_get_deep_idx/a)))
 
 # now we try some external packages (must be installed in the system for the test)
 
@@ -306,10 +320,10 @@ try:
                 if type(a) is not SortedDict:
                     raise TypeError('%s is no SortedDict' % repr(a))
 
-    a = timeit.timeit(performance_sdict_build, number=repeat)
-    print('Exectime time SortedDict build: {}'.format(a / repeat))
-    a = timeit.timeit(performance_sdict_get_key, number=repeat)
-    print('Exectime time SortedDict key access: {}'.format(a / repeat))
+    a = timeit.timeit(performance_sdict_build, number=repeat)/ repeat
+    print('Execution time SortedDict build: {} ~ {:.3f}x faster as iTree'.format(a,(it_append/a)))
+    a = timeit.timeit(performance_sdict_get_key, number=repeat)/ repeat
+    print('Execution time SortedDict key access: {} ~ {:.3f}x faster as iTree'.format(a,(it_find_all_by_tag/a)))
 
 
 except ImportError:
@@ -353,15 +367,15 @@ def performance_et_get_idx():
             for k in key_list:
                 a=a[k]
 
-a = timeit.timeit(performance_et_build, number=repeat)
-print('Exectime time xml ElementTree build: {}'.format(a / repeat))
+a = timeit.timeit(performance_et_build, number=repeat)/ repeat
+print('Execution time xml ElementTree build: {} ~ {:.3f}x faster as iTree'.format(a,(it_append/a)))
 if max_items<6000:
-    a = timeit.timeit(performance_et_get_key, number=repeat)
-    print('Exectime time xml ElementTree key access: {}'.format(a / repeat))
+    a = timeit.timeit(performance_et_get_key, number=repeat)/ repeat
+    print('Execution time xml ElementTree key access: {} ~ {:.3f}x faster as iTree'.format(a,(it_find_all_by_tag/a)))
 else:
     print('xml ElementTree key access skipped -> too slow')
-a = timeit.timeit(performance_et_get_idx, number=repeat)
-print('Exectime time xml ElementTree index access: {}'.format(a / repeat))
+a = timeit.timeit(performance_et_get_idx, number=repeat)/ repeat
+print('Execution time xml ElementTree index access: {} ~ {:.3f}x faster as iTree'.format(a,(it_get_deep_idx/a)))
 
 try:
     from anytree import Node, search
@@ -399,16 +413,16 @@ try:
                 for k in key_list:
                     a = a.children[k]
 
-    a = timeit.timeit(performance_at_build, number=repeat)
-    print('Exectime time Anytree build: {}'.format(a / repeat))
+    a = timeit.timeit(performance_at_build, number=repeat) / repeat
+    print('Execution time Anytree build: {} ~ {:.3f}x faster as iTree'.format(a,(it_append/a)))
     if max_items<20:
-        a = timeit.timeit(performance_at_get_key, number=repeat)
-        print('Exectime time Anytree key access (no cache): {}'.format(a / repeat))
+        a = timeit.timeit(performance_at_get_key, number=repeat) / repeat
+        print('Execution time Anytree key access (no cache): {} ~ {:.3f}x faster as iTree'.format(a,(it_find_all_by_tag/a)))
     else:
         print('Anytree key access skipped -> slow')
     #this is somehow not woking:
-    a = timeit.timeit(performance_at_get_idx, number=repeat)
-    print('Exectime time Anytree index access: {}'.format(a / repeat))
+    a = timeit.timeit(performance_at_get_idx, number=repeat) / repeat
+    print('Execution time Anytree index access: {} ~ {:.3f}x faster as iTree'.format(a,(it_get_deep_idx/a)))
 
 except ImportError:
     pass

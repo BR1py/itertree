@@ -1,18 +1,43 @@
-'''
+# -*- coding: utf-8 -*-
+"""
+This code is taken from the itertree package:
+https://pypi.org/project/itertree/
+GIT Home:
+https://github.com/BR1py/itertree
+The documentation can be found here:
+https://itertree.readthedocs.io/en/latest/index.html
+
+The code is published under MIT license:
+
+The MIT License (MIT)
+Copyright © 2022 <copyright holders>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+documentation files (the “Software”), to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
+to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT
+OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+For more information see: https://en.wikipedia.org/wiki/MIT_License
+
+
+This part of code contains
 helper classes used in DataTree object
-'''
+"""
+
 from __future__ import absolute_import
 import time
 import fnmatch
 import operator
 import itertools
 from collections import namedtuple
-# We are testing here if numpy is available
-import numpy as np
-try:
-    np_object=np.object_
-except TypeError:
-    np_object=np.object
 
 
 #CONSTANTS used as parameters of methods in DataTree and related classes
@@ -452,14 +477,16 @@ class iTLink(object):
     '''
     Definition of a link to an element in another DataTree
     '''
-    __slots__ = ("_file_path", "_key_path",'_loaded','_link_data','_link_tag')
+    __slots__ = ("_file_path", "_key_path",'_loaded','_link_data','_link_tag','_link_item','_source_path')
 
-    def __init__(self, file_path, key_path=None):
+    def __init__(self, file_path=None, key_path=None,link_item=None):
         self._file_path = file_path
         self._key_path = key_path
         self._loaded = None
         self._link_tag=None
         self._link_data=None
+        self._source_path=None
+        self._link_item = link_item
 
     @property
     def loaded(self):
@@ -468,6 +495,11 @@ class iTLink(object):
     @property
     def is_loaded(self):
         return self._loaded is not None
+
+
+    @property
+    def link_item(self):
+        return self._link_item
 
     @property
     def file_path(self):
@@ -489,15 +521,27 @@ class iTLink(object):
     def link_data(self):
         return self._link_data
 
+    @property
+    def source_path(self):
+        return self._source_path
+
+    def set_source_path(self,path):
+        self._source_path=path
+
     def set_loaded(self,tag=None,data=None):
         self._loaded=time.time()
         self._link_tag=tag
         self._link_data=data
 
+
     def dict_repr(self):
         return {'path':self._file_path,'key':self._key_path}
 
     def __repr__(self):
+        if self._link_item is not None:
+            return 'iTreeLink(file_path=%s, key_path=%s,link_item=%s)' % (
+                repr(self._file_path), repr(self._key_path),repr(self._link_item),)
+
         return 'iTreeLink(file_path=%s, key_path=%s)' % (
         repr(self._file_path), repr(self._key_path), )
 

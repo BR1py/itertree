@@ -1,12 +1,16 @@
+# -*- coding: utf-8 -*-
 """
 profile a nested structure
 """
 import cProfile
+import sys
 import itertools
 from itertree import *
 
 max_items = 102
 #max_items = 5
+if len(sys.argv)==2:
+    max_items = int(sys.argv[1])
 
 root=None
 
