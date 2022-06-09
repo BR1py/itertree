@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='itertree',
-    version='0.8.1',
+    version='0.8.2',
     packages=['itertree', 'itertree.examples','itertree.examples.itree_editor'],
     package_dir={'': 'src'},
     url='https://github.com/BR1py/itertree',
