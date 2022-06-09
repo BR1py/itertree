@@ -4,10 +4,10 @@ Changelog
 =============
 
 ************************************
-Version 0.8.1
+Version 0.8.2
 ************************************
 
-We reworked the itree_data module so that iData class behaves much better like a dict. All overloaded methods
+We reworked the itertree data module so that iData class behaves much better like a dict. All overloaded methods
 are improved to match the dict interface. Also `iTDataModel` is changed and is now a class that must be overloaded.
 
 The value `validator()` raises now an `iTDataValueError` or `iTDataTypeError` exception directly. This behavior match

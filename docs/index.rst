@@ -61,7 +61,7 @@ Status and compatibility information
 
    *Please do not email me directly.*
 
-.. |release| replace:: Version | 0.8.1|
+.. |release| replace:: Version | 0.8.2|
 .. _release: https://pypi.python.org/pypi/itertree/
 
 The original implementation is done in Python 3.5 and it is tested under Python 3.5 and 3.9. It should work in all

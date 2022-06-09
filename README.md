@@ -3,7 +3,7 @@
 
 ## Welcome to itertree python package. 
 
-0.8.1 --BETA-- -> this is already final release candidate (all interfaces are fixed), 
+0.8.2 --BETA-- -> this is already final release candidate (all interfaces are fixed), 
                   we do just some more unit-testing to get the last bugs out!
 
 Do you have to store data in a tree like structure? Do you need good performance, a reach feature set especially in 
