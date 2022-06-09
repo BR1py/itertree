@@ -65,7 +65,7 @@ The main features of the iTree object in itertree can be summarized in:
 * iTree keeps the order of the added children
 * the item related data is stored in a protected data structure where data models can be used to evaluate the given data values
 * a iTree can contain linked/referenced items (linking to other internal tree parts or to an external itertree file is supported)
-* in a linked iTree specific items can be *localized* and they can *cover* linked elements
+* in a linked iTree specific children can be *localized* and they can *cover* linked elements
 * standard export/import to JSON (incl. numpy and OrderedDict data serialization)
 * designed for performance (huge trees with hundreds of levels)
 * it's a pure python package (should be therefore usable in all embedded environments)
