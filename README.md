@@ -54,7 +54,7 @@ But we have two recommendations which give the package additional performance:
   
   -> in case both not found normal json package will be used
 
-##Feature Overview
+## Feature Overview
 
 The main features of the iTree object in itertree can be summarized in:
 
@@ -86,7 +86,7 @@ Here is very simple example of itertree usage:
      └──iTree('sub', data="{'mykey': 4}")
 
 
-##First steps
+## First steps
 
 
 All important classes of the package are published by the __init__.py file so that the functionality of itertree can be reached by simply importing:
@@ -182,7 +182,7 @@ a specific item in a file (external link) or create internal links.
     True
     >>> root+=iTree('link',link=iTLink(dt.dtz',iTreeTagIdx(child',0))) # The node item will integrate the children of the linked item.
     
-##iterators vs. lists
+## iterators vs. lists
 
 We named the package itertree because when ever a iTree operation delivers multiple items the result will be an
 iterator (and not a list what the user might expect).
