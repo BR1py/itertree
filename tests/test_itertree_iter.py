@@ -525,7 +525,7 @@ class Test1_iTreeInstance:
         print('%s() -> iteration-time: %es (%i)' % (method_name, t,len(a)))
 
         a=[i for i in iter_method(True)]
-        assert len(a)==len(tree[0][0].tag_number)
+        assert len(a)==tree[0][0].tag_number
         t = calc_timeit(lambda: [i for i in iter_method(True)], number=timeit_number)
         print('%s(order_last=True) -> iteration-time: %es (%i)' % (method_name, t,len(a)))
 
