@@ -2,8 +2,8 @@ from setuptools import setup
 
 setup(
     name='itertree',
-    version='0.8.2',
-    packages=['itertree', 'itertree.examples','itertree.examples.itree_editor'],
+    version='1.0.0',
+    packages=['itertree', 'itertree.examples'],
     package_dir={'': 'src'},
     url='https://github.com/BR1py/itertree',
     license='MIT',

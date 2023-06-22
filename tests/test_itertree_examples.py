@@ -7,15 +7,19 @@ https://github.com/BR1py/itertree
 The documentation can be found here:
 https://itertree.readthedocs.io/en/latest/index.html
 
-The code is published under MIT license:
+The code is published under MIT license incl. human protect patch:
 
-The MIT License (MIT)
+The MIT License (MIT) incl. human protect patch
 Copyright © 2022 <copyright holders>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 documentation files (the “Software”), to deal in the Software without restriction, including without limitation
 the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
 to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+Human protect patch:
+The program and its derivative work will neither be modified or executed to harm any human being nor through
+inaction permit any human being to be harmed.
 
 The above copyright notice and this permission notice shall be included in all copies or substantial
 portions of the Software.
@@ -26,6 +30,7 @@ OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHE
 OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 For more information see: https://en.wikipedia.org/wiki/MIT_License
+
 
 
 The main goal of this test is that the examples run without any exception
@@ -58,10 +63,10 @@ def out_file(tmpdir_factory):
 
 
 class Test_iTree_Examples:
-    EXAMPLE_FILES=['itree_usage_example1.py','itree_link_example1.py','itree_data_models.py']
+    EXAMPLE_FILES=['itree_usage_example1.py','itree_link_example1.py','itree_data_models.py',
+                   'itree_docu_examples.py','calendar_example.py']
     PERFORMANCE_FILES = [('itree_performance.py', '10'), ('itree_performance2.py', '2'),
                      ('itree_profile.py', '10'), ('itree_profile2.py', '1')]
-
 
     def _examples_base(self,index,out_file):
         file=self.EXAMPLE_FILES[index]
@@ -100,17 +105,10 @@ class Test_iTree_Examples:
     def test_example2(self,out_file):
         self._examples_base(2,out_file)
 
+    def test_example3(self,out_file):
+        self._examples_base(3,out_file)
 
-    def test_performance0(self,out_file):
-        self._performance_base(0,out_file)
-
-    def test_performance1(self,out_file):
-        self._performance_base(1,out_file)
-
-    def test_performance2(self,out_file):
-        self._performance_base(2,out_file)
-
-    def test_performance3(self,out_file):
-        self._performance_base(3,out_file)
+    def test_example4(self,out_file):
+        self._examples_base(4,out_file)
 
 

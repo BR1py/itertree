@@ -1,5 +1,36 @@
 # -*- coding: utf-8 -*-
 """
+This code is taken from the itertree package:
+https://pypi.org/project/itertree/
+GIT Home:
+https://github.com/BR1py/itertree
+The documentation can be found here:
+https://itertree.readthedocs.io/en/latest/index.html
+
+The code is published under MIT license incl. human protect patch:
+
+The MIT License (MIT) incl. human protect patch
+Copyright © 2022 <copyright holders>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+documentation files (the “Software”), to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
+to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+Human protect patch:
+The program and its derivative work will neither be modified or executed to harm any human being nor through
+inaction permit any human being to be harmed.
+
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT
+OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+For more information see: https://en.wikipedia.org/wiki/MIT_License
+
 This file contains some examples of data models
 that might be modified or used for determine the data stored in the iTData object
 
@@ -22,419 +53,37 @@ import time
 from itertree import *
 
 
-# define some helpers
-
-class IntegerModel(Data.iTDataModel):
-    """'
-    A data model for integer type numbers
-    """
-
-    BIN = 0
-    HEX = 1
-    DEC = 2
-
-    def __init__(self, value=Data.__NOVALUE__, range_interval=iTInterval(iTInterval.INF, iTInterval.INF),
-                 representation=DEC):
-        """
-        A data model for integer type numbers
-
-        :param value: a value that should be entered (default/start value) directly into the model
-
-        :param range_interval: Interval object defining the valid range for the integer
-
-        :param representation: on of DEC/HEX/BIN for the formatting of the string representation of the integer
-        """
-        self._range_interval = range_interval
-        self._representation = representation
-        super().__init__(value)
-
-    def validator(self, value):
-        """
-        check if the given value matches
-
-        In case check fails an iTreeValidationError is raised
-
-        :param value: to be checked against the model
-
-        :return: tuple (return_code (int), hint string) - in case return code == 0 check was successful
-        """
-        if type(value) is not int:
-            raise Data.iTDataTypeError('Given value of wrong type')
-        if self._range_interval.check(value):
-            return value
-        raise Data.iTDataValueError('Value: %s not in range: %s' % (repr(value), self._range_interval.math_repr()))
-
-    def formatter(self, value=None):
-        """
-        The formatter function the creates the string representation of the value
-        Note:: If n value is defined "None" is returned
-        :param value: give external value to be formatted (if None the internal value will be used)
-
-        :return: string representing the value
-        """
-        if value is None:
-            if self.is_empty:
-                return 'None'
-            value = self._value
-
-        if self._representation == self.HEX:
-            return hex(value)
-        elif self._representation == self.BIN:
-            return bin(value)
-        else:  # self._representation == self.DEC:
-            return '%i' % value
-
-    def __repr__(self):
-        """
-        object representation
-        :return: object representation string
-        """
-        if self.is_empty:
-            return 'IntegerModel(range_interval=%s, representation=%i)' % (repr(self._range_interval),
-                                                                           self._representation)
-
-        return 'IntegerModel(value= %s, range_interval=%s, representation=%i)' % (repr(self._value),
-                                                                                  repr(self._range_interval),
-                                                                                  self._representation)
+# define some extra models
 
 
-class FloatModel(Data.iTDataModel):
-    """
-           A data model for float type numbers
-    """
 
-
-    def __init__(self, value=Data.__NOVALUE__, range_interval=iTInterval(iTInterval.INF, iTInterval.INF), digits=3):
-        """
-        A data model for float type numbers
-
-        :param value: a value that should be entered (default/start value) directly into the model
-
-        :param range_interval: Interval object defining the valid range for the float
-
-        :param digits: number of digits that should be printed in the string representation of the float
-        """
-        self._range_interval = range_interval
-        self._digits = digits
-        super().__init__(value)
-
-    def validator(self, value):
-        """
-        check if the given value matches
-
-        In case check fails an iTreeValidationError is raised
-
-        :param value: to be checked against the model
-
-        :return: tuple (return_code (int), hint string) - in case return code == 0 check was successful
-        """
-        if type(value) is not float:
-            raise Data.iTDataTypeError('Given value of wrong type')
-        if self._range_interval.check(value):
-            return value
-        raise Data.iTDataValueError('Value: %s not in range: %s' % (repr(value), self._range_interval.math_repr()))
-
-    def formatter(self, value=None):
-        """
-        The formatter function the creates the string representation of the value
-        Note:: If n value is defined "None" is returned
-        :param value: give external value to be formatted (if None the internal value will be used)
-
-        :return: string representing the value
-        """
-        if value is None:
-            if self.is_empty:
-                return 'None'
-            value = self._value
-
-        return '{v:.{digits}f}'.format(v=value, digits=self._digits)
-
-    def __repr__(self):
-        """
-        object representation
-        :return: object representation string
-        """
-
-        if self.is_empty:
-            return 'FloatModel(range_interval=%s, digits=%i)' % (repr(self._range_interval),
-                                                                 self._digits)
-
-        return 'FloatModel(value= %s, range_interval=%s, digits=%i)' % (repr(self._value),
-                                                                        repr(self._range_interval),
-                                                                        self._digits)
-
-
-class StringModel(Data.iTDataModel):
-    """
-    data model for strings
-    """
-
-    def __init__(self, value=Data.__NOVALUE__, match=None, max_len=None):
-        """
-        data model for strings
-        :param value: default/start value
-        :param match: match pattern (fnmatch standard) for the given string
-        :param max_len: maximum length of the string
-        """
-        self._match = match
-        self._max_len = max_len
-        super().__init__(value)
-
-    def validator(self, value):
-        """
-        check if the given value matches
-
-        In case check fails an iTreeValidationError is raised
-
-        :param value: to be checked against the model
-
-        :return: tuple (return_code (int), hint string) - in case return code == 0 check was successful
-        """
-        t = type(value)
-        if t is not str:
-            raise Data.iTDataTypeError('Given value of wrong type')
-        if self._max_len is not None:
-            if len(value) > self._max_len:
-                raise Data.iTDataValueError('Given value contains to many characters (max_length=%i)' % self._max_len)
-        if self._match is not None:
-            if not fnmatch(value, self._match):
-                raise Data.iTDataValueError('Given value does not match to given match pattern')
-        return value
-
-    def formatter(self, value=None):
-        """
-        The formatter function the creates the string representation of the value
-        Note:: If n value is defined "None" is returned
-        :param value: give external value to be formatted (if None the internal value will be used)
-
-        :return: string representing the value
-        """
-        if value is None:
-            if self.is_empty:
-                return 'None'
-            value = self._value
-        return value
-
-    def __repr__(self):
-        """
-        object representation
-        :return: object representation string
-        """
-
-        if self.is_empty:
-            return 'StringModel(match=%s, max_length=%s)' % (repr(self._match),
-                                                             repr(self._max_len))
-
-        return 'StringModel(value= %s, match=%s, max_length=%s)' % (repr(self._value),
-                                                                    repr(self._match),
-                                                                    repr(self._max_len))
-
-
-class EnumerationModel(Data.iTDataModel):
-    """
-    data model for an enumeration type of data
-    """
-
-    def __init__(self, value=Data.__NOVALUE__, enum_iterable_dict=()):
-        """
-        data model for an enumeration type of data
-        :param value: default/starting value
-        :param enum_iterable_dict: Here the enumeration is defined in a dict or just by a iterable (list/tuple,...)
-                                   e.g.: {1:'FIRST',2:'SECOND'} ~ ('FIRST','SECOND') ~ ['FIRST','SECOND']
-                                   Note: the dict allows gabs: {1:'FIRST',3:'THIRD'}
-        """
-        if type(enum_iterable_dict) is dict:
-            for i in enum_iterable_dict.keys():
-                if type(i) is not int:
-                    raise TypeError('enum_iterable_dict: dict keys must be integers')
-            self._enum = enum_iterable_dict
-        else:  # we build a dict to find the enum iterable
-            self._enum = {i: enum for i, enum in enumerate(enum_iterable_dict)}
-
-        self._v2i = None
-
-        super().__init__(value)
-
-    def validator(self, value):
-        """
-        check if the given value matches
-
-        In case check fails an iTreeValidationError is raised
-
-        :param value: to be checked against the model
-
-        :return: tuple (return_code (int), hint string) - in case return code == 0 check was successful
-        """
-        if type(value) is not int:
-            raise Data.iTDataTypeError('Given value of wrong type')
-        if value not in self._enum:
-            raise Data.iTDataValueError('Value: %i not in enumeration definition' % value)
-        return value
-
-    def formatter(self, value=None):
-        """
-        The formatter function the creates the string representation of the value
-        Note:: If n value is defined "None" is returned
-        :param value: give external value to be formatted (if None the internal value will be used)
-
-        :return: string representing the value
-        """
-        if value is None:
-            if self.is_empty:
-                return 'None'
-            value = self._value
-
-        return self._enum[value]
-
-    def enum_str_to_int(self, enum_string):
-        """
-        translates the enumeration string back to the int value
-        :param enum_string: string to be translated back to int
-        :return:
-        """
-        if self._v2i is None:
-            self._v2i = {value: key for key, value in self._enum}
-        try:
-            return self._v2i[enum_string]
-        except KeyError:
-            return None
-
-    def __repr__(self):
-        """
-        object representation
-        :return: object representation string
-        """
-
-        if self.is_empty:
-            return 'EnumerationModel(enum_iterable_dict=%s)' % (repr(self._enum))
-
-        return 'EnumerationModel(value= %s, enum_iterable_dict=%s)' % (repr(self._value), repr(self._enum))
-
-
-class TimeModel(Data.iTDataModel):
+class TimeModel(Data.iTValueModel):
     """
     A data model for timestamps (unix time) will be formatted into ISO time standard in string representation
     """
+    def __init__(self,value=NoValue):
+        super().__init__(value,
+                         shape=tuple(), # single_value
+                         )
 
-    def __init__(self, value=Data.__NOVALUE__, ):
-        """
-        A data model for timestamps (unix time) will be formatted into ISO time standard in string representation
-        :param value: float unix time (generated by time.time() command)
-        """
-        super().__init__(value)
-
-    def validator(self, value):
-        """
-        check if the given value matches
-
-        In case check fails an iTreeValidationError is raised
-
-        :param value: to be checked against the model
-
-        :return: tuple (return_code (int), hint string) - in case return code == 0 check was successful
-        """
-        # we validate for an float (unix-time) here
-        t = type(value)
-        if t is not float:
-            raise Data.iTDataTypeError('Given value of wrong type')
-        if value < 0:
-            raise Data.iTDataValueError('Value out of range')
-        return value
-
-    def formatter(self, value=None):
-        """
-        The formatter function the creates the string representation of the value
-        Note:: If n value is defined "None" is returned
-        :param value: give external value to be formatted (if None the internal value will be used)
-
-        :return: string representing the value
-        """
-        if value is None:
-            if self.is_empty:
-                return 'None'
-            value = self._value
-        t = datetime.datetime.fromtimestamp(value)
-        return t.isoformat(' ')
-
-    def __repr__(self):
-        """
-        object representation
-        :return: object representation string
-        """
-
-        if self.is_empty:
-            return 'TimeModel()'
-        return 'TimeModel(value= %s)' % (repr(self._value))
-
-
-class ArrayModel(Data.iTDataModel):
-
-
-    def __init__(self, value=Data.__NOVALUE__, item_model=Data.iTDataModelAny(), max_len=None):
-        """
-        A data model for arrays of another type of data model
-        e.g. a array of floats or integers
-        :param value: default/initial value
-        :param item_model: sub data model for the items
-        :param max_len:
-        """
-        self._item_model = item_model
-        self._max_len = max_len
-        super().__init__(value)
-
-    def validator(self, value):
-        """
-        check if the given value matches
-
-        In case check fails an iTreeValidationError is raised
-
-        :param value: to be checked against the model
-
-        :return: tuple (return_code (int), hint string) - in case return code == 0 check was successful
-        """
-        # value must be an iterable
-        if not hasattr(value, '__iter__'):
-            raise Data.iTDataTypeError('Given value of wrong type (expecting an iterable)')
-        if self._max_len is not None:
-            if len(value) > self._max_len:
-                raise Data.iTDataValueError('Value array length bigger then max_len')
-        for i, item in enumerate(value):
+    def check_and_cast_single_item(self, value_item):
+        t=type(value_item)
+        if t is not datetime.datetime:
             try:
-                self._item_model.validator(item)
-            except Data.iTDataValueError as e:
-                raise Data.iTDataValueError('Given sub_value (index: %i)-> %s' % (i, str(e)))
-            except Data.iTDataTypeError as e:
-                raise Data.iTDataTypeError('Given sub_value (index: %i)-> %s' % (i, str(e)))
-        return value
+                value=float(value_item)
+                value_item=datetime.datetime.fromtimestamp(value)
+            except:
+                raise ValueError('Given value %s could not be converted in internal datetime object'%repr(value_item))
+        return value_item
 
-    def formatter(self, value=None):
-        """
-        The formatter function the creates the string representation of the value
-        Note:: If n value is defined "None" is returned
-        :param value: give external value to be formatted (if None the internal value will be used)
+    def get_init_args(self):
+        return (self._value,)
 
-        :return: string representing the value
-        """
+    def __str__(self):
+        if self._value is NoValue:
+            return 'NoValue'
+        return self._value.isoformat(' ')
 
-        if value is None:
-            if self.is_empty:
-                return 'None'
-            value = self._value
-
-        return repr([self._item_model.formatter(i) for i in value])
-
-    def __repr__(self):
-        """
-        object representation
-        :return: object representation string
-        """
-
-        if self.is_empty:
-            return 'ArrayModel(item_type=%s, max_len=%s)' % (repr(self._item_model), str(self._max_len))
-        else:
-            return 'ArrayModel(value= %s, item_type=%s, max_len=%s)' % (repr(self._value),
-                                                                        repr(self._item_model),
-                                                                        str(self._max_len))
 
 
 if __name__ == '__main__':
@@ -444,139 +93,134 @@ if __name__ == '__main__':
     representation of the data model is printed out
     """
     print('Run itertree data_model.py example')
-    print('We build a tree for the following information:')
-    print('signal_catalog')
-    print(' - signal_category')
-    print('   - signal')
-    print('Each level in the tree contains several attributes that are stored in the data model')
-    print('Build iTData structure for signal_catalog:')
-    catalog_data = Data.iTData({'creation_time': TimeModel(), 'name': StringModel(max_len=20)})
-    print(catalog_data)
-    print('Build iTData structure for signal_category')
-    category_data = Data.iTData({'description': StringModel(max_len=200)})
-    print(category_data)
-    print('Build iTData structure for signal')
-    signal_data = Data.iTData({'type': StringModel(max_len=20),
-                               'raw_data': ArrayModel(item_model=FloatModel(range_interval=iTInterval(-10,
-                                                                                                      10,
-                                                                                                      False,
-                                                                                                      False),
-                                                                            digits=2)),
-                               'gain': FloatModel(digits=4),
-                               'offset': FloatModel(digits=4),
-                               'io_type': EnumerationModel(enum_iterable_dict={1: 'INPUT', 2: 'OUTPUT'}),
-                               'buffer_size': IntegerModel(range_interval=iTInterval(0, 1024, False, False)),
-                               'address': IntegerModel(
-                                   range_interval=iTInterval(0, iTInterval.INF, False, False),
-                                   representation=IntegerModel.HEX),
-
-                               })
-    print(signal_data)
-
+    print('Each iTree item will contain different types of data models for the values')
     print('Build the tree')
-    root = iTree('signal_catalog', data=catalog_data)
-    print('Type check example')
-    print('Enter int as name and catch exception')
+
+    root=iTree('root')
+
+    print('Append model items and enter values')
+
+
+    print('\nEnter a string in the string model, iTree nows that a model is in value and takes over the given value implicit into the model')
+    item=root.append(iTree('str_len20_item', value=Data.iTStrModel(shape=(20,))))
+    print('Appended item: %s'%repr(item))
+    item.set_value('Hello world')
+    print('Content stored in item value: %s'%repr(item.value))
+    print('Content delivered via get_value(): %s' % str(item.get_value()))
     try:
-        root.d_set('name', 1)
+        print('Enter a string in the string model which is to long')
+        item.set_value('Hello world this string is more then 20 characters long')
     except ValueError as e:
-        print('Exception caught: %s' % repr(e))
-    root.d_set('name', 'my signal catalog')
-    print('Enter creation time')
-    root.d_set('creation_time', time.time())
-    print('Creation time value:', root.d_get('creation_time'))
-    print('Creation time string representation:', root.d_get('creation_time', return_type=Data.STR))
+        print('Exception raised (and handled):')
+        print(e.args[0])
 
-    print('Create a category')
-    child = iTree('analog signals', data=category_data)
-    print('Enter a to long description and catch exception')
+    print(
+        '\nEnter a string in the string model, iTree nows that a model is in value and takes over the given value implicit into the model')
+    item=root.append(iTree('ascii_str_len40_item', value=Data.iTASCIIStrModel(shape=(40,))))
+    print('Appended item: %s'%repr(item))
+    item.set_value('Hello world')
+    print('Content stored in item value: %s'%repr(item.value))
+    print('Content delivered via get_value(): %s' % str(item.get_value()))
     try:
-        child.d_set('description', 'Signals responsible for analog inputs and outputs' + '.' * 300)
-    except Data.iTDataValueError as e:
-        print('Exception caught: %s' % repr(e))
-    # enter valid description
-    child.d_set('description', 'Signals responsible for analog inputs and outputs')
-    # append to root
-    root.append(child)
-    # create some signals for the category
-    sub_child = iTree('power voltage', data=signal_data)
-    sub_child.d_set('type', 'analog input')
-    print('Enter a array item out of range')
+        print('Enter a string in the ASCII string model which is to long')
+        item.set_value('Hello world'*40)
+    except ValueError as e:
+        print('Exception raised (and handled):')
+        print(e.args[0])
     try:
-        sub_child.d_set('raw_data', [1.1, 2.2, 3.1, 4.2, 5.3, 6.4, 7.5, 8.6, 10.1])
-    except Data.iTDataValueError as e:
-        print('Exception caught: %s' % repr(e))
+        print('Enter a string in the ASCII string model which contains non ascii characters')
+        item.set_value('°C')
+    except ValueError as e:
+        print('Exception raised (and handled):')
+        print(e.args[0])
 
-    print('Enter a array item with wrong data type (here an integer as second value))')
+    print('\nEnter len()=2 floats list')
+    item=root.append(iTree('float_array2_item', value=Data.iTFloatModel(shape=(2,),formatter='{:.2f}')))
+    print('Appended item: %s'%repr(item))
+    item.set_value([1.3,6.4])
+    print('Content stored in item value: %s'%repr(item.value))
+    print('Content delivered via get_value(): %s' % str(item.get_value()))
+    print('Enter a numeric string in the float model')
+    item.set_value(['1','3'])
+    print('Content delivered via get_value(): %s' % str(item.get_value()))
+    item.set_value(['1.3','3.1'])
+    print('Content delivered via get_value(): %s' % str(item.get_value()))
+    print('Enter a single item list in the float array model')
+    item.set_value([1.1])
+    print('Content delivered via get_value(): %s' % str(item.get_value()))
     try:
-        sub_child.d_set('raw_data', [1.1, 2, 3.1, 4.2, 5.3, 6.4, 7.5, 8.6])
-    except Data.iTDataTypeError as e:
-        print('Exception caught: %s' % repr(e))
-    # Enter valid entry
-    sub_child.d_set('raw_data', [1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 9.9])
-    print('raw_data_string', sub_child.d_get('raw_data', return_type=Data.STR))
-    sub_child.d_set('gain', 1.023)
-    print('gain (see number of digits=4!)', sub_child.d_get('gain', return_type=Data.STR))
-    sub_child.d_set('offset', 0.0183)
-    print('Enter invalid enumerate number')
+        print('Enter a string in the float model')
+        item.set_value(['1.3','ABC'])
+    except ValueError as e:
+        print('Exception raised (and handled):')
+        print(e.args[0])
     try:
-        sub_child.d_set('io_type', 3)
-    except Data.iTDataValueError as e:
-        print('Exception caught: %s' % repr(e))
-    # enter valid io_type
-    sub_child.d_set('io_type', 1)
-    print('io_type enum string', sub_child.d_get('io_type', return_type=Data.STR))
-    sub_child.d_set('buffer_size', 256)
-    sub_child.d_set('address', 0xFF1234)
-    print('address as hex representation', sub_child.d_get('address', return_type=Data.STR))
-    child.append(sub_child)
-    # create some more children to complete the tree
-    sub_child = iTree('power current', data=signal_data)
-    print('Enter invalid buffer_size in update()')
+        print('Enter a single float in the float array model')
+        item.set_value(1.1)
+    except ValueError as e:
+        print('Exception raised (and handled):')
+        print(e.args[0])
     try:
-        sub_child.d_update({'type': 'analog input',
-                            'raw_data': [1.0, 2.0, 3.0, 4.0],
-                            'gain': 1.0,
-                            'offset': 0.0,
-                            'io_type': 1,
-                            'buffer_size': -1,  # issue!
-                            'address': 0xFED123,
-                            })
-    except Data.iTDataValueError as e:
-        print('Exception caught: %s' % repr(e))
-    # valid update
-    sub_child.d_update({'type': 'analog input',
-                        'raw_data': [1.1, 2.2, 3.3, 4.0],
-                        'gain': 1.0,
-                        'offset': 0.0,
-                        'io_type': 1,
-                        'buffer_size': 100,
-                        'address': 123,
-                        })
-    child.append(sub_child)
-    sub_child = iTree('power control', data=signal_data)
-    sub_child.d_update({'type': 'analog output',
-                        'gain': 1.0,
-                        'offset': 0.0,
-                        'io_type': 2,
-                        'address': 456,
-                        })
-    child.append(sub_child)
-    child = iTree('digital signals', data=category_data)
-    child.d_set('description', 'Digital signals (switches and state inputs)')
-    # append to root
-    root.append(child)
-    sub_child = iTree('power switch', data=signal_data)
-    sub_child.d_update({'type': 'digital output',
-                        'io_type': 2,
-                        'address': 789,
-                        })
-    child.append(sub_child)
-    sub_child = iTree('power state', data=signal_data)
-    sub_child.d_update({'type': 'digital input',
-                        'io_type': 1,
-                        'address': 101112,
-                        })
+        print('Enter a triple item list in the float array model')
+        item.set_value([1.1,2.2,4.4])
+    except ValueError as e:
+        print('Exception raised (and handled):')
+        print(e.args[0])
 
-    print('CONSTRUCTED TREE:')
-    root.render()
+    print('\nEnter single float with range')
+    item=root.append(iTree('float_single_item', value=Data.iTFloatModel(shape=tuple(),
+                                                                   contains=Filters.mSetInterval((-10,True),(10,True)),
+                                                                   formatter='{:.4e}')))
+    print('Appended item: %s'%repr(item))
+    item.set_value(5.5)
+    print('Content stored in item value: %s'%repr(item.value))
+    print('Content delivered via get_value(): %s' % str(item.get_value()))
+    print('Enter a numeric string in the float model')
+    item.set_value('-4.4')
+    print('Content delivered via get_value(): %s' % str(item.get_value()))
+    try:
+        print('Enter a string in the float model')
+        item.set_value('ABC')
+    except ValueError as e:
+        print('Exception raised (and handled):')
+        print(e.args[0])
+    try:
+        print('Enter a float list in the float model')
+        item.set_value([1.2,3.4])
+    except ValueError as e:
+        print('Exception raised (and handled):')
+        print(e.args[0])
+    try:
+        print('Enter a float out of range upper limit in the float model')
+        item.set_value(11)
+    except ValueError as e:
+        print('Exception raised (and handled):')
+        print(e.args[0])
+    try:
+        print('Enter a float out of range lower limit in the float model')
+        item.set_value(-11)
+    except ValueError as e:
+        print('Exception raised (and handled):')
+        print(e.args[0])
+
+    print('\nEnter timestamp')
+    item=    root.append(iTree('time_stamp_item', value=TimeModel(0)))
+    print('Appended item: %s'%repr(item))
+    item.set_value(time.time())
+    print('Content stored in item value: %s'%repr(item.value))
+    print('Content delivered via get_value(): %s' % str(item.get_value()))
+    item.set_value(datetime.datetime.fromtimestamp(time.time()))
+    print('Content stored in item value: %s' % repr(item.value))
+    print('Content delivered via get_value(): %s' % str(item.get_value()))
+    try:
+        print('Enter a string in the time model')
+        item.set_value('ABC')
+    except ValueError as e:
+        print('Exception raised (and handled):')
+        print(e.args[0])
+    try:
+        print('Enter a negative float in the time model')
+        item.set_value(-100)
+    except ValueError as e:
+        print('Exception raised (and handled):')
+        print(e.args[0])
