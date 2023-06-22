@@ -7,15 +7,19 @@ https://github.com/BR1py/itertree
 The documentation can be found here:
 https://itertree.readthedocs.io/en/latest/index.html
 
-The code is published under MIT license:
+The code is published under MIT license incl. human protect patch:
 
-The MIT License (MIT)
+The MIT License (MIT) incl. human protect patch
 Copyright © 2022 <copyright holders>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 documentation files (the “Software”), to deal in the Software without restriction, including without limitation
 the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
 to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+Human protect patch:
+The program and its derivative work will neither be modified or executed to harm any human being nor through
+inaction permit any human being to be harmed.
 
 The above copyright notice and this permission notice shall be included in all copies or substantial
 portions of the Software.
@@ -27,12 +31,14 @@ OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 
 For more information see: https://en.wikipedia.org/wiki/MIT_License
 
+
 This test suite focuses on the linking and "covering mechanisms" available in iTree
 """
 import os
 # import sys
 import collections
-# import timeit
+import timeit
+import itertools
 import pytest
 
 try:
@@ -49,7 +55,7 @@ print('ROOT_PATH', root_path)
 
 TEST_SELECTION = {1, 2, 3}
 
-print('Test start')
+print('Test start: itertree linked items test')
 
 
 def get_relpath_to_root(item_path):
@@ -60,370 +66,412 @@ def get_relpath_to_root(item_path):
         new_path = new_path[1:]
     return root_path + '/' + new_path
 
+def calc_timeit(check_method, number):
+    min_time = float('inf')
+    for i in range(number):
+        t = timeit.timeit(check_method, number=1)
+        if t < min_time:
+            min_time = t
+    return min_time
 
-class Test_iTreeBase:
-    def _build_mix_tree(self):
-        root = iTree('root')
-        root += iTree('c1', data=0)
-        root += iTree('c2', data=1)
-        root += iTree((0,), data=2)
-        root += iTree('c2', data=3)
-        root += iTree((1,), data=4)
-        root += iTree('c2', data=5)
-        root += iTree((1,), data=6)
-        root += iTree('c2', data=7)
-        root += iTree((1,), data=8)
-        root += iTree('c2', data=9)
-        root += iTree('c3', data=10)
-        root += iTree((2,), data=11)
-        # this will do internal copies!
-        root[2].extend(root)
-        root[2][2].extend(root)
-        root[3].extend(root)
-        return root
+def large_itree(number_per_level,tags=[],counter_var=None,_root=None,_count=0):
+    counters=[]
+    for tag in tags:
+        if tag==counter_var:
+            counters.append(0)
 
-    def _build_base_tree(self):
-        # build a tree
-        root = iTree('root', data={'level': ()})
-        # append subitems via +=
-        root += iTree('sub1', data={'level': (1, -1)})
-        root += iTree('sub2', data={'level': (2, -1)})
-        # append subitems via append()
-        root.append(iTree('sub3', data={'level': (3, -1)}))
-        # insert first element via appendleft
-        root.appendleft(iTree('sub0', data={'level': (0, -1)}))
-        # append in deeper level via += and select last subelement via [-1]
-        sub3_0 = iTree('sub3_0', data={'level': (3, 0)})
-        root[-1] += sub3_0
-        # append next element via append()
-        root[-1].append(iTree('sub3_2', data={'level': (3, 2)}))
-        # insert in between the other elements
-        root[TagIdx('sub3', 0)].insert(1, iTree('sub3_1', data={'level': (3, 1)}))
-        # build alist and extend
-        subtree = [iTree('sub2_0', data={'level': (2, 0)}),
-                   iTree('sub2_1', data={'level': (2, 1)}),
-                   iTree('sub2_3', data={'level': (2, 3)}),
-                   iTree('sub2_4', data={'level': (2, 4)}),
-                   iTree('sub2_2', data={'level': (2, 2)})
-                   ]
-        root[2].extend(subtree)
+        elif type(tag) is tuple:
+            sub_counters=[]
+            for i,t in enumerate(tag):
+                if t ==counter_var:
+                    sub_counters.append(i)
+            counters.append(sub_counters)
+        elif type(tag) is str and '%i' in tag:
+            counters.append(1)
+        else:
+            counters.append(None)
+    if _root is None:
+        root=iTree('root')
+    else:
+        root=_root
+    cnt=_count
+    level=len(number_per_level)-1
+    for i in range(number_per_level[0]):
+        for update,tag in zip(counters,tags):
+            if update==0:
+                cnt += 1
+                sub_item=iTree(i,cnt)
+            elif update == 1:
+                cnt += 1
+                sub_item = iTree(tag % i, cnt)
+            elif update is None:
+                cnt += 1
+                sub_item = iTree(tag, cnt)
+            elif type(tag) is tuple:
+                tag = list(tag)
+                for ii in update:
+                    tag[ii]=i
+                cnt += 1
+                sub_item = iTree(tuple(tag), cnt)
+            else:
+                cnt += 1
+                sub_item = iTree(tag, cnt)
+            if level!=0:
+                sub=number_per_level[1:]
+                sub_item,cnt=large_itree(sub,tags,counter_var,sub_item,cnt)
+            root.append(sub_item)
+    return root,cnt
 
-        # root[2][TagIdx('sub2_2', 0)]+=iTree('sub2_2_0')
-        # root[2][TagIdx('sub2_2', 0)] += iTree('sub2_2_1')
-        # root[2][TagIdx('sub2_2', 0)] += iTree('sub2_2_2')
 
-        # move an existing item
-        root[2][TagIdx('sub2_2', 0)].move(2)
 
-        # extendleft a iTree
-        root[0] += iTree('sub0_3', data={'level': (0, 3)})
-        subtree = iTree('extend', subtree=[iTree('sub0_0', data={'level': (0, 0)}),
-                                           iTree('sub0_1', data={'level': (0, 1)}),
-                                           iTree('sub0_2', data={'level': (0, 2)})])
-        root[0].extendleft(subtree)
+class Test_iTree_linked_items:
 
-        s4 = iTree('sub4', data={'level': (4, -1)})
-        root += s4
+    def test_internal_links_creation_and_not_loaded_behavior(self):
 
-        # append multiples
-        s4.extend(iTree('sub4_n', data={'level': ('n')}) * 100)
-        for i in range(len(s4)):
-            s4[i].d_set('level', 'n%i' % i)
+        print('\nRUN TEST: Test not loaded internal link and allowed operations')
 
-        # Serializer.itrRenderer().render(root)
-        return root
+        root = iTree('root', subtree=[iTree('A'), iTree('B'),
+                                      iTree('B', subtree=[iTree('Ba'), iTree('Bb'), iTree('Bb'), iTree('Bc')]),
+                                      iTree('internal_link', link=iTLink(None, [('B', 1)]))])
 
-    def test1_linking(self):
-        if not 1 in TEST_SELECTION:
-            return
+        #check properties
+        assert not root.is_link_loaded
+        link_root_item=root[-1]
+        assert not link_root_item.is_link_loaded
+        assert link_root_item.is_link_root
+        assert not link_root_item.is_linked
 
-        print('\nRESULT OF TEST: external and internal linking')
+        #we excute the next operation and we do not expect any exceptions!
+        link_root_item.append(iTree('test'))
+        link_root_item+=iTree('test')
+        link_root_item.insert(0,iTree('test'))
+        link_root_item.appendleft(iTree('test'))
+        link_root_item[0].rename('new_name')
+        link_root_item[0].move(-1)
+        link_root_item.extend([iTree(),iTree()])
+        link_root_item.extendleft([iTree(), iTree()])
+        link_root_item[0].rename('new_name2')
+        link_root_item.reverse()
+        link_root_item.deep.reverse()
+        link_root_item.rotate()
+        link_root_item.rotate(2)
+        link_root_item.rotate(-3)
+        link_root_item.sort()
+        link_root_item.deep.sort()
+        del link_root_item[2]
+        link_root_item.pop(1)
+        link_root_item.remove(filter(lambda i: i.tag == NoTag, link_root_item))
+        with pytest.raises(SyntaxError):
+            link_root_item[2].make_local()
 
-        # first we create a file
-        root = self._build_base_tree()
-        root_data_path = get_relpath_to_root('tmp')
-        if not os.path.exists(root_data_path):
-            os.makedirs(root_data_path)
-        target_path = root_data_path + '/out.itz'
-        root.dump(target_path=target_path, overwrite=True)
+        print('\nRESULT OF TEST: Test not loaded internal link and allowed operations -> PASS')
 
-        # we build a new tree
-        root = self._build_mix_tree()
-        # we add a linked element
-        linked_item = iTreeLink('LINKED', data=0, link_file_path=target_path, link_key_path=4, load_links=False)
-        root.insert(1, linked_item)
-        print()
-        # root.render()
-        assert len(linked_item) == 0
-        root.load_links()
-        assert len(linked_item) == 100
-        # data can be changed
-        linked_item.d_set('DATA', 'TEST')
-        # but not in the sub items!
+    def test_internal_links_creation_and_after_loaded_behavior(self):
+
+        print('\nRUN TEST: Test loaded internal link and allowed afterwards operations')
+
+        root = iTree('root', subtree=[iTree('A'), iTree('B'),
+                                      iTree('B', subtree=[iTree('Ba'), iTree('Bb'), iTree('Bb'), iTree('Bc')]),
+                                      iTree('internal_link', link=iTLink(None, [('B', 1)]))])
+
+        assert root.load_links()
+        #check properties
+        assert root.is_link_loaded
+        link_root_item=root[-1]
+        assert link_root_item.is_link_loaded
+        assert link_root_item.is_link_root
+        assert not link_root_item.is_linked
+        assert len(link_root_item) == len(root.get(*[('B', 1)]))
+        assert link_root_item._link.tags=={i.tag for i in root.get(*[('B', 1)])}
+        for i in link_root_item:
+            assert i.is_linked
+            assert not i.is_link_loaded
+            assert not i.is_link_root
+            assert not i.link_root is link_root_item
+            assert root.get(*[('B', 1), i.tag_idx]) == i
+            assert root.get(*[('B', 1), i.tag_idx]) is not i
+
+        #we excute the next operation and we do not expect any exceptions!
+        # append is allowed in all variations
+        a=len(link_root_item)
+        link_root_item.append(iTree('test')) #new tag
+        local_with_link_tag=link_root_item.append(iTree('Bb')) # linked tag the item is required for later tests!
+        link_root_item.append(iTree())  # empty tag (tag=NoTag)
+        link_root_item.append('myvalue') # implicit definition (tag=NoTag)
+        # append via __iadd__()
+        link_root_item+=iTree('test')
+        link_root_item += iTree('Bb')
+        link_root_item+=iTree()
+
+        # appendleft allowed operations
+        link_root_item.appendleft(iTree('test_appendleft'))  # unlinked new tag
+        link_root_item.appendleft(iTree('test')) # unlinked tag
+        link_root_item.appendleft(iTree())  # unlinked tag==NoTag
+        link_root_item.appendleft('appendleft_value')  # unlinked tag==Notag (implicit definition)
+        # appendleft blocked operations
         with pytest.raises(PermissionError):
-            linked_item[1].d_set('DATA', 'TEST')
-        for i, item in enumerate(root.iter_all()):
-            if i == 0:
-                assert not item.is_linked
-            elif i == 1:
-                assert item.tag == 'LINKED'
-                assert item.is_linked
-            elif i > 2 and i <= 101:
-                assert item.is_linked
-            elif i == 101:
-                assert item.d_get('level') == 'n99'
-            elif i == 102:
-                assert not item.is_linked
-                assert item.tag == 'c2'
-            elif i > 102:
-                assert not item.is_linked
+            link_root_item.appendleft(iTree('Ba'))  # linked tag
 
-        for i, item in enumerate(root.iter_all(Filter.iTFilterItemType(iTreeLink, invert=True))):
-            assert not item.is_linked
-        for i, item in enumerate(root.iter_all(Filter.iTFilterItemType(iTreeLink))):
-            assert item.is_linked
-
-        print('PASSED')
-
-    def test2_link_external_and_internal(self):
-        if not 2 in TEST_SELECTION:
-            return
-
-        print('\nRESULT OF TEST: external and internal linking part2')
-
-        # first we create a simple tree and write it into a file
-        root = iTree('root')
-        root += iTree('A')
-        root += (iTree('B'))
-        root += (iTree('C'))
-
-        A = root[0]
-        A += (iTree('Aa'))
-        A += (iTree('Ab'))
-        A += (iTree('Ac'))
-
-        root[1].append(iTree('Ba', 'dataBa'))
-        root[1].append(iTree('Bb', 'dataBb'))
-        root[1].append(iTree('Bc', 'dataBc'))
-        root.get_deep([1, 0]).append(iTree('Baa', 'dataBaa'))
-        root.get_deep([1, 0]).append(iTree('Bab', 'dataBab'))
-        root.get_deep([1, 0]).append(iTree('Bac', 'dataBac'))
-
-        root_data_path = get_relpath_to_root('tmp')
-        if not os.path.exists(root_data_path):
-            os.makedirs(root_data_path)
-        target_path = root_data_path + '/out.itz'
-        root.dump(target_path=target_path, overwrite=True)
-        # we build a second tree
-        root = iTree('local_root')
-        root += iTree('A')
-        root.append(iTree('C'))
-        root[1].append(iTree('Ca'))
-        root[1].append(iTree('Cb'))
-        root[1].append(iTree('Cc'))
-        root.get_deep([1, 0]).append(iTree('Caa', 'dataCaa'))
-        root.get_deep([1, 0]).append(iTree('Cab', 'dataCab'))
-        root.get_deep([1, 0]).append(iTree('Cac', 'dataCac'))
-        # Now we link a part of the first tree into the this tree (link to subtree in a file
-        linked_item = iTreeLink('FILE_LINK', data=0, link_file_path=target_path, link_key_path=1, load_links=False)
-        root.insert(1, linked_item)
-        # as long as we did not load the links we expect in this case no children
-        assert len(linked_item) == 0
-        # now we load the linked items
-        root.load_links()
-        assert len(linked_item) == 3
-        assert len(list(linked_item.iter_all())) == 6
-        # data of the linked item can be changed
-        linked_item.d_set('NEW_DATA', 'TEST')
-        # we recheck if we cannot change the data of the linked sub items
+        # insert allowed operations
+        link_root_item.insert(1, iTree('test_insert'))  # unlinked new tag
+        link_root_item.insert(1, iTree('test'))  # unlinked tag
+        link_root_item.insert(1, iTree())  # unlinked tag==NoTag
+        link_root_item.insert(1, 'insert_value')  # unlinked tag==Notag (implicit definition)
+        linked_item_idx=next(itertools.dropwhile(lambda i: not i.is_linked, link_root_item)).idx
+        link_root_item.insert(linked_item_idx, iTree())  # targeting a linked item
+        # insert blocked operations
         with pytest.raises(PermissionError):
-            linked_item[1].d_set('DATA', 'TEST')
+            link_root_item.insert(1,iTree('Ba'))  # linked tag
 
-        # create an internal link:
-        linked_item2 = iTreeLink('INTERNAL_LINK', data=0, link_file_path=None, link_key_path=['/', 2, 0],
-                                 load_links=False)
-        # we append the linked item at the end of the tree
-        root.append(linked_item2)
-        assert len(linked_item2) == 0
-        # load the link
-        root.load_links()
-        assert len(linked_item2) == 3
-        # data of the linked item can be changed
-        linked_item2.d_set('NEW_DATA2', 'TEST2')
-        # we recheck if we cannot change the data of the linked sub items
+        #rename
+        link_root_item[0].rename('new_name') # rename a not linked item with no linked tag
+        local_with_link_tag.rename('new_name')  # rename a not linked item with no linked tag
+        # we must recreate the local_with_link for following tests:
+        local_with_link_tag = link_root_item.append(iTree('Bb'))  # linked tag the item is required for later tests!
+        # rename blocked operations
         with pytest.raises(PermissionError):
-            linked_item2[1].d_set('DATA', 'TEST')
-        # check that circular linking is denied
-        linked_item3 = iTreeLink('INTERNAL_LINK2', data=0, link_file_path=None, link_key_path=['INTERNAL_LINK'],
-                                 load_links=False)
-        root.append(linked_item3)
-        # check circular protection
-        with pytest.raises(TypeError):
-            root.load_links()
-        # we load the links with delete_invalid_items_flag, this will clean the tree before the save!
-        l1 = len(root)
-        root.load_links(delete_invalid_items=True)
-        assert (l1 - 1) == len(root)  # last item should be deleted!
+            link_root_item[0].rename('Ba')  # rename a not linked item with linked tag
+        linked_item_idx = next(itertools.dropwhile(lambda i: not i.is_linked, link_root_item)).idx
+        with pytest.raises(PermissionError):
+            link_root_item[linked_item_idx].rename('new_name')  # rename a linked item
 
-        # save the tree with linked items
-        root_data_path = get_relpath_to_root('tmp')
-        if not os.path.exists(root_data_path):
-            os.makedirs(root_data_path)
-        target_path = root_data_path + '/out_linked.itr'
-        root.dump(target_path=target_path, overwrite=True, pack=False)
+        # move
+        link_root_item[0].move(-2) # move local
+        linked_item_idx = next(itertools.dropwhile(lambda i: not i.is_linked, link_root_item)).idx
+        with pytest.raises(PermissionError): # move linked
+            link_root_item[linked_item_idx].move(-2)  # move a linked item
+        with pytest.raises(PermissionError):
+            local_with_link_tag.move(-2) #  move a local with linked item tag
 
-        root2 = iTree('root').load(target_path, load_links=False)
-        assert len(root2) == len(root)
-        last = root2[-1]
-        for i, item in enumerate(root2.iter_children()):
-            if i == 1 or item == last:
+        # extend should work without limitation
+        link_root_item.extend([iTree(), iTree('extend_name'),iTree('Bb'),iTree('Ba')]) # all kinds of tags used here
+
+        # extendleft like appenmdleft but a precheck is required and we must recheck if in case one extended
+        # item was wrong no item is extended
+        link_root_item.extendleft([iTree(), iTree('extendleft_name')])
+        with pytest.raises(PermissionError): # extend left a linked tag
+            link_root_item.extendleft([iTree(value='extend_left'), iTree('Bb')])
+        assert link_root_item[0].value != 'extend_left'
+
+        # not allowed operations:
+        with pytest.raises(PermissionError):
+            link_root_item.reverse()
+        with pytest.raises(PermissionError):
+            link_root_item.deep.reverse()
+        with pytest.raises(PermissionError):
+            link_root_item.rotate()
+        with pytest.raises(PermissionError):
+            link_root_item.rotate(2)
+        with pytest.raises(PermissionError):
+            link_root_item.rotate(-3)
+        with pytest.raises(PermissionError):
+            link_root_item.sort()
+        with pytest.raises(PermissionError):
+            link_root_item.deep.sort()
+
+        # __del__()
+        del link_root_item[2]
+        linked_item_idx = next(itertools.dropwhile(lambda i: not i.is_linked, link_root_item)).idx
+        with pytest.raises(PermissionError):
+            del link_root_item[linked_item_idx]
+        with pytest.raises(PermissionError):
+            del link_root_item['Bb'] # family contains links!
+        with pytest.raises(PermissionError):
+            del link_root_item[lambda i: i.tag=='Bb']  # Filter result contains links
+        del link_root_item[NoTag]  # family contains no links
+        # we do not test pop() here because it uses internally __del__()
+
+        # we check a corner case for remove:
+        link_root_item.remove(filter(lambda i: i.tag in {'extend_name','extendleft_name'} ,link_root_item))
+        with pytest.raises(PermissionError):
+            link_root_item.remove(filter(lambda i: i.tag == 'Bb' ,link_root_item))
+
+        print('\nRESULT OF TEST: Test loaded internal link and allowed afterwards operations ->')
+
+
+    def test_internal_links_creation_on_complex_local_structure(self):
+
+        print('\nRUN TEST: Test loaded internal link over complex local structure')
+        root = iTree('root', subtree=[iTree('A'), iTree('B'),
+                                      iTree('B', subtree=[iTree('Ba'), iTree('Bb',0), iTree('Bb',1), iTree('Bc')]),
+                                      iTree('internal_link', link=iTLink(None, [('B', 1)]))])
+
+        link_root_item=root[-1]
+
+        # we add them items with different tags and check how the items are integrated after we load the links
+        # some should be reordered
+        link_root_item.append(iTree(value=0))
+        link_root_item.append(iTree('Bc'))
+        link_root_item.append(iTree('Bb2'))
+        Bb=link_root_item.append(iTree('Bb'))
+        Bb.append('sub_item_value')
+        link_root_item.append(iTree('Ba'))
+        link_root_item.append(iTree(value=1))
+
+        root.load_links()
+
+        #expected=[('Ba',NoValue),('Bb',NoValue),('Bb',1),('Bc',NoValue),(NoTag,0),('Bb2',NoValue),(NoTag,1)]
+        expected = [('Ba', NoValue), ('Bb2', NoValue),('Bb', NoValue), ('Bb', 1),(NoTag, 0),
+                    ('Bc', NoValue),
+                    (NoTag, 1)]
+        for i,item in enumerate(link_root_item):
+            assert item.tag==expected[i][0]
+            assert item.value == expected[i][1]
+            if i ==3:
                 assert item.is_linked
             else:
                 assert not item.is_linked
-
-        root2.load_links()
-        assert len(list(root2.iter_all())) == 19
-
-        # print(root2.render())
-        print('PASSED')
-
-    def test3_overloading_tags(self):
-        if not 3 in TEST_SELECTION:
-            return
-
-        print('\nRESULT OF TEST: local elements in linked items')
-
-        # first we create a simple tree
-        root = iTree('root')
-        root += iTree('A')
-        root += iTree('A')
-
-        root.append(iTree('B', data='B0'))
-        root.append(iTree('B', data='B1'))
-        root.append(iTree('C'))
-
-        A = root[1]
-        A.append(iTree('Aa'))
-        A.append(iTree('Ab'))
-        A.append(iTree('Ab'))
-        A.append(iTree('Ac'))
-
-        root[3].append(iTree('Ba', 'dataBa'))
-        root[3].append(iTree('Bb', 'dataBb0'))
-        root[3].append(iTree('Bb', 'dataBb1'))
-        root[3].append(iTree('Bc', 'dataBc'))
-        root.get_deep([3, 0]).append(iTree('Baa', 'dataBaa'))
-        root.get_deep([3, 0]).append(iTree('Bab', 'dataBab0'))
-        root.get_deep([3, 0]).append(iTree('Bab', 'dataBab1'))
-        root.get_deep([3, 0]).append(iTree('Bac', 'dataBac'))
-
-        root.get_deep([3, 2]).append(iTree('Bba', 'dataBba'))
-        root.get_deep([3, 2]).append(iTree('Bbb', 'dataBbb0'))
-        root.get_deep([3, 2]).append(iTree('Bbb', 'dataBbb1'))
-        root.get_deep([3, 2]).append(iTree('Bbc', 'dataBbc'))
-
-        # we add an internal link
-        linked_item2 = iTreeLink('INTERNAL_LINK', data=0, link_file_path=None, link_key_path=['/', TagIdx('B', 1)],
-                                 load_links=False)
-        root.append(linked_item2)
-        root.load_links()
-        l = len(list(root.iter_all()))
-        assert l == 34
-        #print(root.render())
-        # we try to make a subitem local, this should fail
-        sub_item = linked_item2.find('Ba/Baa')
-        assert sub_item is not None
-        assert type(sub_item) is iTreeLink
-
-        with pytest.raises(TypeError):
-            sub_item.make_self_local()
-
-        print(repr(linked_item2))
-        # one leve higher it shoudl work
-        sub_item = linked_item2.find(TagIdx('Bb', 1))
-        with pytest.raises(PermissionError):
-            sub_item.append(iTree('new'))
-        # print(root.render())
-        # we make an item local and we "overload" the contants by changing the sub elements and the data
-        local = sub_item.make_self_local()
-        assert type(sub_item) != type(local)
-        assert sub_item.tag == local.tag
-        assert sub_item.data == local.data
-        sub_item_new = linked_item2.find(TagIdx('Bb', 1))
-        assert sub_item_new == local
-        # we change the data
-        local.d_set('OVERLOAD')
-
-        # we change the subtree
-        new = iTree('new')
-        local.append(new)
-        not_linked = {6, 7, 8, 9, 10, 11}
-        # print(linked_item2.render())
-        for i, item in enumerate(linked_item2.iter_all()):
-            if i in not_linked:
-                assert not item.is_linked, '%i' % i
+            if i in {0,2,5}:
+                assert item._link._link_item.tag==item.tag
             else:
-                assert item.is_linked, '%i' % i
-        new.d_set('NEW_DATA')
+                assert not hasattr(item,'_link')
 
-        # we run the other allowed operations
-        linked_item2 += (iTree('append1'))
-        linked_item2.append(iTree('append2'))
-        new2 = iTree('extend', subtree=[iTree('sub_extend1'), iTree('sub_extend2')])
-        linked_item2.append(new2)
-        linked_item2.extend(new2)
+        # finally we insert a new item in the source and we see if reordering is made correctly
+        root[2].insert(-1,iTree('Bb2'))
 
-        # we run the not allowed operations:
-        sub_item = linked_item2.get_deep([TagIdx('Ba', 0), TagIdx('Baa', 0)])
-        with pytest.raises(TypeError):
-            sub_item.make_self_local()
-        with pytest.raises(PermissionError):
-            sub_item.append(iTree('TEST'))
-        with pytest.raises(PermissionError):
-            sub_item.d_set('KEY', 'DATA')
-        with pytest.raises(PermissionError):
-            sub_item.rename('new_name')
-        with pytest.raises(PermissionError):
-            linked_item2.insert(7, iTree('TEST'))
-        with pytest.raises(PermissionError):
-            linked_item2.appendleft(iTree('TEST'))
-        with pytest.raises(PermissionError):
-            linked_item2.extendleft([iTree('TEST')])
-        with pytest.raises(PermissionError):
-            linked_item2.rotate(2)
+        # reload of subtrees has no effect
+        root[2].load_links()
+        assert link_root_item[1].tag=='Bb2'
+        link_root_item[0].load_links()
+        assert link_root_item[1].tag == 'Bb2'
 
-        # we store the tree for later reload (check if locals stored correctly)!
-        root_data_path = get_relpath_to_root('tmp')
-        if not os.path.exists(root_data_path):
-            os.makedirs(root_data_path)
-        target_path = root_data_path + '/out_linked.itr'
-        root.dump(target_path=target_path, overwrite=True, pack=False)
+        # full reload
+        #root.render()
+        root.load_links()
+        #root.render()
+        expected = [('Ba', NoValue), ('Bb', NoValue), ('Bb', 1),  ('Bb2', NoValue), (NoTag, 0),('Bc', NoValue),
+                    (NoTag, 1)]
+        for i, item in enumerate(link_root_item):
+            assert item.tag == expected[i][0]
+            assert item.value == expected[i][1]
 
-        # now we check if we can delete the local and the old linked item appears again:
-        l = len(linked_item2)
-        del linked_item2[2]
-        # check item and neighbors
-        assert linked_item2[1].tag == 'Bb'
-        assert linked_item2[1].is_linked
-        assert linked_item2[2].tag == 'Bb'
-        assert linked_item2[2].is_linked
-        assert linked_item2[3].tag == 'Bc'
-        assert linked_item2[3].is_linked
+        # delete some items
+        del link_root_item[('Bc',0)]
+        assert link_root_item[('Bc',0)].tag=='Bc'
+        link_root_item.insert(0, iTree(tag='first_item'))
 
-        l2 = len(linked_item2)
-        assert l == l2
-        del linked_item2['sub_extend2']
-        assert l - 1 == len(linked_item2)
-
-        # print(root.render())
-
-        # reload data from file with load_links = False flag
-        root2 = iTree('TMP').load(target_path, load_links=False)
-        # check for placeholders!
-        assert root2.get_deep([TagIdx('INTERNAL_LINK', 0), 0]).is_placeholder
-        assert len(list(root2.iter_all())) == 36
+        link_root_item.insert(('Bc',0),iTree('afterwards we need placeholder'))
+        # Now we check for all placeholders
+        # we expect the place holder for the 'Bc' item
+        dump_str=root.dumps()
+        root2=iTree().loads(dump_str,load_links=False)
+        assert root2!=root # links not yet loaded
+        link_item2=root2[-1]
+        for i,item in enumerate(link_item2):
+            if i==3 or i==7:
+                assert item.is_placeholder
+            else:
+                assert not item.is_placeholder
         root2.load_links()
-        assert len(list(root2.iter_all())) == 42
+        assert root==root2
 
-        # print(root2.render())
-        print('PASSED')
+        print('\nRESULT TEST: Test loaded internal link over complex local structure -> PASS')
+
+    def test_internal_links_creation_detect_circular_definitions(self):
+
+        print('\nRUN TEST: Test internal links circular detection')
+
+        root = iTree('root', subtree=[iTree('A',subtree=[iTree('Aa'), iTree('Ab', 0), iTree('Ab', 1), iTree('Ac')]),
+                                      iTree('B'),
+                                      iTree('B', subtree=[iTree('Ba'), iTree('Bb', 0), iTree('Bb', 1), iTree('Bc')]),
+                                      iTree('C', subtree=[iTree('internal_link', link=iTLink(None, [('B', 1)]))])
+                                      ]
+                     )
+
+        # add a non circular link
+        root[2].append(iTree('internal_link1', link=iTLink(None, [('A', 0)])))
+        # we do not expect an exception here
+        root.load_links()
+        #root.render()
+        assert len(root.deep) == 27
+        root[2].append(iTree('internal_link2', link=iTLink(None, [('C', 0)]))) # circular link
+        #root.render()
+        def detect_recursion(root):
+            with pytest.raises(RecursionError):
+                root.load_links()
+
+        print('Exec time to detect a circular definition: {:.3e} s'.format(calc_timeit(lambda:detect_recursion,4 )))
+
+        print('\nRESULT TEST: Test internal links circular detection -> PASS')
+
+    def test_order_locals_correctly(self):
+
+        print('\nRUN TEST: Test order locals correctly after reload')
+        root = iTree('root', subtree=[iTree('A'), iTree('B'),
+                                      iTree('B', subtree=[iTree('Ba'), iTree('Bb',0), iTree('Bb',1), iTree('Bc')]),
+                                      iTree('internal_link', link=iTLink(None, [('B', 1)]))])
+
+        #create locals
+        link_locals=[]
+        link_item=root[-1]
+        link_item.append(iTree('Ba before',0))
+        link_item.append(iTree('Ba before',1))
+        link_locals.append(link_item.append(iTree('Ba',2)))
+        link_item.append(iTree('Bb0 before',3))
+        link_item.append(iTree('Bb0 before',4))
+        link_locals.append(link_item.append(iTree('Bb',5)))
+        link_item.append(iTree('Bb1 before',6))
+        link_item.append(iTree('Bb1 before',7))
+        link_locals.append(link_item.append(iTree('Bb',8)))
+        link_item.append(iTree('Bc before',9))
+        link_item.append(iTree('Bc before',10))
+        link_locals.append(link_item.append(iTree('Bc',11)))
+        link_item.append(iTree('after',12))
+        link_item.append(iTree('after',13))
+
+        root.load_links()
+
+        assert link_locals==list(filter(lambda i: i.is_link_cover,link_item))
+        assert list(link_item.values())==list(range(14))
+
+        # delete the covering items:
+        a=link_locals
+        keys=[]
+        for item in list(link_locals):
+            key=item.tag_idx
+            keys.append(key)
+            del link_item[key]
+
+        for key in keys:
+            assert link_item[key].is_linked
+            assert not link_item[key].is_link_cover
+
+        root_data_path = get_relpath_to_root('tmp')
+        target_path = root_data_path + '/out.itr'
+        root.dump(target_path,pack=False,overwrite=True)
+
+        root2=iTree().load(target_path,load_links=False)
+
+        link_item2=root2[-1]
+
+        for key in keys:
+            item=link_item2[key]
+            assert item.is_placeholder
+
+        root2.load_links()
+
+
+        for i,item in enumerate(link_item2):
+            key=item.tag_idx
+            if key in keys:
+                assert item.is_linked
+                assert not item.is_placeholder
+            else:
+                assert i==item.value
+
+        assert root2==root
+
+        root2[2][-1].move(1)
+
+        root2.load_links()
+
+        #recheck that the reordering took place:
+
+        start_idx=link_item2[('Ba',0)].idx
+        assert link_item2[start_idx+1].tag_idx == ('Bc before', 0)
+        assert link_item2[start_idx+2].tag_idx == ('Bc before', 1)
+        assert link_item2[start_idx+3].tag_idx == ('Bc', 0)
+        assert link_item2[start_idx+4].tag_idx == ('Bb0 before', 0)
+
+
+        print('\nRESULT TEST: Test order locals correctly after reload -> PASS')

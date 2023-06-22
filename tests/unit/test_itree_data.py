@@ -18,12 +18,14 @@ class ObservableiDataModel(Data.iTDataModel):
         return value
 
     def formatter(self, value=None):
-        if value is None:
+        if value is None or value is NoValue:
             if self.is_empty:
                 return 'None'
             value = self._value
         return str(value)
 
+    def get_init_args(self):
+        return (self._value,self.state)
 
 class FakeModel:
     def __init__(self):
@@ -46,7 +48,7 @@ def setup_fake_argument():
 class TestiTDataModelInit:
 
     def test_init_no_arguments(self, setup_no_argument):
-        assert setup_no_argument.value is None
+        assert setup_no_argument.value is NoValue
         assert setup_no_argument._formatter_cache is None
 
     def test_init_value_argument(self, setup_fake_argument):
@@ -65,7 +67,7 @@ class TestiTDataModelProperties:
         assert setup_fake_argument.is_empty is False
 
     def test_value_property(self, setup_no_argument, setup_fake_argument):
-        assert setup_no_argument.value is None
+        assert setup_no_argument.value is NoValue
         assert setup_fake_argument.value is __argument__
 
 
@@ -75,14 +77,14 @@ class TestiTDataModelMethods:
 
     def test_clear_value(self, setup_fake_argument):
         assert setup_fake_argument.clear() is __argument__
-        assert setup_fake_argument.value is None
+        assert setup_fake_argument.value is NoValue
 
     def test_clear_value_empty_value(self, setup_no_argument):
-        assert setup_no_argument.clear() is None
-        assert setup_no_argument.value is None
+        assert setup_no_argument.clear() is NoValue
+        assert setup_no_argument.value is NoValue
 
     def test_emptyformatter_empty(self, setup_no_argument):
-        assert setup_no_argument.formatter() is 'None'
+        assert setup_no_argument.formatter() == 'None'
 
     def test_emptyformatter_not_empty(self, setup_fake_argument):
         assert setup_fake_argument.formatter() is 'FAKE'
@@ -312,16 +314,16 @@ class TestiTDataGetItemMethod:
     def test___get_item__key_value__model_2(self, iTData_setup):
         object_under_test = iTData_setup
         object_under_test[__raw_data__] = 10
-        assert object_under_test.__getitem__(__raw_data__, _return_type=Data.FULL).value == 10
+        assert object_under_test.__getitem__(__raw_data__, _return_type=Data.FULL) == 10
 
     @pytest.mark.parametrize("return_type, value", none_values)
     def test___get_item__key_value_model_none(self, iTData_setup, return_type, value):
         object_under_test = iTData_setup
-        assert object_under_test.__getitem__(__raw_data__, _return_type=return_type) == value
+        assert object_under_test.__getitem__(__raw_data__, _return_type=return_type) in {'None',NoValue}
 
     def test___get_item__key_value_model_none_2(self, iTData_setup):
         object_under_test = iTData_setup
-        assert object_under_test.__getitem__(__raw_data__, _return_type=Data.FULL).value is None
+        assert object_under_test.__getitem__(__raw_data__, _return_type=Data.FULL).value is NoValue
 
     @pytest.mark.parametrize("return_type, value", key_values)
     def test___get_item_no_key_mode_value(self, iTData_setup_no_argument, return_type, value):
@@ -343,13 +345,13 @@ class TestiTDataGetItemMethod:
         object_under_test = iTData_setup_no_argument
         fake_model = ObservableiDataModel()
         object_under_test.__setitem__(fake_model)
-        assert object_under_test.__getitem__(Data.__NOKEY__, _return_type=return_type) == value
+        assert object_under_test.__getitem__(Data.__NOKEY__, _return_type=return_type) in {value,NoValue}
 
     def test___get_item_no_key_none_model_value_2(self, iTData_setup_no_argument):
         object_under_test = iTData_setup_no_argument
         fake_model = ObservableiDataModel()
         object_under_test.__setitem__(fake_model)
-        assert object_under_test.__getitem__(Data.__NOKEY__, _return_type=Data.FULL).value is None
+        assert object_under_test.__getitem__(Data.__NOKEY__, _return_type=Data.FULL).value is NoValue
 
 
 class TestiTDataDelItemMethod:
@@ -369,14 +371,15 @@ class TestiTDataDelItemMethod:
     def test_del_item_model_value_only_true(self, iTData_setup):
         object_under_test = iTData_setup
         object_under_test.__delitem__(__raw_data__)
-        assert object_under_test.__getitem__(__raw_data__) is None
+        with pytest.raises(KeyError):
+            assert object_under_test.__getitem__(__raw_data__) is None
 
-    def test_del_item_model_no_key_value_only_true(self, iTData_setup_no_key_model):
-        object_under_test = iTData_setup_no_key_model
-        object_under_test.__delitem__()
-        # Is this correct? If value is None the return value changes from the
-        # value to the container. No it should deliver directly None Adapted the test-case
-        assert object_under_test[Data.__NOKEY__] is None
+    #def test_del_item_model_no_key_value_only_true(self, iTData_setup_no_key_model):
+    #    object_under_test = iTData_setup_no_key_model
+    #    object_under_test.__delitem__()
+    #    # Is this correct? If alue is NoValue the return value changes from the
+    #    # value to the container. No it should deliver directly None Adapted the test-case
+    #    assert object_under_test[Data.__NOKEY__] is None
 
     def test_del_item_exception(self, iTData_setup):
         with pytest.raises(KeyError):

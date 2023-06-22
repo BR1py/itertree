@@ -1,0 +1,26 @@
+digraph iTree {
+    node [shape=record, fillcolor=cadetblue3, style="rounded,filled"];
+
+item0 [label="'root'", fillcolor=cadetblue];
+
+item1 [label="sub1"];
+item2 [label="sub2"];
+item3 [label="sub3 |iTLink(target_path=['root','sub1'])", fillcolor=cornflowerblue];
+
+item11 [label="subsub1"];
+item12 [label="subsub2"];
+
+item31 [label="subsub1", fillcolor=grey];
+item32 [label="subsub1b"];
+item33 [label="subsub2", fillcolor=grey];
+
+item0 -> {item1 item2 item3} [arrowhead=none];
+item3 -> item1 [style=dashed,color=blue, constraint=false];
+item1 -> {item11 item12} [arrowhead=none];
+item3 -> {item31 item32 item33} [arrowhead=none];
+item31 -> item11 [style=dotted, constraint=false];
+item33 -> item12 [style=dotted, constraint=false];
+{rank=same item1 item2 item3}
+{rank=same item11 item12 item31 item32 item33}
+}
+
