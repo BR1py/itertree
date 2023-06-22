@@ -533,7 +533,7 @@ class Test1_iTreeInstance:
         iter_method = tree[0][0].iter_families
         method_name = 'iter_families'
         a=[i for i in iter_method()]
-        assert len(a)==len(tree[0][0].tag_number)
+        assert len(a)==tree[0][0].tag_number
         last = -1
         for i,ii in a:
             item = tree[0][0].get.by_tag(i)[0]
@@ -545,7 +545,7 @@ class Test1_iTreeInstance:
         print('%s() -> iteration-time: %es (%i)' % (method_name, t,len(a)))
 
         a=[i for i in iter_method(None,True)]
-        assert len(a)==len(tree[0][0].tag_number)
+        assert len(a)==tree[0][0].tag_number
         t = calc_timeit(lambda: [i for i in iter_method(None,True)], number=timeit_number)
         print('%s(order_last=True) -> iteration-time: %es (%i)' % (method_name, t,len(a)))
 
