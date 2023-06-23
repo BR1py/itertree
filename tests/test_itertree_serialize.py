@@ -268,8 +268,8 @@ class Test2_Converter:
                 print('numpy required for this test run')
                 pass
         else:
-        assert new_itree.tag=='root'
-        assert len(new_itree.deep) == 12
+            assert new_itree.tag=='root'
+            assert len(new_itree.deep) == 12
 
     def test3_convert(self):
         source_file=root_path+'/test_converter/out2.itz'
