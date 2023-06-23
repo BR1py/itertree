@@ -76,6 +76,7 @@ try:
     np_loaded = True
 except ImportError:
     np_loaded = False
+    np=None
 
 from itertree import *
 
@@ -183,7 +184,7 @@ class Converter_1_1_1_to_2_0_0_Cls(object):
                 return eval('%s(new)' % o_type[5:])
             elif o_type == 'npa':
                 # here we will get an exception in case numpy is not available!
-                if np is None:
+                if not np_loaded:
                     raise ImportError(
                         'Numpy is needed for decoding of this data! It is not found in the python installation')
                 return np.frombuffer(bytes(bytearray(raw_o.get(self.DATA_CONTAINER))), raw_o.get('np.dtype'))
