@@ -26,7 +26,7 @@ jobs:
         # temporarily install numpy, bug in module's dependencies.
       - name: GitHub Action for pytest
         run: |
-          python -m pytest ./tests
+          python -m pytest ./tests --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
         #uses: cclauss/GitHub-Action-for-pytest@0.5.0
         #with:
         #  args: pytest --verbose --collect-only
