@@ -21,7 +21,11 @@ jobs:
           pip install --upgrade pip
           pip install pytest
       - name: GitHub Action for pytest
-        run: python -m pytest ./tests
-        #uses: cclauss/GitHub-Action-for-pytest@0.5.0
-        #with:
-        #  args: pytest --verbose --collect-only
+        run: |
+          #python -m pytest ./tests
+          pytest ./tests/ --verbose --show-capture=all --capture=tee-sys --doctest-modules --junitxml=junit/test-results-${{ matrix.python-version }}.xml
+        name: Upload pytest test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: pytest-results-${{ matrix.python-version }}.xml
+          path: junit/test-results-${{ matrix.python-version }}.xml

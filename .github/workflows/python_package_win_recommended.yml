@@ -6,7 +6,7 @@ jobs:
       strategy:
         fail-fast: false
         matrix:
-          python-version: ["3.7","3.8", "3.9"] #blist compile not working on python 3.10
+          python-version: ["3.7","3.8", "3.9", "3.11"] #blist compile not working on python 3.10
       steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
@@ -26,7 +26,10 @@ jobs:
         # temporarily install numpy, bug in module's dependencies.
       - name: GitHub Action for pytest
         run: |
-          python -m pytest ./tests
-        #uses: cclauss/GitHub-Action-for-pytest@0.5.0
-        #with:
-        #  args: pytest --verbose --collect-only
+          #python -m pytest ./tests
+          pytest ./tests/ --verbose --show-capture=all --capture=tee-sys --doctest-modules --junitxml=junit/test-results-${{ matrix.python-version }}.xml
+        name: Upload pytest test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: pytest-results-${{ matrix.python-version }}.xml
+          path: junit/test-results-${{ matrix.python-version }}.xml
