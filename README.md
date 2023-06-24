@@ -3,7 +3,7 @@
 
 ## Welcome to itertree python package
 
-Release 1.0.0   - fully released
+Release 1.0.1   - fully released
 
 * Do you have to store data in a tree like structure?
 * Do you need good performance and a reach feature set in the tree object?

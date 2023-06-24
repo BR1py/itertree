@@ -50,7 +50,7 @@ The profiling of the package done by running over 100000 base operations gives t
 
 ::
 
-    Running on itertree version: 1.0.0
+    Running on itertree version: 1.0.1
     Profiling is done based on 100000 single operations (some clas might be even used more often)
              5000038 function calls (4900039 primitive calls) in 3.334 seconds
 
@@ -101,7 +101,7 @@ Deletion is slower then append but still relative quick.
 Running the same profiling actions without blist package (using normal list) we get:
 ::
 
-    Running on itertree version: 1.0.0
+    Running on itertree version: 1.0.1
     Profiling is done based on 100000 single operations (some clas might be even used more often)
              5000038 function calls (4900039 primitive calls) in 12.823 seconds
 

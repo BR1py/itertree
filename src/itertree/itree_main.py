@@ -70,7 +70,6 @@ from .itree_indepth import _iTreeIndepthTree
 from .itree_getitem import _iTreeGetitem
 from .itree_private import _iTreePrivate
 
-
 class iTree(_iTreePrivate):
     __slots__ = (  # Attributes
         '_tag', '_value', '_link', '_flags', '_coupled',
