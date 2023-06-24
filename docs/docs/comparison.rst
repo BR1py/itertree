@@ -62,7 +62,7 @@ Finally we tried to make the testing as comparable as possible:
           size or the depth grows.
 
 
-**We used for the here discussed analysis a setup with Python 3.9 incl. blist package installed.**
+**We used for the here discussed analysis a setup with Python 3.9 incl. blist package installed on a Windows OS.**
 
 The output is reduced by some spaces so it fits better on the html page.
 
