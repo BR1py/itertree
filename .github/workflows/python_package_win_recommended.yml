@@ -20,6 +20,7 @@ jobs:
           python setup.py install
           pip install --upgrade pip
           pip install pytest
+          pip install pytest-cov
           pip install ojson
           pip install blist
           pip install numpy 
