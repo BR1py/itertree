@@ -25,7 +25,14 @@ jobs:
           pip install numpy 
         # temporarily install numpy, bug in module's dependencies.
       - name: GitHub Action for pytest
-        run: python -m pytest ./tests
+        run: |
+          #python -m pytest ./tests
+          pytest ./tests/ --show-capture --doctest-modules --junitxml=junit/test-results-${{ matrix.python-version }}.xml
         #uses: cclauss/GitHub-Action-for-pytest@0.5.0
         #with:
         #  args: pytest --verbose --collect-only
+      - name: Upload pytest test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: pytest-results-${{ matrix.python-version }}
+          path: junit/test-results-${{ matrix.python-version }}.xml
