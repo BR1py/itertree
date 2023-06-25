@@ -29,7 +29,7 @@ Every node in the itertree (`iTree`-object) contains two main parts:
     * Second the item related value attribute were any kind of object can be stored in
 
 The itertree solution can be compared with nested lists or dicts. Other packages that targeting in the in the same
-direction are `anytree`, `(l)xml.ElementTree`, `PyToolingTree`. In detail the feature-set and functional focus
+direction are `anytree`, `(l)xml.ElementTree`, `pyTooling.Tree`. In detail the feature-set and functional focus
 of `iTree` is a bit different. 
 
 ## Installation
