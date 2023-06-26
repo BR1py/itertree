@@ -51,6 +51,7 @@ But we have two recommendations which give the package additional performance:
     * documentation: http://stutzbachenterprises.com/blist/.
 
 -> in case the package is not found normal list object will be used instead
+-> How to utilize for Python 3.10 and 3.11 read tutorial
 
 * orjson - A quicker json parser that used to create the JSON structures during serializing/deserializing
 
