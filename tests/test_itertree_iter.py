@@ -57,7 +57,7 @@ import timeit
 from types import GeneratorType
 from collections import OrderedDict
 from itertree import *
-from itertree.itree_helpers import NoValue, NoTag, Tag
+from itertree.itree_helpers import NoValue, NoTag, BLIST_ACTIVE
 from itertree.itree_mathsets import mSetInterval
 
 root_path = os.path.dirname(__file__)
@@ -67,6 +67,7 @@ TEST_SELECTION = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}
 # TEST_SELECTION={}
 
 print('Test start')
+if BLIST_ACTIVE: print('blist module imported for the test')
 
 
 def get_relpath_to_root(item_path):

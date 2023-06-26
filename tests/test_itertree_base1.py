@@ -67,7 +67,7 @@ TEST_SELECTION = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}
 # TEST_SELECTION={}
 
 print('Test start: itertree  base test 1')
-
+if BLIST_ACTIVE: print('blist module imported for the test')
 
 def get_relpath_to_root(item_path):
     new_path = item_path.replace(root_path, '')

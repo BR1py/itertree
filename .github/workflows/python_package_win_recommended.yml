@@ -6,7 +6,7 @@ jobs:
       strategy:
         fail-fast: false
         matrix:
-          python-version: ["3.7","3.8", "3.9", "3.11"] #blist compile not working on python 3.10
+          python-version: ["3.7","3.8", "3.9","3.10", "3.11"] #blist compile not working on python 3.10
       steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
@@ -22,7 +22,7 @@ jobs:
           pip install pytest
           pip install pytest-cov
           pip install ojson
-          pip install ./dist/blist-1.3.7.tar.gz
+          pip install ./dist/blist_br-1.3.7.tar.gz
           pip install numpy 
         # temporarily install numpy, bug in module's dependencies.
       - name: GitHub Action for pytest

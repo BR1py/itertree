@@ -52,6 +52,7 @@ except:
 
 from itertree import *
 from itertree.itree_data import iTData
+from itertree.itree_helpers import BLIST_ACTIVE
 mSetInterval=Filters.mSetInterval
 mSetCombine=Filters.mSetCombine
 
@@ -62,6 +63,7 @@ TEST_SELECTION = {1, 2, 3, 4, 5, 6, 7, 8, 10}
 # TEST_SELECTION={}
 
 print('Test start')
+if BLIST_ACTIVE: print('blist module imported for the test')
 
 
 def get_relpath_to_root(item_path):

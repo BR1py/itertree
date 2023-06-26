@@ -20,7 +20,7 @@ import timeit
 from types import GeneratorType
 from collections import OrderedDict
 from itertree import *
-#from itertree.itree_helpers import NoValue, NoTag, Tag
+from itertree.itree_helpers import BLIST_ACTIVE
 
 
 root_path = os.path.dirname(__file__)
@@ -42,6 +42,8 @@ def calc_timeit(check_method, number):
             min_time = t
     return min_time
 
+print('Start full featured tree test')
+if BLIST_ACTIVE: print('blist module imported for the test')
 
 
 class Test_FullFeatureTreesTest():
