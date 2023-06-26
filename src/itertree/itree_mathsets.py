@@ -582,7 +582,7 @@ a       :rtype: set
         result is a iterable over the single results
         :param value: to be checked iterable value (single item check)
         :param vars_dict: variable replacement dict
-        :return: iterable True\False
+        :return: iterable True/False
         """
         pass
 
@@ -1471,7 +1471,7 @@ class mSetInterval(_mSetBase):
         result is a iterable over the single results
         :param value: to be checked iterable value (single item check)
         :param vars_dict: variable replacement dict
-        :return: iterable True\False
+        :return: iterable True/False
         """
 
         limits = self._get_lower_upper(vars_dict)
@@ -1757,7 +1757,7 @@ class mSetRoster(_mSetBase):
         result is a iterable over the single results
         :param value: to be checked iterable value (single item check)
         :param vars_dict: variable replacement dict
-        :return: iterable True\False
+        :return: iterable True/False
         """
         _replacement_vars = set()
         if vars_dict is not None and self._vars:
@@ -2111,7 +2111,7 @@ class mSetCombine(_mSetBase):
         result is a iterable over the single results
         :param value: to be checked iterable value (single item check)
         :param vars_dict: variable replacement dict
-        :return: iterable True\False
+        :return: iterable True/False
         """
 
         return [self.__contains__(v, vars_dict) for v in value]
