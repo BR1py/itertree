@@ -1,8 +1,8 @@
-name: Pytest Package WINDOWS with standard installation
+name: Pytest Package MAC OS with standard installation
 on: [push]
 jobs:
   Explore-Pytest-Action:
-      runs-on: windows-latest
+      runs-on: macos-latest
       strategy:
         fail-fast: false
         matrix:

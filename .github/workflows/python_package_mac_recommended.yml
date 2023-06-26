@@ -1,4 +1,4 @@
-name: Pytest Package WINDOWS with recommended installations
+name: Pytest Package MAC OS with recommended installations
 on: [push]
 jobs:
   Explore-Pytest-Action:
