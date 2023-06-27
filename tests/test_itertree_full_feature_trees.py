@@ -34,6 +34,18 @@ def get_relpath_to_root(item_path):
         new_path = new_path[1:]
     return root_path + '/' + new_path
 
+def get_tmp_path():
+    if not sys.platform.startswith('win'):
+        tmp_path= '/tmp/itertree_test'
+        try:
+            if not os.path.exists(tmp_path):
+                os.makedirs(tmp_path)
+        except:
+            tmp_path = get_relpath_to_root('tmp')
+    else:
+        tmp_path = get_relpath_to_root('tmp')
+    return tmp_path
+
 def calc_timeit(check_method, number):
     min_time = float('inf')
     for i in range(number):
@@ -53,7 +65,7 @@ class Test_FullFeatureTreesTest():
         print('\nRUN TEST: full featured iTree 1')
         print('we build a tree containing all kind of data models')
         print('nested children the tree will be stored in a file and used as a linked subtree in the next test!')
-        root_data_path = get_relpath_to_root('tmp')
+        root_data_path=get_tmp_path()
         if not os.path.exists(root_data_path):
             os.makedirs(root_data_path)
         target_path = root_data_path + '/out.itr'
@@ -264,7 +276,7 @@ class Test_FullFeatureTreesTest():
         # we create 2 deep items load the link in second level of both trees
         print('Current recursion limit is: %s' % sys.getrecursionlimit())
         depth = sys.getrecursionlimit() - 100
-        root_data_path = get_relpath_to_root('tmp')
+        root_data_path=get_tmp_path()
         print('Temporary files stored in %s'%root_data_path)
         target_path = root_data_path + '/out.itr'
         assert os.path.exists(target_path), 'We need resulting file of test1 for this test, related file not found'

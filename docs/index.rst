@@ -167,6 +167,9 @@ recommendations which give the package additional performance:
               https://github.com/BR1py/itertree/tree/main/dist
               We did not test the package in detail but the itertree testsuite runs without issues.
 
+              ..note :: We recommend to use it only for the newer Python versions. For older versions
+                        Python <=3.9 use the original package from PyPI.
+
 
     * orjson - A quicker json parser that used to create the JSON structures during serializing/deserializing
 

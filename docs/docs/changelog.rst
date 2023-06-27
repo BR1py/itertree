@@ -7,6 +7,8 @@ Changelog
 Version 1.0.2
 ************************************
 
+This version contains minor changes related to comments and the test setup.
+
 We appended a new version of blist which can be used in python 3.10 and 3.11 environments.
 
 Issues #21,#22 solved.
