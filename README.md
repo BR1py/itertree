@@ -3,7 +3,7 @@
 
 ## Welcome to itertree python package
 
-Release 1.0.2   - fully released
+Release 1.0.3   - fully released
 
 * Do you have to store data in a tree like structure?
 * Do you need good performance and a reach feature set in the tree object?
@@ -50,8 +50,11 @@ But we have two recommendations which give the package additional performance:
     * package link: https://pypi.org/project/blist/
     * documentation: http://stutzbachenterprises.com/blist/.
 
--> in case the package is not found normal list object will be used instead
--> How to utilize for Python 3.10 and 3.11 read tutorial
+    -> in case the package is not found normal list object will be used instead
+
+    -> If you like to utilize blist under Python 3.10 and 3.11 read the installation hints in the
+       Introduction of the itertree documentation.
+
 
 * orjson - A quicker json parser that used to create the JSON structures during serializing/deserializing
 
