@@ -104,7 +104,7 @@ class _iTreeRenderDot(object):
             item_str = item_str + ', fillcolor=cadetblue1'
         elif itree_object.is_link_root:
             item_str = item_str + ', fillcolor=cornflowerblue'
-        item_str=item_str.replace('{','\{').replace('}','\}')
+        item_str = item_str.replace('{', '\\{').replace('}', '\\}')
         return item,item_str+'];'
 
     def render_children(self,out,parent,itree,number,filter_method=None):
