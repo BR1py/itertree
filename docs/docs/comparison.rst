@@ -64,6 +64,61 @@ Finally we tried to make the testing as comparable as possible:
 
 **We used for the here discussed analysis a setup with Python 3.9 incl. blist package installed on a Windows OS.**
 
+..note :: If you need even better performance we can recommend Python 3.11 or cython.
+          If you have cython installed you can use: `cythonize.exe -i itree_...` on the modules in itertree. At least
+          we can recommend to do this on the modules:
+
+            * itree_main.py
+            * itree_private.py
+            * itree_getitem.py
+            * itree_indepth.py
+
+          Let's see the difference for the `append()` by appending 500000 items in the tree:
+
+          Python 3.9 incl. blist (as used in this comparison:
+
+          ::
+
+            itertree.iTree:
+            tree=iTree(); tree.append(iTree(tag,value))                         0.663867 s
+            build-in list:
+            tree=list(); tree.append((key,value,list()))                        0.091123 s  -> 7.285x faster as iTree
+            build-in dict:
+            tree=dict(); tree[key]=(value,dict())                               0.115628 s  -> 5.741x faster as iTree
+
+          Python 3.9 cythonized incl. blist:
+
+          ::
+
+            itertree.iTree:
+            tree=iTree(); tree.append(iTree(tag,value))                         0.058339 s
+            build-in list:
+            tree=list(); tree.append((key,value,list())                         0.009436 s  -> 6.183x faster as iTree
+            build-in dict:
+            tree=dict(); tree[key]=(value,dict())                               0.011373 s  -> 5.129x faster as iTree
+
+          We see that we can win "only" 10% of speed.
+
+          If we move to Python 3.11 we see also a better performance:
+
+          Python 3.11 incl. blist; append 500000 items:
+
+          ::
+
+            itertree.iTree:
+            tree=iTree(); tree.append(iTree(tag,value))                         0.606875 s
+            build-in list:
+            tree=list(); tree.append((key,value,list())                         0.089229 s  -> 6.801x faster as iTree
+            build-in dict:
+            tree=dict(); tree[key]=(value,dict())                               0.146663 s  -> 4.138x faster as iTree
+
+          We see that we can win here 8% of speed.
+
+          The effect is a bit dependent to the used functionality. But we can see that the implementation is on
+          a very high level and even cythonize the modules does not bring a big performance boost.
+
+
+
 The output is reduced by some spaces so it fits better on the html page.
 
 ##############################

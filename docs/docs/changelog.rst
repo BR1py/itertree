@@ -2,6 +2,12 @@
 
 Changelog
 =============
+************************************
+Version 1.0.4
+************************************
+Minor bugfix (escapes).
+
+And correct issues related wrong commit in 1.0.3
 
 ************************************
 Version 1.0.3
