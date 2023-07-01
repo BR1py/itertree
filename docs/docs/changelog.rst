@@ -2,6 +2,25 @@
 
 Changelog
 =============
+************************************
+Version 1.0.5
+************************************
+Minor bugfix (escapes).
+
+And correct issues related wrong commit in 1.0.3
+
+************************************
+Version 1.0.3
+************************************
+
+This version contains minor changes related to comments and the test setup.
+
+Deleting of items targeted via `slice` are improved. E.g.: `del mytree[10:100]` 
+
+
+We appended a new version of blist which can be used in python 3.10 and 3.11 environments.
+
+Issues #21,#22 solved.
 
 ************************************
 Version 1.0.1

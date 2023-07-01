@@ -3,7 +3,7 @@
 
 ## Welcome to itertree python package
 
-Release 1.0.1   - fully released
+Release 1.0.5   - fully released
 
 * Do you have to store data in a tree like structure?
 * Do you need good performance and a reach feature set in the tree object?
@@ -29,7 +29,7 @@ Every node in the itertree (`iTree`-object) contains two main parts:
     * Second the item related value attribute were any kind of object can be stored in
 
 The itertree solution can be compared with nested lists or dicts. Other packages that targeting in the in the same
-direction are `anytree`, `(l)xml.ElementTree`, `PyToolingTree`. In detail the feature-set and functional focus
+direction are `anytree`, `(l)xml.ElementTree`, `pyTooling.Tree`. In detail the feature-set and functional focus
 of `iTree` is a bit different. 
 
 ## Installation
@@ -50,7 +50,11 @@ But we have two recommendations which give the package additional performance:
     * package link: https://pypi.org/project/blist/
     * documentation: http://stutzbachenterprises.com/blist/.
 
--> in case the package is not found normal list object will be used instead
+    -> in case the package is not found normal list object will be used instead
+
+    -> If you like to utilize blist under Python 3.10 and 3.11 read the installation hints in the
+       Introduction of the itertree documentation.
+
 
 * orjson - A quicker json parser that used to create the JSON structures during serializing/deserializing
 

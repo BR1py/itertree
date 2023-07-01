@@ -38,7 +38,7 @@ the integration tests related to the base iTree functionalities
 
 
 import os
-# import sys
+import sys
 import collections
 import timeit
 import pytest
@@ -52,6 +52,7 @@ except:
 
 from itertree import *
 from itertree.itree_data import iTData
+from itertree.itree_helpers import BLIST_ACTIVE
 mSetInterval=Filters.mSetInterval
 mSetCombine=Filters.mSetCombine
 
@@ -62,6 +63,7 @@ TEST_SELECTION = {1, 2, 3, 4, 5, 6, 7, 8, 10}
 # TEST_SELECTION={}
 
 print('Test start')
+if BLIST_ACTIVE: print('blist module imported for the test')
 
 
 def get_relpath_to_root(item_path):
@@ -71,6 +73,18 @@ def get_relpath_to_root(item_path):
     if new_path.startswith('/'):
         new_path = new_path[1:]
     return root_path + '/' + new_path
+
+def get_tmp_path():
+    if not sys.platform.startswith('win'):
+        tmp_path= '/tmp/itertree_test'
+        try:
+            if not os.path.exists(tmp_path):
+                os.makedirs(tmp_path)
+        except:
+            tmp_path = get_relpath_to_root('tmp')
+    else:
+        tmp_path = get_relpath_to_root('tmp')
+    return tmp_path
 
 def calc_timeit(check_method, number):
     min_time = float('inf')
@@ -807,9 +821,7 @@ class Test_iTreeBase:
         print('\nRESULT OF TEST: serialize, dump and load')
 
         root = self._build_base_tree()
-        root_data_path = get_relpath_to_root('tmp')
-        if not os.path.exists(root_data_path):
-            os.makedirs(root_data_path)
+        root_data_path = get_tmp_path()
         target_path = root_data_path + '/out.itz'
         target_path2 = root_data_path + '/out.itr'
         target_path3 = root_data_path + '/out2.itz'

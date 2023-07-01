@@ -40,7 +40,7 @@ import os
 import timeit
 import copy
 import shutil
-# import sys
+import sys
 import collections
 # import timeit
 import pytest
@@ -76,6 +76,22 @@ def get_relpath_to_root(item_path):
         new_path = new_path[1:]
     return root_path + '/' + new_path
 
+def get_tmp_path(clean=False):
+    if not sys.platform.startswith('win'):
+        tmp_path= '/tmp/itertree_test'
+        try:
+            if not os.path.exists(tmp_path):
+                os.makedirs(tmp_path)
+                clean=False
+        except:
+            tmp_path = get_relpath_to_root('tmp')
+    else:
+        tmp_path = get_relpath_to_root('tmp')
+    if clean and os.path.exists(tmp_path):
+        if os.path.exists(tmp_path):
+            shutil.rmtree(tmp_path)
+        os.makedirs(tmp_path)
+    return tmp_path
 
 class Test1_Serializers:
 
@@ -225,10 +241,7 @@ class Test1_Serializers:
         item=root.insert(0,iTree('level 1'))
         for i in range(3):
             item=item.append(iTree('level %i'%(i+2)))
-        tmp_dir=os.path.join(os.path.dirname(__file__),'testtmp')
-        if os.path.exists(tmp_dir):
-            shutil.rmtree(tmp_dir)
-        os.makedirs(tmp_dir)
+        tmp_dir=get_tmp_path(True)
         file_path=os.path.join(tmp_dir,'test.itz')
         root.dump(file_path)
         print('iTree dumped in: {}'.format(file_path))

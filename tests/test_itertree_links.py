@@ -35,7 +35,7 @@ For more information see: https://en.wikipedia.org/wiki/MIT_License
 This test suite focuses on the linking and "covering mechanisms" available in iTree
 """
 import os
-# import sys
+import sys
 import collections
 import timeit
 import itertools
@@ -65,6 +65,18 @@ def get_relpath_to_root(item_path):
     if new_path.startswith('/'):
         new_path = new_path[1:]
     return root_path + '/' + new_path
+
+def get_tmp_path():
+    if not sys.platform.startswith('win'):
+        tmp_path= '/tmp/itertree_test'
+        try:
+            if not os.path.exists(tmp_path):
+                os.makedirs(tmp_path)
+        except:
+            tmp_path = get_relpath_to_root('tmp')
+    else:
+        tmp_path = get_relpath_to_root('tmp')
+    return tmp_path
 
 def calc_timeit(check_method, number):
     min_time = float('inf')
@@ -436,7 +448,8 @@ class Test_iTree_linked_items:
             assert link_item[key].is_linked
             assert not link_item[key].is_link_cover
 
-        root_data_path = get_relpath_to_root('tmp')
+        root_data_path = get_tmp_path()
+
         target_path = root_data_path + '/out.itr'
         root.dump(target_path,pack=False,overwrite=True)
 

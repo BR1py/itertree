@@ -1736,7 +1736,8 @@ class iTree(_iTreePrivate):
             elif self.is_link_loaded:
                 is_link_root = True
         if self:
-            if type(target) is int:  # special very quick access:
+            t=type(target)
+            if t is int:  # special very quick access:
                 if is_link_root:
                     item = self.getitem_by_idx(target)
                     if item._flags & (self._LINKED | self._PLACEHOLDER):
@@ -1771,6 +1772,42 @@ class iTree(_iTreePrivate):
                     self._families.__delitem__(tag)
                 del_item._itree_prt_idx = None
                 return del_item
+            elif t is slice:  # special quick access:
+                items=self._items
+                del_items = items[target]
+                if is_link_root:
+                    for item in del_items:
+                        if item._flags & (self._LINKED | self._PLACEHOLDER):
+                            self._raise_read_only_exception(self)
+                del items[target]
+                for idx,del_item in zip(range(target.start,target.stop),del_items):
+                    tag = del_item._tag
+                    family = self._getitem_fam(tag)
+                    size_fam = len(family)
+                    if hasattr(del_item, '_link') and del_item._link._link_item is not None:
+                        f_idx = del_item.tag_idx[1]
+                        link_item = del_item._link._link_item
+                        self._items.insert(idx, link_item)
+                        family[f_idx] = link_item
+                        link_item._itree_prt_idx = [self, idx, f_idx]
+                        del_item._itree_prt_idx = None
+                        return del_item
+                    elif size_fam - 1:
+                        # find family index
+                        i = del_item._itree_prt_idx[2]
+                        if i < size_fam and del_item is family[i]:
+                            family.__delitem__(i)
+                        else:
+                            start = 0
+                            for _ in family:  # for is quicker as while
+                                i = family.index(del_item, start)
+                                if family[i] is del_item:
+                                    f_idx = i
+                                    break
+                                start = i + 1
+                            family.__delitem__(f_idx)
+                    del_item._itree_prt_idx = None
+                    return del_items
             else:
                 items = self.__getitem__(target)
                 if hasattr(items, '_itree_prt_idx'):

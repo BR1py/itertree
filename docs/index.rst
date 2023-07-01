@@ -67,7 +67,7 @@ Status and compatibility information
    Please use the `github issues <https://github.com/BR1py/itertree/issues>`_
    to ask questions report problems.
 
-.. |release| replace:: Version | 1.0.1|
+.. |release| replace:: Version | 1.0.5|
 .. _release: https://pypi.python.org/pypi/itertree/
 
 The original implementation is done in Python 3.9 and it is tested under Python 3.5, 3.6 and 3.9. The package
@@ -161,6 +161,15 @@ recommendations which give the package additional performance:
 
               -> in case the package is not found normal list object will be used instead
               -> depending on the size blist is especially better for `insert()` operations and slicing
+
+              For Python 3.10 and 3.11 we created a package based on: https://github.com/stefanor/blist/tree/python3.11
+              and some additional adaptions. The package can be found under:
+              https://github.com/BR1py/itertree/tree/main/dist
+              We did not test the package in detail but the itertree testsuite runs without issues.
+
+              ..note :: We recommend to use it only for the newer Python versions. For older versions
+                        Python <=3.9 use the original package from PyPI.
+
 
     * orjson - A quicker json parser that used to create the JSON structures during serializing/deserializing
 
