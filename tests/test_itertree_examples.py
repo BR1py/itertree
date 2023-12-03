@@ -48,6 +48,12 @@ from itertree import *
 root_path = os.path.dirname(os.path.dirname(__file__))
 print('ROOT_PATH', root_path)
 
+tmp_dir=os.path.join(os.path.dirname(__file__),'tmp')
+if os.path.exists(tmp_dir):
+    shutil.rmtree(tmp_dir)
+os.makedirs(tmp_dir)
+print('TMP_DIR', tmp_dir)
+
 
 print('Test start')
 
@@ -56,6 +62,7 @@ def out_file(tmpdir_factory):
     i=0
     while 1:
         fn = str(tmpdir_factory.mktemp("data").join("test_%i.out"%i))
+        fn=os.path.join(tmp_dir,os.path.basename(fn))
         if not os.path.exists(fn):
             break
         i+=1
@@ -73,6 +80,7 @@ class Test_iTree_Examples:
         print('\n<- RESULT OF TEST: %s'%file)
         rel_example_dir=os.path.join(root_path,'src','itertree','examples')
         temp_file_path=out_file
+        print('Temporary File: %s'%temp_file_path)
         target_file=os.path.join(rel_example_dir,file)
         print('We ran: %s'%target_file)
         assert os.path.exists(target_file)
