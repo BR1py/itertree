@@ -9,14 +9,12 @@ class description of the modules too. But the huge number of methods in the `iTr
 We hope these chapters orders the things in a much better way so that the user get's used to the class as
 quick as possible.
 
-To understand the functionality of itertree in practice the user might have a look on the related examples
-which can be found
-in the example folder of itertree.
+It's recommended to have a look on the related examples too (stored in the example folder of itertree).
 
 **Status and compatibility information:**
 
-The original implementation is done in python 3.9 and it is tested under python 3.5 and 3.9. It should work for all
-Python-versions  >= 3.4.
+The original implementation is done in python 3.9 and it is tested under python 3.5, 3.9 and 3.11. It should work for
+all Python-versions  >= 3.4.
 
 From version 1.0.0 on we see the package as released and stable. The unit and integration test suite should target a
 huge amount of functionalities and use cases. We will try to keep the interface stable too.
@@ -28,8 +26,9 @@ Quick start - the basics
 
 
 We really hope that the usage of the itertree package is intuitive. If the user is familiar with `list` and
-`dict` objects the basic functionality should be easy to understand. So don't have any fears about all the details
-described in this tutorial you can start quite quick and simple.
+`dict` objects the basic functionality should be easy to understand. If you extend the functions to nested lists or
+dicts you already get a tree like structure. What is really a bit complex are the functions related to tree iterations
+and filterings but of course the "simple" iteration like in the other objects are available too.
 
 Build the object
 ++++++++++++++++
@@ -231,6 +230,24 @@ supports the serialization of more complex value-objects (e.g. numpy-arrays).
           the stored data the serializer creates a flat list of entries (which avoids RecursionErrors related to the JSON parser).
 
 
+Use iTree as super class
++++++++++++++++++++++++++
+
+If the user wants to extend the functionalities or to make the class compatible with an already existing implementation
+the iTree class might be used as a super class (possible since new release 1.1.0).
+
+.. warning:: Overloading the orignal methods is very risky because they might be used internally. Changes must consider
+             this and other methods might be overloaded to to ensure that super functions are used.
+
+             Serializing the new class should be possible in general (e.g. the class is just extended with additional
+             methods.
+             If the stored data content is changed (not only .value is used) the serializer must be rewritten too to
+             ensure that the new data is reconstructed during load.
+
+In the examples we have added a module itree_like_anytree.py which overloads the iTree() class so that it
+behaves partly like `anytree` (we did not check all details it's just an example). The module might be a good
+starting point for the use case.
+
 Next steps
 +++++++++++++
 
@@ -238,17 +255,13 @@ After those basic functions are learned you may be motivated to dive deeper. E.g
 targets related to item access, linking trees and branches, search/filter in the trees and store more advanced
 datatypes in the tree.
 
-In the tutorial you can find a large table which compares `iTree` with `dict` and `list` objects
-(link can be found in next chapter).
-
-
 ********************************
-Introduction to the iTree object
+Introduction to the iTree class
 ********************************
 
 As a starting point the `iTree`-class should be seen as a `list` (the object inherits his functions
 from a `list` or `blist`). All typical `list` like methods are available. But `iTree`-objects supports also in-depth
-access and iterations over different levels of the nested tree structure. Different than in normal lists the
+access and iterations over different levels of the nested tree structure. In a second abstraction level
 `iTree`-class supports the more `dict`-like access functions related to keys too.
 
 For a functional comparison in between `ìTree`, `list` and `dict` the table in the chapter
@@ -282,27 +295,48 @@ inbetween. They are not seen in the family because they have other tags!
 
 .. list-table::
 
- * - **abs-order**
-   - **family "a"**
-   - **family "b"**
- * - | iTree(tag='a',value=1)
+ * - **abs.**
+   - **iTree**
+   - **rel.**
+   - **family**
+   - **rel.**
+   - **family**
+ * - **index**
+   - **order**
+   - **index**
+   - **"a"**
+   - **index**
+   - **"b"**
+ * - | 0
+   - | iTree(tag='a',value=1)
+   - | 0
    - | iTree(tag='a',value=1)
    - |
- * - | iTree(tag='b',value=2)
    - |
+ * - | 1
    - | iTree(tag='b',value=2)
- * - | iTree(tag='a',value=3)
+   - |
+   - |
+   - | 0
+   - | iTree(tag='b',value=2)
+ * - | 2
+   - | iTree(tag='a',value=3)
+   - | 1
    - | iTree(tag='a',value=3)
    - |
- * - | iTree(tag='b',value=4)
    - |
+ * - | 3
+   - | iTree(tag='b',value=4)
+   - |
+   - |
+   - | 1
    - | iTree(tag='b',value=4)
 
 
 Normally the tag must be given to the item when it is instanced. As tag-objects the user can give any hashable object
 (e.g. tuples, int, float, str, bytes). If no tag is given the `iTree`-object will use the default `NoTag`-object
-as tag. In `iTree` exists a  `rename()` method to change the tag of an item, but if possible this should be avoided
-because it implies a reordering of the items inside the effected tag-families (removed tag and new tag).
+as tag. In `iTree` exists a  `rename()` method to change the tag of an item, but it implies a reordering of the
+items inside the effected tag-families (removed tag and new tag).
 
 Unique parent principle
 ++++++++++++++++++++++++++
@@ -386,8 +420,8 @@ In the itertree package and this tutorial the following naming convention is use
         * 1. element (level 1) ->
         * 0. element (level 2)
 
-    In access function the relative idx_path from the current object to the sub-item must be given
-    (not the absolute path (might be used if you target via `itree.root.get(*idx_path)`)).
+    In access function the relative idx_path from the current object to the sub-item must be given. The absolute
+    path to the root makes only sense if it used related to the root object: `itree.root.get(*absolute_idx_path)`.
 
 * **tag_idx_path**
     List of tag-idx-keys (unique tuples of family-tag,family-index) describe the path from the root
@@ -398,8 +432,8 @@ In the itertree package and this tutorial the following naming convention is use
         * 1. element in tag-family NoTag (level 1) ->
         * 0. element in tag-family 1.6 (level 2)
 
-    In access function the relative tag_idx_path from the current object to the sub-item must be given
-    (not the absolute path (might be used if you target via `itree.root.get(*tag_idx_path)`)).
+    In access function the relative tag_idx_path from the current object to the sub-item must be given. As for
+    idx_paths the absolute path can be utilized related to thr root object: `itree.root.get(*absolute_tag_idx_path)`)).
 
 * **target**
     Is an object that targets one or multiple items in an `iTree` the target is used related to one level only. But
@@ -415,7 +449,7 @@ In the itertree package and this tutorial the following naming convention is use
 
     * index - absolute target index integer (fastest operation) -> unique/single result
 
-    * key - key tuple (family_tag, family_index) -> unique/single result
+    * tag_idx - key tuple (family_tag, family_index) -> unique/single result
 
     * tag-set - {family_tag} object targeting a whole family -> list result
 
@@ -425,7 +459,7 @@ In the itertree package and this tutorial the following naming convention is use
 
     * index slice - slice of absolute indexes -> list result
 
-    * key slice - tuple of of (family_tag, family_index_slice)  -> list result
+    * tag_idx_slice - tuple of of (family_tag, family_index_slice)  -> list result
 
     * filter_method - a filtering method that delivers True/False related to an analysis of item properties  -> list result
 
@@ -624,7 +658,7 @@ with same tags are collected in the same tag-family:
   >>> family=root[{(1,2,3)}] # target the family with a set(): {(1,2,3)}
   >>> family # is represented as a list of the related items (with same tag)
   [iTree((1, 2, 3)), iTree((1, 2, 3), value=1)]
-  >>> family=root.get.by_tag((1,2,3)) # target via the s�ecial tag access function
+  >>> family=root.get.by_tag((1,2,3)) # target via the s�ecial tag access function
   >>> family # is represented as a list of the related items (with same tag)
   [iTree((1, 2, 3)), iTree((1, 2, 3), value=1)]
   
@@ -1637,10 +1671,14 @@ The `iTree` object contains the following general properties:
 .. autoproperty:: itertree.iTree.root
             :noindex:
 
+
 .. autoproperty:: itertree.iTree.is_root
             :noindex:
 
 .. autoproperty:: itertree.iTree.parent
+            :noindex:
+
+.. autofunction:: itertree.iTree.ancestors()
             :noindex:
 
 .. autoproperty:: itertree.iTree.pre_item
@@ -1878,7 +1916,7 @@ In `iTree` we have iteration-generators which are more related to list-like func
 which are targeting more in the direction of the dict-like iterators.
 
 
-Most iteration-generators are available in diffrent level behavior:
+Most iteration-generators are available in different level behavior:
 
 1. The children only variant iterating only over the items in level 1 of the tree-structure
 
@@ -1890,7 +1928,13 @@ of the `iTree`-object.
 .. autofunction:: itertree.iTree.__iter__()
             :noindex:
 
-The more dict-like iteration-methods targeting the children  (level 1) are:
+.. autofunction:: itertree.iTree.siblings()
+            :noindex:
+
+.. note:: The siblings iterator does not consider the item itself. If you need an iterator that considers the
+          item itself use: `mytree.parent.__iter__()`.
+
+Some more dict-like iteration-methods targeting the children (level 1 only) are:
 
 .. autofunction:: itertree.iTree.keys()
             :noindex:
@@ -1900,6 +1944,7 @@ The more dict-like iteration-methods targeting the children  (level 1) are:
 
 .. autofunction:: itertree.iTree.items()
             :noindex:
+
 
 To make the delivered generator-content visible we use the `list()`-cast in the following examples:
 
@@ -1953,7 +1998,7 @@ Most in-depth iteration-methods have additional parameters:
      direction of the iteration top->down or bottom-> up (default: `up_to_low=True`).
 
 
-All the in-depth iteration-methods are reached via the helper class `iTree.deep`:
+All the **in-depth** iteration-methods are reached via the helper class `iTree.deep`:
 
 .. function:: itertree.iTree.deep.__iter__()
 coded in helper-class:
@@ -1967,7 +2012,25 @@ coded in helper-class:
 .. autofunction:: itertree.itree_indepth._iTreeIndepthTree.iter()
             :noindex:
 
-As explained we can iter in two directions up-> low (default) or low->up (set parameter `up_to_low=False`):
+We have several options which influences the way we iterate over the tree they can be combined
+(e.g. ITER.REVERSE | ITER.SELF):
+
+    * ITER.UP - changes the default up-down direction of the iteration into bottom up.
+
+    * ITER.REVERSE - switches the iteration direction from standard low index to high index to high index to low index.
+
+    * ITER.SELF - include the item itself into the iteration (In up-down direction the item itself will be first in
+      the other direction it will be the elast element iterated)
+
+    * ITER.FILTER_ANY - This flag has effect if a filter_method is given. It enables the pythons
+      build_in `filter()` on any iterated object (non hierarchical filtering).
+      The default is a hierarchical filtering.
+
+    .. note:: Only for downward compatibility with the depreciated positional `up_to_low`-parameter the option
+               `ITER.DOWN` and 0 (~ ITER.UP) exists too. If `ITER.DOWN | ITER.UP` is combined the option
+               `ITER.DOWN` will be ignored. In general we can say that using ITER.DOWN is not recommended.
+
+               The named argument `up_to_low` still exists too. But if used a depreciation warning will be given.
 
 .. start: tutorial-code 20
 
@@ -1987,15 +2050,295 @@ As explained we can iter in two directions up-> low (default) or low->up (set pa
 
 .. end - entry created: 2023-06-22T21:38:27
 
-.. figure:: resources/IterUpDown.png
+The figures should show the scheme of iteration for the different parameter settings.
+
+.. figure:: resources/iter_legende.png
    :align: center
 
-   Figure schema for up->down (default) iteration
+   Figure shows the meanings of the different symbols used in the following figures.
 
-.. figure:: resources/IterDownUp.png
+
+.. figure:: resources/iter.png
+   :align: center
+
+   Figure schema for standard up->down (default) iteration
+
+.. figure:: resources/iter_self.png
+   :align: center
+
+   Figure schema for standard up->down (default) iteration including self
+
+.. figure:: resources/iter_ext_filter.png
+   :align: center
+
+   Figure schema for standard up->down (default) iteration showing the effect of external filtering
+   (all elements with `item.idx==0 or item.idx==None` are filtered out)
+
+.. figure:: resources/iter_hfilter.png
+   :align: center
+
+   Figure schema for standard up->down (default) iteration showing the effect of internal hierarchical filtering
+   (all elements with `item.idx==0 or item.idx==None` are filtered out)
+
+.. figure:: resources/iter_reverse.png
+   :align: center
+
+   Figure schema for standard up->down (default) iteration but with reversed indexing of the items
+
+.. figure:: resources/iter_down_up.png
    :align: center
 
    Figure schema for down->up iteration
+
+.. figure:: resources/iter_down_up_self.png
+   :align: center
+
+   Figure schema for down->up iteration including self
+
+.. figure:: resources/iter_down_up_ext_filter.png
+   :align: center
+
+   Figure schema for down->up iteration showing the effect of external filtering
+   (all elements with `item.idx==0` are filtered out)
+
+.. figure:: resources/iter_down_up_hfilter.png
+   :align: center
+
+   Figure schema for down->up iteration showing the effect of internal hierarchical filtering
+   (all elements with `item.idx==0` are filtered out)
+
+.. figure:: resources/iter_down_up_reverse_self.png
+   :align: center
+
+   Figure schema for down->up iteration but with reversed indexing of the items including self
+
+.. function:: itertree.iTree.deep.siblings()
+coded in helper-class:
+
+.. autofunction:: itertree.itree_indepth._iTreeIndepthTree.siblings()
+            :noindex:
+
+In the in_depth variant the siblings class steps down the levels from the current itree objects and deliver all items
+in same level relative level. The absolute level can be targeted if the method is called from the root object.
+
+The function accepts negative levels too. Here the method is always calculating the level from the "bottom" of the
+tree. It can be that in those iterations the same item is targeted multiple times. By default the function will deliver
+the items only at the first time they are yielded. Additional matches are skipped. If the flag ´ITER:MULTIPLE´ is set
+the items delivered each time.
+Interesting cases might be:
+
+
+    * `mytree.root.deep.siblings(mytree.level)` - Iter over all siblings in the full tree in the same level as the
+      calling item (absolute level in the tree from the root).
+
+    * `mytree.deep.siblings(-1)` - Iter over all "bottom" items in the subtree of the calling item.
+
+    * `mytree.root.deep.siblings(-1)` - Iter over all "bottom" items in the full tree from root.
+
+
+Have a deep look on the figures showing the wide range of possible iteration related to the given options.
+
+
+.. figure:: resources/siblings_legend.png
+   :align: center
+
+   Figure shows the meanings of the different symbols used in the following figures.
+
+.. figure:: resources/siblings_simple.png
+   :align: center
+
+   The figure shows the simple (not in_depth) sibling function.
+
+.. figure:: resources/siblings_children.png
+   :align: center
+
+   The figure shows how the item itself is included by iterating over the children of the parent object.
+   (not in_depth) sibling function.
+
+.. figure:: resources/siblings2.png
+   :align: center
+
+   The figure shows the iteration over the level 2 siblings relative the calling object.
+
+.. figure:: resources/siblings1.png
+   :align: center
+
+   The figure shows the iteration over the same level
+   siblings (`SELF.level` property used as level parameter) as absolute level from root. The root is targeted
+   by `mytree.root` property from the calling object.
+
+.. figure:: resources/siblings_self_self.png
+   :align: center
+
+   The figure shows the iteration over the same level
+   siblings (`SELF.level` property used as level parameter) as absolute level from root. The root is targeted
+   by `mytree.root` property from the calling object.
+   Because the `ITER.SELF` option is given the item itself is
+   included in the iteration.
+
+.. figure:: resources/siblings_reverse_self.png
+   :align: center
+
+   The figure shows the iteration in reversed order (high -> low index) over the same level
+   siblings (`SELF.level` property used as level parameter) as absolute level from root. The root is targeted
+   by `mytree.root` property from the calling object.
+   Because the `ITER.SELF` option is given the item itself is
+   included in the iteration.
+
+
+.. figure:: resources/siblings_0_self.png
+   :align: center
+
+   The figure shows a special cornercase. The relative level 0 iteration over the full tree on the level of the calling
+   item itself. Because of `ITER.SELF`-option-flag the item itself is considered in the iteration. Without the flag
+   an empty iterator would be given.
+
+.. figure:: resources/siblings_minus_1.png
+   :align: center
+
+   The figure shows the iteration of all "bottom" items in the sub-tree (from caller).
+
+.. figure:: resources/siblings_minus_3_self.png
+   :align: center
+
+   The figure shows the iteration over all items with a distance of three levels from the bottom. The calling item
+   itself is include into the iteration because the `ITER.SELF` option is given. We see that for
+   negative levels it can be that specific items are matching multiple times for the given condition. By default
+   only the first match will be yielded into the iterator. Additional matches will be ignored. Each item will be
+   target only one time.
+
+
+.. figure:: resources/siblings_minus_3_self_multi.png
+   :align: center
+
+   The figure shows the iteration over all items with a distance of three levels from the bottom. The calling item
+   itself is include into the iteration because the `ITER.SELF` option is given. In this case the `ITER.MULTI`
+   option is set which means the items will be yielded when ever they match. This means it can be that a specific item
+   can be
+   delivered multiple times.
+
+.. figure:: resources/siblings_minus_3_self_reverse.png
+   :align: center
+
+   The figure shows the iteration over all items in reversed (high -> low index) order with a distance of three levels
+   from the bottom. The calling item
+   itself is include into the iteration because the `ITER.SELF` option is given.
+
+
+
+
+.. function:: itertree.iTree.deep.levels()
+coded in helper-class:
+
+.. autofunction:: itertree.itree_indepth._iTreeIndepthTree.levels()
+            :noindex:
+
+The `levels()` iteration generator is feeded with multiple levels (slice or iterable of integers) and it will iterate
+of the given levels as the `siblings()` method does it for one level only.
+
+E.g.:
+
+    ::
+
+        mytree.deep.levels(levels=[1,2]) == itertools.chain([mytree.deep.siblings(1),mytree.deep.siblings(2)])
+        mytree.deep.levels(levels=[1]) = mytree.deep.siblings(1)
+
+It's possible to run through the same level
+multiple times. But each item will be yielded onl yone time, except ´ITER.MULTIPLE` option is set.
+
+In huge trees and with negative levels the iteration can take longer time. For negative levels the items must be
+calculated from low level items, this extra effort leads in slower iteration times.
+
+Some interesting iterations created by `deep.levels()` method might be:
+
+    * `mytree.root.deep.levels(options=ITER.SELF)` -  iterates over all levels of the tree from the root
+      the calling item itself is part of the iteration.
+
+    * `mytree.root.deep.levels(slice(-1,None,-1),options=ITER.SELF|ITER.ABS)` -  iterates over all levels of the tree
+      from the root in bottom up direction.
+      The calling item itself is part of the iteration.
+
+Iteration examples related to the `deep.levels()`-method. Please remember that the method beahves like a cascaded
+`deep.siblings()` method. If the result is to confusing you might first have a look
+how the `deep.siblings()`-method works.
+
+.. figure:: resources/levels_self.png
+   :align: center
+
+   The figure shows the default iteration of the `deep.levels()` method. Because option
+   ´ITER.SELF´ is set the item itself is yielded as first item in the iteration.
+
+The default levels parameter value is a `slice(0,None,1)`. It starts
+with relative level 0 (related to caller item) and steps over all levels in down direction.
+
+.. figure:: resources/levels_reverse.png
+   :align: center
+
+   The figure shows the default iteration of the `deep.levels()` method but in reversed order (high--> low index).
+   Here `SELF` is not
+   included because `ITER.SELF` is not set.
+
+
+.. figure:: resources/levels_slice_2_minus_1.png
+   :align: center
+
+   The figure shows an iteration over all levels in bottom->up order via slicing `(2,None,-1)`. The calling item
+   is included via option `ITER.SELF`.
+
+.. figure:: resources/levels_slice_minus_2_minus_1.png
+   :align: center
+
+   The figure shows an iteration over all levels in bottom->up order via slicing `(-2,None,-1)`. The calling item
+   is included via option `ITER.SELF`.
+
+Different as in the example before we see if giving a negative index as start level in the slice (here -2) the iterator
+will calculate the levels from the bottom upward.
+
+.. figure:: resources/levels_slice_minus_2_1.png
+   :align: center
+
+   The figure shows an iteration over all levels down via slicing `(-2,None,1)`. The calling item
+   is included via option `ITER.SELF`.
+
+Again we see a different behavior in the example the level is again calculated from the bottom but the slice
+increases the target level (-> -2, -1)  so the iterator dives deeper into the tree. It stops after the deepest level
+is reached.
+
+
+.. figure:: resources/levels_slice_3_minus_1_reverse_self.png
+   :align: center
+
+   The figure shows an iteration over all levels in bottom up order via slicing `(3,None,-1)`. The iteration
+   direction is reversed (high-> low index) and `SELF` is included.
+
+
+Now we look on some levels iterations using level lists instead of slices.
+
+.. figure:: resources/levels_1_3.png
+   :align: center
+
+   The figure shows an levels iteration over the levels 1 and 3.
+
+.. figure:: resources/levels_0_3_1_self.png
+   :align: center
+
+   The figure shows an levels iteration over the levels 0; 1; 3 because `ITER.SELF`option is `SELF`is yielded too.
+
+.. figure:: resources/levels_minus__minus_3_self_multi.png
+   :align: center
+
+   The figure shows an levels iteration over the levels -1 and -3. Options `ITER.SELF` and `ITER.MULTIPLE` are activated.
+
+For negative levels or if the user uses one level multiple times in the given levels list itc can be that one item is
+found multiple times in the iteration. But only if the option `ITER.MULTIPLE` is set it will be delivered if not only
+first match is delivered and all items in the iteration are unique (see next example).
+
+.. figure:: resources/levels_minus_1_minus_3_self_reverse.png
+   :align: center
+
+   The figure shows an levels iteration over the levels -1; -3 in reversed order (high-> low index). Because
+   `ITER.MULTIPLE` is not set iteration steps of already delivered items are skipped.
+
 
 Additional we have the in-depth iteration-methods:
 
@@ -2090,7 +2433,7 @@ E.g.:
 
     root.get(Filters.is_item_tag('mytag'),Filters.is_item_tag('mytag2'))
 
-will filter in first level for all items with the tag 'mytag' and in next level for all items with the tag 'mytag2'.
+Here we filter in first level for all items with the tag 'mytag' and in next level for all items with the tag 'mytag2'.
 
 The filter is used only at the specific level (in side one level we can just filter) but in the next level only the
 findings of first level will be considered. Therefore the level filtering is a hierarchical filtering which means only
@@ -2108,7 +2451,8 @@ the matching items of the previous level are considered in the next level..
 
 .. end
 
-The filtering in `iTree` is very effective and quick. As an example one might execute the example script
+The filtering in `iTree` is very effective and quick (if the filter function itself is quick). As an example one might
+execute the example script
 itree_usage_example1.py or calendar_example.py. It's recommended that the user uses
 iterator related functions to reach the expected results (e.g. see itertools package).
 
@@ -2117,9 +2461,8 @@ iTree full overview over the in-depth functionalities
 *****************************************************
 
 We already
-talked about some of the features in the in previous chapters (access and iterators) but now we like to give a full
-overview about in-depth
-related functionalities.
+talked about some of the in-depth features in the in previous chapters (access and iterators)
+but now we like to complete the related functionalities.
 
 All related methods are available in a specific `iTree`-object via the subclass `itree.deep`.
 
@@ -2174,18 +2517,6 @@ All related methods are available in a specific `iTree`-object via the subclass 
 .. autofunction::itertree.itree_indepth._iTreeIndepthTree.remove()
             :noindex:
 
-.. autofunction::itertree.itree_indepth._iTreeIndepthTree.__iter__()
-            :noindex:
-
-.. autofunction::itertree.itree_indepth._iTreeIndepthTree.iter()
-            :noindex:
-
-.. autofunction::itertree.itree_indepth._iTreeIndepthTree.idx_paths()
-            :noindex:
-
-.. autofunction::itertree.itree_indepth._iTreeIndepthTree.tag_idx_paths()
-            :noindex:
-
 
 **********************************
 iTree formatted output and storage
@@ -2231,9 +2562,8 @@ represented and stored as a JSON artifact.
 
 In the methods the serializer can be set and might be replaced by the users own serializing format.
 
-The serializer for Version 1.0.0 is modified and the output format is not
-compatible with the old format version 1.1.1. New format can be created quicker and it has no more issues with
-recursion depth exceptions. The conversion of old files can be made via the helper script:
+The serializer for Version 1.0.0 is modified and the output format is no more
+compatible with the old format. The conversion of old files can be made via the helper script:
 
 ::
 
@@ -2247,8 +2577,6 @@ the flags parameter to be switched to read-only where we used a special class in
 But beside this we wanted to have a better performance related to the serializing of the objects. We think that the
 readability is improved too. Even that this was not the main target. The new format is also 100% JSON compatible and
 can be read in by any JSON parser.
-
-The output looks like this:
 
 ::
 
@@ -2279,11 +2607,15 @@ the level in the tree. Each item is coded in JSON in the following way:
 In case the item has additional parameters they are coded like the tag and the value too. The family-index
 is only given for better readability of the files, it's not used during the reconstruction of the object.
 
+If the user uses the iTree class as a super object for his own class the new serializer should work even
+(as long as the related module containing the new class is imported). But we cannot ensure that any
+extension is stored, it can be that a modified serializer is required in this case.
+
 We have also a dot generator available which may help to create a graphical representation of the tree but this is
 not deeply
 tested there might be limits and we cannot ensure that the shown order is always correct.
 
-Related to serialization we like to remark that `iTree`-objects can be pickled (`pickle(my_tree)`).
+Related to serialization we like to remark that `iTree`-objects can be pickled (`pickle(my_tree)`) too.
 
 ***************************
 iTree linked sub-trees

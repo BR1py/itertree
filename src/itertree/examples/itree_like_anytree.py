@@ -70,20 +70,14 @@ deep_item_it=n2[-1]
 class NodeITDeep(_iTreeIndepthTree):
 
     def preorder(self):
-        return chain([self._itree],self)
+        return self.iter(add_self=True)
 
     def postorder(self):
-        return chain(self.iter(up_to_low=False),[self._itree])
+        return self.iter(up_to_low=False,add_self=True)
 
     def levelorder(self):
-        level_items=[self._itree]
-        while level_items:
-            next_level_items=[]
-            for i in level_items:
-                yield i
-                if len(i):
-                    next_level_items.extend(i)
-            level_items=next_level_items
+        return self.iter_levels(start_levels=0)
+
 
 class NodeIT(iTree):
 
@@ -98,22 +92,8 @@ class NodeIT(iTree):
         return self.tag
 
     @property
-    def ancestors(self):
-        ancestors=[]
-        p=self.parent
-        while p!=None:
-            ancestors.append(p)
-            p=p.parent
-        ancestors.reverse()
-        return ancestors
-
-    @property
-    def siblings(self):
-        return [] if self.parent is None else [i for i in self.parent if i!=self]
-
-    @property
     def leaves(self):
-        return [i for i in self.deep if len(i)==0]
+        return self.deep.iter_siblings(-1)
 
     @property
     def is_leave(self):

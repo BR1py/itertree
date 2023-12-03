@@ -933,9 +933,7 @@ class Test1_iTreeInstance:
         t = calc_timeit(lambda: list(i for i in filter(test_filter_outside,iter_method(up_to_low=True))), number=timeit_number)
         print('filter(test_filter,%s()) -> iteration-time over %s items: %es' % (method_name, s, t))
 
-
         print('\nRESULT OF TEST: iTree deep key_paths iterators -> PASS')
-
 
     def test2_iTree_unit_filters(self):
         # filters are tested in a special test

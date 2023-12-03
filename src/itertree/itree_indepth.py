@@ -35,23 +35,53 @@ For more information see: https://en.wikipedia.org/wiki/MIT_License
 This part of code contains the main iTree object
 """
 
-
-from itertools import dropwhile,islice
+from itertools import dropwhile, islice, chain
 import sys
+import warnings
+import copy
 from collections import deque
+from .itree_helpers import ORDER_PRE, ORDER_POST, ORDER_LEVEL, ITER
+from .itree_indepth_helpers.itree_indepth_iter import _iTreeIndepthIter
 
-iter_list = list if sys.version_info >= (3, 8) else deque # from Python 3.8 on lists are quicker then deque
+DOWN = ITER.DOWN
+UP = ITER.UP
+REVERSE = ITER.REVERSE
+SELF = ITER.SELF
+FILTER_ANY = ITER.FILTER_ANY
+MULTIPLE=ITER.MULTIPLE
 
-NONE_TUPLE=(None,)
+iter_list = list if sys.version_info >= (3, 8) else deque  # from Python 3.8 on lists are quicker then deque
 
-class _iTreeIndepthTree():
+NONE_TUPLE = (None,)
 
-    __slots__ = ('_itree','get','_active_iter')
 
+class _iTreeIndepthTree(_iTreeIndepthIter):
+    __slots__ = ('_itree', 'get', '_active_iter')
 
     # To win some speed we set self._itree after init of the class in the main iTree object
 
-    def unset_tree_read_only(self,filter_method=None,hierarchical=True):
+    _ITER_HELPERS = {
+        0: _iTreeIndepthIter._iter_normal,
+        UP:_iTreeIndepthIter._iter_up,
+        REVERSE: _iTreeIndepthIter._iter_reverse,
+        UP | REVERSE: _iTreeIndepthIter._iter_up_reverse,
+    }
+
+    _ITER_IDXPATH_HELPERS = {
+        0: _iTreeIndepthIter._iter_normal_idxpath,
+        UP:_iTreeIndepthIter._iter_up_idxpath,
+        REVERSE: _iTreeIndepthIter._iter_reverse_idxpath,
+        UP | REVERSE: _iTreeIndepthIter._iter_up_reverse_idxpath,
+    }
+
+    _ITER_TAGIDXPATH_HELPERS = {
+        0: _iTreeIndepthIter._iter_normal_tagidxpath,
+        UP:_iTreeIndepthIter._iter_up_tagidxpath,
+        REVERSE: _iTreeIndepthIter._iter_reverse_tagidxpath,
+        UP | REVERSE: _iTreeIndepthIter._iter_up_reverse_tagidxpath,
+    }
+
+    def unset_tree_read_only(self, filter_method=None, hierarchical=True):
         """
         Call method via `iTree().deep.unset_tree_read_only()`
 
@@ -82,9 +112,9 @@ class _iTreeIndepthTree():
                                      not match to the filter))
 
         """
-        itree=self._itree
-        unset_flags=itree._unset_flags
-        read_only_tree_flag=itree._READ_ONLY_TREE
+        itree = self._itree
+        unset_flags = itree._unset_flags
+        read_only_tree_flag = itree._READ_ONLY_TREE
         if itree._itree_prt_idx is not None and itree._itree_prt_idx[0]._flags & itree._READ_ONLY_TREE:
             raise PermissionError('The structural protection flag can only be unset in '
                                   'case the parent is not protected. But here the parent holds the protection flag')
@@ -92,18 +122,17 @@ class _iTreeIndepthTree():
             if filter_method(itree):
                 unset_flags(itree, read_only_tree_flag)
             if hierarchical:
-                iterator=self.iter(filter_method)
+                iterator = self.iter(filter_method)
             else:
                 # not sure if this makes sense, hi risk of denied action because of protected parents
-                iterator = filter(filter_method,self)
+                iterator = filter(filter_method, self)
         else:
             unset_flags(itree, read_only_tree_flag)
-            iterator=self.__iter__()
+            iterator = self.__iter__()
         for i in iterator:
             unset_flags(i, read_only_tree_flag)
 
-
-    def unset_value_read_only(self,filter_method=None, hierarchical=True):
+    def unset_value_read_only(self, filter_method=None, hierarchical=True):
         """
         Call via **iTree().deep.unset_value_read_only()**
 
@@ -130,9 +159,9 @@ class _iTreeIndepthTree():
                                      filter and considered in the result (even that the parent might
                                      not match to the filter))
         """
-        itree=self._itree
-        read_only_value_flag=itree._READ_ONLY_VALUE
-        unset_flags=itree._unset_flags
+        itree = self._itree
+        read_only_value_flag = itree._READ_ONLY_VALUE
+        unset_flags = itree._unset_flags
         if itree._itree_prt_idx is not None and itree._itree_prt_idx[0]._flags & itree._READ_ONLY_TREE:
             raise PermissionError('The structural protection flag can only be unset in '
                                   'case the parent is not protected. But here the parent holds the protection flag')
@@ -140,18 +169,17 @@ class _iTreeIndepthTree():
             if filter_method(itree):
                 unset_flags(itree, read_only_value_flag)
             if hierarchical:
-                iterator=self.iter(filter_method)
+                iterator = self.iter(filter_method)
             else:
-                iterator=filter(filter_method, self)
+                iterator = filter(filter_method, self)
         else:
             unset_flags(itree, read_only_value_flag)
-            iterator=self.__iter__()
+            iterator = self.__iter__()
         # We consume the iterator and change the flag as quick as possible
         for i in iterator:
             unset_flags(i, read_only_value_flag)
 
-
-    def set_value_read_only(self,filter_method=None, hierarchical=True):
+    def set_value_read_only(self, filter_method=None, hierarchical=True):
         """
         Call via **iTree().deep.set_value_read_only()**
 
@@ -178,9 +206,9 @@ class _iTreeIndepthTree():
                                      filter and considered in the result (even that the parent might
                                      not match to the filter))
         """
-        itree=self._itree
-        read_only_value_flag=itree._READ_ONLY_VALUE
-        set_flags=itree._set_flags
+        itree = self._itree
+        read_only_value_flag = itree._READ_ONLY_VALUE
+        set_flags = itree._set_flags
         if itree._itree_prt_idx is not None and itree._itree_prt_idx[0]._flags & itree._READ_ONLY_TREE:
             raise PermissionError('The structural protection flag can only be unset in '
                                   'case the parent is not protected. But here the parent holds the protection flag')
@@ -188,15 +216,15 @@ class _iTreeIndepthTree():
             if filter_method(itree):
                 set_flags(itree, read_only_value_flag)
             if hierarchical:
-                iterator=self.iter(filter_method)
+                iterator = self.iter(filter_method)
             else:
-                iterator=filter(filter_method, self)
+                iterator = filter(filter_method, self)
         else:
             set_flags(itree, read_only_value_flag)
-            iterator=self.__iter__()
+            iterator = self.__iter__()
         # We consume the iterator and change the flag as quick as possible
         for i in iterator:
-            set_flags(i,read_only_value_flag)
+            set_flags(i, read_only_value_flag)
 
     def __len__(self):
         """
@@ -208,7 +236,6 @@ class _iTreeIndepthTree():
         :return: number of children and sub-children in `iTree`-object
         """
         return sum(1 for _ in self)
-
 
     def __lt__(self, other):
         """
@@ -266,7 +293,7 @@ class _iTreeIndepthTree():
         """
         return self.__len__() >= len(other)
 
-    def count(self,item):
+    def count(self, item):
         """
         Call via **iTree().deep.count()**`
 
@@ -278,7 +305,7 @@ class _iTreeIndepthTree():
         :rtype: int
         :return: Number of matching items found
         """
-        return sum(item==i for i in self)
+        return sum(item == i for i in self)
 
     def filtered_len(self, filter_method, hierarcical=True):
         """
@@ -306,9 +333,9 @@ class _iTreeIndepthTree():
         if hierarcical:
             return sum(1 for _ in self.iter(filter_method))
         else:
-            return sum(1 for _ in filter(filter_method,self))
+            return sum(1 for _ in filter(filter_method, self))
 
-    def __contains__(self,item):
+    def __contains__(self, item):
         """
         Call via **x in iTree().deep**
 
@@ -331,7 +358,7 @@ class _iTreeIndepthTree():
         except StopIteration:
             return False
 
-    def is_tag_in(self,tag):
+    def is_tag_in(self, tag):
         """
         Call via **iTree().deep.is_tag_in()**
 
@@ -339,12 +366,12 @@ class _iTreeIndepthTree():
         :param tag: family tag
         :return: True/False
         """
-        for i in self: #iter over all items
+        for i in self:  # iter over all items
             if i.is_tag_in(tag):
                 return True
         return False
 
-    def is_in(self,item):
+    def is_in(self, item):
         """
         Call via **iTree().deep.is_in()**
 
@@ -360,7 +387,7 @@ class _iTreeIndepthTree():
                 * False - no matching item found
         """
         # search is done based on parents:
-        itree=self._itree
+        itree = self._itree
         p = item._itree_prt_idx is not None and item._itree_prt_idx[0] or None
         while p is not None:
             if p is itree:
@@ -368,8 +395,7 @@ class _iTreeIndepthTree():
             p = p._itree_prt_idx is not None and p._itree_prt_idx[0] or None
         return False
 
-
-    def index(self,item,start=None,stop=None):
+    def index(self, item, start=None, stop=None):
         """
         Call via **iTree().deep.index()**
 
@@ -402,35 +428,35 @@ class _iTreeIndepthTree():
         ;rtype: list
         :return: index_path of the found item
         """
-        itree=self._itree
+        itree = self._itree
         if itree:
             s = len(itree.idx_path)
-            iterator=self.__iter__()
+            iterator = self.__iter__()
             if start is not None:
-                if not hasattr(start,'_itree_prt_idx'):
-                    start=self._itree.get.single(*start)
+                if not hasattr(start, '_itree_prt_idx'):
+                    start = self._itree.get.single(*start)
                 try:
-                    first_item=next(dropwhile(lambda i: i is not start,iterator))
-                    if first_item==item:
+                    first_item = next(dropwhile(lambda i: i is not start, iterator))
+                    if first_item == item:
                         return first_item.idx_path[s:]
                 except StopIteration:
-                    raise IndexError('No matching item found in iTree')
+                    raise IndexError('No matching item found')
             if stop is not None:
-                if not hasattr(stop,'_itree_prt_idx'):
-                    stop=self._itree.get.single(*stop)
+                if not hasattr(stop, '_itree_prt_idx'):
+                    stop = self._itree.get.single(*stop)
                 try:
-                    item = next(dropwhile(lambda i: i is not stop and i!=item, iterator))
+                    item = next(dropwhile(lambda i: i is not stop and i != item, iterator))
                     if item is not stop:
                         return item.idx_path[s:]
                     raise StopIteration
                 except StopIteration:
-                    raise IndexError('No matching item found in iTree')
+                    raise IndexError('No matching item found')
             else:
                 try:
-                    item = next(dropwhile(lambda i: i!=item, iterator))
+                    item = next(dropwhile(lambda i: i != item, iterator))
                     return item.idx_path[s:]
                 except StopIteration:
-                    raise IndexError('No matching item found in iTree')
+                    raise IndexError('No matching item found')
 
     def reverse(self):
         """
@@ -443,7 +469,7 @@ class _iTreeIndepthTree():
 
         .. note:: The implementation of this method is recursive for deep trees recursion limit might be reached.
         """
-        itree=self._itree
+        itree = self._itree
         flags = itree._flags
         if flags & itree._IS_TREE_PROTECTED:
             if not itree.is_link_root or itree._link.is_loaded:
@@ -483,7 +509,7 @@ class _iTreeIndepthTree():
                         as if each comparison were reversed.
 
         """
-        itree=self._itree
+        itree = self._itree
         flags = itree._flags
         if flags & itree._IS_TREE_PROTECTED:
             if not itree.is_link_root or itree._link.is_loaded:
@@ -493,7 +519,7 @@ class _iTreeIndepthTree():
             for i in itree:
                 i.deep.sort(key, reverse)
 
-    def remove(self,*target_path):
+    def remove(self, *target_path):
         """
         Call via **iTree().deep.remove()**
 
@@ -522,8 +548,8 @@ class _iTreeIndepthTree():
                  a list of the deleted objects will be delivered
         """
 
-        del_items=self._itree.get(*target_path)
-        if hasattr(del_items,'_itree_prt_idx'):
+        del_items = self._itree.get(*target_path)
+        if hasattr(del_items, '_itree_prt_idx'):
             # single result
             return del_items.parent.pop(del_items.idx)
         for i in del_items:
@@ -540,40 +566,41 @@ class _iTreeIndepthTree():
         :return: iterator over all ìTree`-items
         """
         if self._itree:
-            iterators=iter_list((self._itree.__iter__(),))
+            iterators = iter_list((self._itree.__iter__(),))
             while iterators:
                 for item in iterators[-1]:
                     yield item
                     if item:
                         iterators.append(item.__iter__())
                         break
-                else: # for loop is finished and not broken
+                else:  # for loop is finished and not broken
                     del iterators[-1]
 
-    def iter(self,filter_method=None,up_to_low=True):
+
+    def iter(self, filter_method=None, options=DOWN, up_to_low=None):
         """
-        Call via **iTree().deep.iter()**
 
         In-depth iterator that iterates over all items in the nested `iTree`-structure. The iterator flattens the
-        nested structure.
+        nested structure. In an instanced `iTree`-object the method is reached via: **iTree().deep.iter()**.
 
+        The way we iterate depends on the given iteration options (combine options with | (OR bit operator)):
 
-        Via the parameters the user can achieve hierarchical filtering of items. He can change the iteration order
-        up-> down or down->up.
+            * ITER.UP - Iteration will be made bottom->up (from the deepest items to the root),
+              The default iteration direction is top -> down
 
-        If no parameter is given `iter()` behaves like the build in `__iter__()` method of the object.
+            * ITER.REVERSE - The children of a item are iterated in the reversed direction (high index -> zero index).
+              The default iteration direction for the children is zero index ->o highest index)
 
-        .. note:: The given iteration order must not be seen like the build-in  'reversed()' function which
-                  changes the iteration direction in general! Furthermore, it means we iterate:
+            * ITER.SELF - In the iteration the calling object (self) will be included.
+              The default is that the calling object is not part of the iteration
 
-                  * `up_to_low==True`: parent-> child-> sub-child-> sub-sub-child-> ...
+            * ITER.FILTER_ANY - This flag has effect if a filter_method is given. It enables the pythons
+              build_in `filter()` on any iterated object. The default is a hierarchical filtering.
 
-                  or we start from the most-inner nested item:
+        Other iteration flags are not supported by this function
 
-                  * `up_to_low==False`: item,  parent, parent-parent, ..., -> root
-
-                  But we always start in the right order we have in `iTree` first the root or in second case
-                  first most-inner nested item coming from the root.
+        .. note:: The call `for item in mytree.deep.iter():` is same as `for i in mytree.deep`. Calling `iter() `
+                  without parameters is same as `__iter__()'.
 
         :type filter_method: Union[Callable,None]
         :param filter_method: filter method that checks for matching items
@@ -581,110 +608,335 @@ class _iTreeIndepthTree():
                          The `filter_method` targets always the `iTree`-child-object and checks a characteristic
                          of this object.
 
-                         If `None` is given no filtering will be performed.
+                         If `None` (default) is given no filtering will be performed.
 
-        :type up_to_low: bool
-        :param up_to_low:
-                        * True (default) - we iterate in-depth from up to the lower inner structure of the `iTree`-object
-                        * False - we iterate in-depth from lower to upper structure of the `iTree`-object
+        :type option: int
+        :param option: Supported iteration options:
+                       ITER.UP | ITER.REVERSE | ITER.SELF | ITER.FILTER_ANY
 
         :rtype: Generator
         :return: iterator over all nested ìTree`-items
         """
-        if self._itree:
+        # for downward compatibility:
+        # the option: ITER.DOWN is ignored because this is the default behavior.
+        # ITER.DOWN exists only for downward compatibility
+        if options == 0:
+            options = options | UP
+        if up_to_low is not None:
+            if not up_to_low:
+                options = options | UP
+            warnings.warn(
+                "The parameter up_to_low will be removed soon. Use options=ITER.UP instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+        if ITER.valid_option(UP | DOWN | REVERSE | SELF | FILTER_ANY):
+            raise AttributeError(ITER.valid_option(options))
+        if options & FILTER_ANY:
             if filter_method:
-                iterators = iter_list((filter(filter_method, self._itree.__iter__()),))
-                if up_to_low:
-                    # hierarchical filtered up -> down iterator
-                    while iterators:
-                        for item in iterators[-1]:
-                            yield item
-                            if item:
-                                iterators.append(filter(filter_method, item.__iter__()))
-                                break
-                        else:  # for loop is finished and not broken
-                            del iterators[-1]
-                else:
-                    # hierarchical filtered down -> up iterator
-                    while iterators:
-                        for item in iterators[-1]:
-                            if item:
-                                iterators.extend(((None, item), filter(filter_method, item.__iter__())))
-                                break
-                            elif item is None:
-                                yield iterators.pop()[-1]
-                                break
-                            else:
-                                yield item
-                        else:  # for loop is finished and not broken
-                            del iterators[-1]
+                return filter(filter_method, self._ITER_HELPERS[options & (UP | REVERSE)](self,None, options & SELF))
             else:
-                iterators = iter_list((self._itree.__iter__(),))
-                if up_to_low:
-                    while iterators:
-                        for item in iterators[-1]:
-                            yield item
-                            if item:
-                                iterators.append(item.__iter__())
-                                break
-                        else:  # for loop is finished and not broken
-                            del iterators[-1]
-                else:
-                    # low -> up iterator:
-                    while iterators:
-                        for item in iterators[-1]:
-                            if item:
-                                iterators.extend(((None, item), item.__iter__()))
-                                break
-                            elif item is None:
-                                yield iterators.pop()[-1]
-                                break
-                            else:
-                                yield item
-                        else:  # for loop is finished and not broken
-                            del iterators[-1]
+                return self._ITER_HELPERS[options & (UP | REVERSE)](self, None, options & SELF)
+        else:
+            return self._ITER_HELPERS[options & (UP | REVERSE)](self,filter_method, options & SELF)
 
-    def idx_paths(self,filter_method=None,up_to_low=True):
+    def siblings(self, level, options=0):
         """
-        Call via **iTree().deep.idx_paths()**
+        Call via **iTree().deep.siblings()**
 
-        In-depth generator (iterator) which iterates over all nested items of the `iTree`-object in
-        top -> down direction.
-        The iterator delivers per item the pair (relative idx_path, item).
+        This generator iterates over all siblings in the targeted level in the calling item.
 
-        The index path is same as in the items `.idx_path` property which contains the absolute indexes
-        to the root-parent. But in this iterator we deliver the relative idx_path related to the element the
-        iteration is started and not the path to the root-parent.
+        The way we iterate depends on the given iteration options (combine options with | (OR bit operator)):
 
-        The iterator does exactly the same as the following code based on the main iterator and the
-        extraction of the idx_paths:
+            * ITER.REVERSE - The item in the level will be iterated  in the reversed direction (high index -> low index).
+              The default iteration direction  is low index ->o highest index)
 
-            >>> # Let itree be the instanced iTree in which we like to iterate over all nested items (in-depth-iteration)
-            >>> s=len(itree.idx_path) # required to create relative paths
-            >>> idx_paths_generator=((i.idx_path[s:],i) for i in iter(itree.all))
+            * ITER.SELF - In the iteration the calling object (self) will be included.
+              The default is that the calling object is not part of the iteration
 
-        But this specific iterator is much quicker because the indexes are counted up internally during the iteration
-        which is more efficent as the calculation of the idx_path for each item in this solution.
+            * ITER.MULTIPLE - allows multiple matches of one item during the iteration 
+                              (can happen in case of negative level values)
 
-        The solution to deliver the pairs is chosen, because the user can choose by unpacking what's required for his
-        needs and he still can filter based on item properties.
+        Other iteration flags are not supported by this method. For better understanding we recommend
+        the related section in the tutorial where the behavior is explained in diagrams.
 
-        E.g.:
-        Store the ind_paths in a list:
+        .. note :: The method supports negative target levels. In this case the iteration might not stay in same
+                   absolute level! (e.g. The  call `mytree.deep.siblings(-1)` will deliver all ending items (no children)
+                   of mytree. In case the branches inside mytree have different depth the iteration will step in
+                   the related positive levels up and down. In case of the iteration finds same item again it will not
+                   be delivered again in the resulting generator (a sibling will be considered only one
+                   time during the iteration).
 
-            >>> my_idx_path_list=[idx_path for idx_path,_ in itree.all.idx_paths()]
 
-        Store the filtered idx_paths in a list (because of the delivered items a filtering is possible):
+        :type level: int
+        :param level: target level. The target level can be negative too.
 
-            >>> my_idx_path_list=[idx_path for idx_path,_ in filter(lambda i: i[1].tag=='mytag', itree.all.idx_paths())]
+        :type option: int
+        :param option: Supported iteration options: ITER.REVERSE | ITER.SELF | ITER.MULTIPLE
 
-        Convert the content of the `iTree` in a dict by using the idx_paths as keys:
+        :rtype: Generator
+        :return: iterator over specif level of the tree
+        """
+        if ITER.valid_option(options, REVERSE | SELF|MULTIPLE):
+            raise AttributeError(ITER.valid_option(options))
+        if level < 0:
+            return self._SIBLINGS_MINUS_HELPERS[options & (MULTIPLE | REVERSE)](self,level, options & SELF)
+        else:
+            return self._SIBLINGS_PLUS_HELPERS[options & (MULTIPLE | REVERSE)](self,level, options & SELF)
 
-            >>> my_dict={idx_path:item for idx_path,item in itree.all.idx_paths()}
+    def levels(self, levels=slice(0, None, 1), options=0):
+        """
+        Multilevel iteration generator. This method iterates over the items level by level based on the given levels.
 
-        The user may store values only in the dict too:
+        As options the user can give:
 
-            >>> my_dict={idx_path:item.value for idx_path,item in itree.all.idx_paths()}
+            * ITER.SELF - the calling object itself will be included, by default it is excluded
+
+            * ITER.REVERSE - Go from high to low index per level
+
+            * ITER.MULTIPLE - Allows that one item can be iterated multiple times
+                              (especially in case of negative levels this is possible)
+
+
+        .. note:: In general the method behaves like the siblings method executed on multiple levels.
+                  ::
+                        def levels(levels, options):
+                            for level in levels:
+                                for item in siblings(level,options)
+                                    yield item
+
+                  Different to the shown replacement function the level function is optimized and should be quicker
+                  compared to the shown code. Especially if the user give `slices` of levels (which is possible too).
+
+        .. note:: In case a list or iterable of levels is given and level values are repeated (e.g. `levels = [1,1,1]`)
+                  This generator function will iterate multiple times over the level items. But without the flag,
+                  ITER.MULTIPLE an already yielded item will not be repeated!
+
+
+        :type levels: Union(Iterable,Slice)
+        :param levels: Iterable of level values (each item must be an integer). If slices are given they are
+                             translated in a loop with related `range()` parameters.
+
+        :type options: int
+        :param options:  ITER option flags, possible values are ITER.SELF|ITER.REVERSE|ITER.MULTIPLE
+        :return: Iteration generator
+        """
+        if ITER.valid_option(options, REVERSE | SELF|MULTIPLE):
+            raise AttributeError(ITER.valid_option(options))
+        if type(levels) is slice:
+            if levels==slice(None,None,None):
+                return
+            start = levels.start
+            stop = levels.stop
+            if start is None:
+                start=0
+            step = levels.step
+            if step is None:
+                step=1
+            cnt = start
+            if stop is None:
+                stop_items = set()
+            else:
+                stop_items = {id(i) for i in self.siblings(stop, options)}
+            itree = self._itree
+            siblings = self.siblings(start, options)
+            yielded_items = set()
+            if step > 0:
+                if options & SELF:
+                    if options & MULTIPLE:
+                        items_found = True
+                        modulo_ok = True
+                        while items_found:
+                            items_found = (cnt == start)
+                            for item in siblings:
+                                items_found = True
+                                item_id = id(item)
+                                if item_id in stop_items:
+                                    if item:
+                                        stop_items.update({id(i) for i in item})
+                                elif modulo_ok:
+                                    yield item
+                                if not item:
+                                    stop_items.add(item_id)
+                            cnt = cnt + 1
+                            modulo_ok = not ((cnt - start) % step)
+                            siblings = self.siblings(cnt, options)
+                    else:
+                        items_found = True
+                        modulo_ok = True
+                        while items_found:
+                            items_found = (cnt == start)
+                            for item in siblings:
+                                items_found = True
+                                item_id = id(item)
+                                if item_id in stop_items:
+                                    if item:
+                                        stop_items.update({id(i) for i in item})
+                                elif modulo_ok and item_id not in yielded_items:
+                                    yield item
+                                    yielded_items.add(id(item))
+                                if not item:
+                                    stop_items.add(item_id)
+                            cnt = cnt + 1
+                            modulo_ok = not ((cnt - start) % step)
+                            siblings = self.siblings(cnt, options)
+                else:
+                    if options & MULTIPLE:
+                        items_found = True
+                        modulo_ok = True
+                        while items_found:
+                            items_found = (cnt == start)
+                            for item in siblings:
+                                items_found = True
+                                item_id = id(item)
+                                if item_id in stop_items:
+                                    if item:
+                                        stop_items.update({id(i) for i in item})
+                                elif modulo_ok and item is not itree:
+                                    yield item
+                                if not item:
+                                    stop_items.add(item_id)
+                        cnt = cnt + 1
+                        modulo_ok = not ((cnt - start) % step)
+                        siblings = self.siblings(cnt, options)
+                    else:
+                        yielded_items.add(id(itree))
+                        items_found = True
+                        modulo_ok = True
+                        while items_found:
+                            items_found = (cnt == start)
+                            for item in siblings:
+                                items_found = True
+                                item_id = id(item)
+                                if item_id in stop_items:
+                                    if item:
+                                        stop_items.update({id(i) for i in item})
+                                elif modulo_ok and item_id not in yielded_items:
+                                    yield item
+                                    yielded_items.add(id(item))
+                                if not item:
+                                    stop_items.add(item_id)
+                            cnt = cnt + 1
+                            modulo_ok = not ((cnt - start) % step)
+                            siblings = self.siblings(cnt, options)
+            else:
+                if options & SELF:
+                    if options & MULTIPLE:
+                        if itree.parent:
+                            stop_items.add(itree.parent)
+                        items_found=True
+                        modulo_ok =True
+                        while items_found:
+                            items_found=(cnt==start)
+                            for item in siblings:
+                                items_found = True
+                                item_id = id(item)
+                                if item_id in stop_items:
+                                    if item:
+                                        stop_items.update({id(i) for i in item})
+                                elif modulo_ok:
+                                    yield item
+                            cnt = cnt - 1
+                            modulo_ok=not((cnt-start) % step)
+                            siblings = self.siblings(cnt, options)
+                    else:
+                        items_found=True
+                        modulo_ok=True
+                        while items_found:
+                            items_found=(cnt==start)
+                            for item in siblings:
+                                items_found=True
+                                item_id = id(item)
+                                if item_id in stop_items:
+                                    if item:
+                                        stop_items.update({id(i) for i in item})
+                                elif modulo_ok and item_id not in yielded_items:
+                                    yield item
+                                    yielded_items.add(id(item))
+                                if item is itree:
+                                    items_found = False
+                                    break
+                            cnt = cnt - 1
+                            modulo_ok = not ((cnt - start) % step)
+                            siblings = self.siblings(cnt, options)
+                else:
+                    if options & MULTIPLE:
+                        if itree.parent:
+                            stop_items.add(itree.parent)
+                        items_found=True
+                        modulo_ok=True
+                        while items_found:
+                            items_found=(cnt==start)
+                            for item in siblings:
+                                items_found=True
+                                item_id = id(item)
+                                if item_id in stop_items:
+                                    if item:
+                                        stop_items.update({id(i) for i in item})
+                                elif modulo_ok and item is not itree:
+                                    yield item
+                            cnt = cnt - 1
+                            modulo_ok = not ((cnt - start) % step)
+                            siblings = self.siblings(cnt, options)
+                    else:
+                        yielded_items.add(id(itree))
+                        items_found=True
+                        modulo_ok=True
+                        while items_found:
+                            items_found=(cnt==start)
+                            for item in siblings:
+                                items_found=True
+                                item_id = id(item)
+                                if item_id in stop_items:
+                                    if item:
+                                        stop_items.update({id(i) for i in item})
+                                elif modulo_ok and item_id not in yielded_items:
+                                    yield item
+                                    yielded_items.add(id(item))
+                                if item is itree:
+                                    items_found = False
+                                    break
+                            cnt = cnt - 1
+                            modulo_ok = not ((cnt - start) % step)
+                            siblings = self.siblings(cnt, options)
+        else:
+            # list or iterable of levels given
+            # this iterator is slower as the slices
+            if options&MULTIPLE:
+                for i in self._levels_via_siblings_iterable(levels,options):
+                    yield i
+            else:
+                yielded_items=set()
+                for i in self._levels_via_siblings_iterable(levels,options):
+                    if id(i) not in yielded_items:
+                        yield i
+                        yielded_items.add(id(i))
+
+
+    def idx_paths(self, filter_method=None, options=DOWN, up_to_low=None):
+        """
+        Call via: **iTree().deep.idx_paths()**
+
+        In-depth iterator that iterates over all items in the nested `iTree`-structure. The iterator flattens the
+        nested structure.
+        In general the method iters the same way as the "normal" `deep.iter()`-method but it yields
+        the tuple `(item.idx_path, item)` per item.
+
+        The way we iterate depends on the given iteration options (combine options with | (OR bit operator)):
+
+            * ITER.UP - Iteration will be made bottom->up (from the deepest items to the root),
+              The default iteration direction is top -> down
+
+            * ITER.REVERSE - The children of a item are iterated in the reversed direction (high index -> zero index).
+              The default iteration direction for the children is zero index ->o highest index)
+
+            * ITER.SELF - In the iteration the calling object (self) will be included.
+              The default is that the calling object is not part of the iteration
+
+            * ITER.FILTER_ANY - This flag has effect if a filter_method is given. It enables the pythons
+              build_in `filter()` on any iterated object. The default is a hierarchical filtering.
+
+        Other iteration flags are not supported by this function.
 
         :type filter_method: Union[Callable,None]
         :param filter_method: filter method that checks for matching items
@@ -692,126 +944,66 @@ class _iTreeIndepthTree():
                          The `filter_method` targets always the `iTree`-child-object and checks a characteristic
                          of this object.
 
-                         If `None` is given no filtering will be performed.
+                         If `None` (default) is given no filtering will be performed.
 
-        :type up_to_low: bool
-        :param up_to_low:
-                        * True (default) - we iterate in-depth from up to the lower inner structure of the `iTree`-object
-                        * False - we iterate in-depth from lower to upper structure of the `iTree`-object
-
+        :type option: int
+        :param option: Supported iteration options:
+                       ITER.UP | ITER.REVERSE | ITER.SELF | ITER.FILTER_ANY
 
         :rtype: Generator
-        :return: iterator over all ìTree`-items and yields for each item the pair (relative idx_path, item)
+        :return: iterator over all nested ìTree`-items (delivers the tuple `(item.idx_path, item)` per item)
         """
-        if self._itree:
-            iterators = iter_list((self._itree.__iter__(),))  # in Python 3.9 lists are quicker than deque
-            indexes = [-1]
+        # for downward compatibility:
+        # the option: ITER.DOWN is ignored because this is the default behavior.
+        # ITER.DOWN exists only for downward compatibility
+        if options == 0:
+            options = options | UP
+        if up_to_low is not None:
+            if not up_to_low:
+                options = options | UP
+            warnings.warn(
+                "The parameter up_to_low will be removed soon. Use options=ITER.UP instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+        if ITER.valid_option(UP | DOWN | REVERSE | SELF | FILTER_ANY):
+            raise AttributeError(ITER.valid_option(options))
+        if options & FILTER_ANY:
+            gen = self._ITER_IDXPATH_HELPERS[options & (UP | REVERSE)](self, None, options & SELF)
             if filter_method:
-                if up_to_low:
-                    none_tuple = NONE_TUPLE
-                    while iterators:
-                        for item in iterators[-1]:
-                            if item:
-                                # In next line we update the cache too
-                                item._itree_prt_idx[1] = indexes[-1] = indexes[-1] + 1
-                                if filter_method(item):
-                                    yield tuple(indexes), item
-                                    iterators.extend((none_tuple, item.__iter__()))
-                                    indexes.append(-1)
-                                    break
-                            elif item is None:
-                                del indexes[-1]
-                                del iterators[-1]
-                                break
-                            else:
-                                item._itree_prt_idx[1] = indexes[-1] = indexes[-1] + 1
-                                if filter_method(item):
-                                    yield tuple(indexes), item
-                        else:  # for loop is finished and not broken
-                            del iterators[-1]
-                else:
-                    while iterators:
-                        for item in iterators[-1]:
-                            if item:
-                                item._itree_prt_idx[1] = indexes[-1] = indexes[-1] + 1
-                                if filter_method(item):
-                                    iterators.extend(((None, (tuple(indexes), item)), item.__iter__()))
-                                    indexes.append(-1)
-                                    break
-                            elif item is None:
-                                yield iterators.pop()[-1]
-                                del indexes[-1]
-                                break
-                            else:
-                                item._itree_prt_idx[1] = indexes[-1] = indexes[-1] + 1
-                                if filter_method(item):
-                                    yield tuple(indexes), item
-                        else:  # for loop is finished and not broken
-                            del iterators[-1]
+                return ((idx_path,item) for idx_path,item in gen if filter_method(item))
             else:
-                if up_to_low:
-                    none_tuple = NONE_TUPLE
-                    while iterators:
-                        for item in iterators[-1]:
-                            if item:
-                                # In next line we update the cache too
-                                item._itree_prt_idx[1] = indexes[-1] = indexes[-1] + 1
-                                yield tuple(indexes), item
-                                iterators.extend((none_tuple, item.__iter__()))
-                                indexes.append(-1)
-                                break
-                            elif item is None:
-                                del indexes[-1]
-                                del iterators[-1]
-                                break
-                            else:
-                                item._itree_prt_idx[1] = indexes[-1] = indexes[-1] + 1
-                                yield tuple(indexes), item
-                        else:  # for loop is finished and not broken
-                            del iterators[-1]
-                else:
-                    iterators = iter_list((self._itree.__iter__(),))
-                    while iterators:
-                        for item in iterators[-1]:
-                            if item:
-                                item._itree_prt_idx[1] = indexes[-1] = indexes[-1] + 1
-                                iterators.extend(((None, (tuple(indexes), item)), item.__iter__()))
-                                indexes.append(-1)
-                                break
-                            elif item is None:
-                                yield iterators.pop()[-1]
-                                del indexes[-1]
-                                break
-                            else:
-                                item._itree_prt_idx[1] = indexes[-1] = indexes[-1] + 1
-                                yield tuple(indexes), item
-                        else:  # for loop is finished and not broken
-                            del iterators[-1]
+                return gen
+        else:
+            return self._ITER_IDXPATH_HELPERS[options & (UP | REVERSE)](self,filter_method, options & SELF)
 
-    def tag_idx_paths(self, filter_method=None, up_to_low=True):
+
+    # ToDo:
+
+    def tag_idx_paths(self, filter_method=None, options=DOWN, up_to_low=None):
         """
         Call via: **iTree().deep.tag_idx_paths()**
 
-        In-depth generator (iterator) which iterates over all nested items of the `iTree`-object in
-        top -> down direction.
-        The iterator delivers per item the pair (relative idx_path, item).
+        In-depth iterator that iterates over all items in the nested `iTree`-structure. The iterator flattens the
+        nested structure.
+        In general the method iters the same way as the "normal" `deep.iter()`-method but it yields
+        the tuple `(item.tag_idx_path, item)` per item.
 
-        The index path is same as in the items `.key_path` property which contains the absolute indexes
-        to the root-parent. But in this iterator we deliver the relative idx_path related to the element the
-        iteration is started and not the path to the root-parent.
+        The way we iterate depends on the given iteration options (combine options with | (OR bit operator)):
 
-        The iterator does exactly the same as the following code based on the main iterator and the
-        extraction of the key_paths:
+            * ITER.UP - Iteration will be made bottom->up (from the deepest items to the root),
+              The default iteration direction is top -> down
 
-            >>> # Let itree be the instanced iTree in which we like to iterate over all nested items (in-depth-iteration)
-            >>> s=len(itree.tag_idx_path) # required to create relative paths
-            >>> key_paths_generator=((i.tag_idx_path[s:],i) for i in iter(itree.all))
+            * ITER.REVERSE - The children of a item are iterated in the reversed direction (high index -> zero index).
+              The default iteration direction for the children is zero index ->o highest index)
 
-        But this specific iterator is much quicker because the family-indexes are counted up internally during the iteration
-        which is more efficent as the calculation of the key_path for each item in this solution.
+            * ITER.SELF - In the iteration the calling object (self) will be included.
+              The default is that the calling object is not part of the iteration
 
-        The solution to deliver the pairs is chosen, because the user can choose by unpacking what's required for his
-        needs and he still can filter based on item properties (see similar examples in method `idx_paths()`).
+            * ITER.FILTER_ANY - This flag has effect if a filter_method is given. It enables the pythons
+              build_in `filter()` on any iterated object. The default is a hierarchical filtering.
+
+        Other iteration flags are not supported by this function.
 
         :type filter_method: Union[Callable,None]
         :param filter_method: filter method that checks for matching items
@@ -819,147 +1011,45 @@ class _iTreeIndepthTree():
                          The `filter_method` targets always the `iTree`-child-object and checks a characteristic
                          of this object.
 
-                         If `None` is given no filtering will be performed.
+                         If `None` (default) is given no filtering will be performed.
 
-        :type up_to_low: bool
-        :param up_to_low:
-                        * True (default) - we iterate in-depth from up to the lower inner structure of the `iTree`-object
-                        * False - we iterate in-depth from lower to upper structure of the `iTree`-object
-
+        :type option: int
+        :param option: Supported iteration options:
+                       ITER.UP | ITER.REVERSE | ITER.SELF | ITER.FILTER_ANY
 
         :rtype: Generator
-        :return: iterator over all ìTree`-items and yields for each item the pair (relative idx_path, item)
+        :return: iterator over all nested ìTree`-items (delivers the tuple `(item.tag_idx_path, item)` per item)
         """
-        if self._itree:
-            tag_indexes = [None]
-            iterators = iter_list((self._itree.__iter__(),))
+        # for downward compatibility:
+        # the option: ITER.DOWN is ignored because this is the default behavior.
+        # ITER.DOWN exists only for downward compatibility
+        if options == 0:
+            options = options | UP
+        if up_to_low is not None:
+            if not up_to_low:
+                options = options | UP
+            warnings.warn(
+                "The parameter up_to_low will be removed soon. Use options=ITER.UP instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+        if ITER.valid_option(UP | DOWN | REVERSE | SELF | FILTER_ANY):
+            raise AttributeError(ITER.valid_option(options))
+        if options & FILTER_ANY:
+            gen = self._ITER_TAGIDXPATH_HELPERS[options & (UP | REVERSE)](self, None, options & SELF)
             if filter_method:
-                if up_to_low:
-                    none_tuple = NONE_TUPLE
-                    tag_index_dict = [{tag: -1 for tag in self._itree._families.keys()}]
-                    while iterators:
-                        for item in iterators[-1]:
-                            if item:
-                                tag = item._tag
-                                tag_dict = tag_index_dict[-1]
-                                item._itree_prt_idx[2] = tag_dict[tag] = idx = tag_dict[tag] + 1
-                                tag_indexes[-1] = (tag, idx)
-                                if filter_method(item):
-                                    yield tuple(tag_indexes), item
-                                    iterators.extend((none_tuple, filter(filter_method,item.__iter__())))
-                                    tag_indexes.append(None)
-                                    tag_index_dict.append({tag: -1 for tag in item._families.keys()})
-                                    break
-                            elif item is None:
-                                del tag_indexes[-1]
-                                del tag_index_dict[-1]
-                                del iterators[-1]
-                                break
-                            else:
-                                tag = item._tag
-                                tag_dict = tag_index_dict[-1]
-                                item._itree_prt_idx[2] = tag_dict[tag] = c = tag_dict[tag] + 1
-                                tag_indexes[-1] = (tag, c)
-                                if filter_method(item):
-                                    yield tuple(tag_indexes), item
-                        else:  # for loop is finished and not broken
-                            del iterators[-1]
-                else:
-                    tag_index_dict = [{tag: -1 for tag in self._itree._families.keys()}]
-                    while iterators:
-                        for item in iterators[-1]:
-                            if item:
-                                tag = item._tag
-                                tag_dict = tag_index_dict[-1]
-                                item._itree_prt_idx[2] = tag_dict[tag] = idx = tag_dict[tag] + 1
-                                tag_indexes[-1] = (tag, idx)
-                                if filter_method(item):
-                                    iterators.extend(((None, (tuple(tag_indexes), item)), filter(filter_method,item.__iter__())))
-                                    tag_indexes.append(None)
-                                    tag_index_dict.append({tag: -1 for tag in item._families.keys()})
-                                    break
-                            elif item is None:
-                                yield iterators.pop()[-1]
-                                del tag_indexes[-1]
-                                del tag_index_dict[-1]
-                                break
-                            else:
-                                tag = item._tag
-                                tag_dict = tag_index_dict[-1]
-                                item._itree_prt_idx[2] = tag_dict[tag] = c = tag_dict[tag] + 1
-                                tag_indexes[-1] = (tag, c)
-                                if filter_method(item):
-                                    yield tuple(tag_indexes), item
-                        else:  # for loop is finished and not broken
-                            del iterators[-1]
+                return ((idx_path,item) for idx_path,item in gen if filter_method(item))
             else:
-                if up_to_low:
-                    none_tuple = NONE_TUPLE
-                    tag_index_dict = [{tag: -1 for tag in self._itree._families.keys()}]
-                    while iterators:
-                        for item in iterators[-1]:
-                            if item:
-                                tag = item._tag
-                                tag_dict = tag_index_dict[-1]
-                                item._itree_prt_idx[2] = tag_dict[tag] = idx = tag_dict[tag] + 1
-                                tag_indexes[-1] = (tag, idx)
-                                yield tuple(tag_indexes), item
-                                iterators.extend((none_tuple, item.__iter__()))
-                                tag_indexes.append(None)
-                                tag_index_dict.append({tag: -1 for tag in item._families.keys()})
-                                break
-                            elif item is None:
-                                del tag_indexes[-1]
-                                del tag_index_dict[-1]
-                                del iterators[-1]
-                                break
-                            else:
-                                tag = item._tag
-                                tag_dict = tag_index_dict[-1]
-                                try:
-                                    item._itree_prt_idx[2] = tag_dict[tag] = c = tag_dict[tag] + 1
-                                except KeyError:
-                                    item._itree_prt_idx[2] = tag_dict[tag] = c = 0
-                                tag_indexes[-1] = (tag, c)
-                                yield tuple(tag_indexes), item
-                        else:  # for loop is finished and not broken
-                            del iterators[-1]
-                else:
-                    tag_index_dict = [{tag: -1 for tag in self._itree._families.keys()}]
-                    while iterators:
-                        for item in iterators[-1]:
-                            if item:
-                                tag = item._tag
-                                tag_dict = tag_index_dict[-1]
-                                item._itree_prt_idx[2] = tag_dict[tag] = idx = tag_dict[tag] + 1
-                                tag_indexes[-1] = (tag, idx)
-                                iterators.extend(((None, (tuple(tag_indexes), item)), item.__iter__()))
-                                tag_indexes.append(None)
-                                tag_index_dict.append({tag: -1 for tag in item._families.keys()})
-                                break
-                            elif item is None:
-                                yield iterators.pop()[-1]
-                                del tag_indexes[-1]
-                                del tag_index_dict[-1]
-                                break
-                            else:
-                                tag = item._tag
-                                tag_dict = tag_index_dict[-1]
-                                try:
-                                    item._itree_prt_idx[2] = tag_dict[tag] = c = tag_dict[tag] + 1
-                                except KeyError:
-                                    item._itree_prt_idx[2] = tag_dict[tag] = c = 0
-                                tag_indexes[-1] = (tag, c)
-                                yield tuple(tag_indexes), item
-                        else:  # for loop is finished and not broken
-                            del iterators[-1]
+                return gen
+        else:
+            return self._ITER_TAGIDXPATH_HELPERS[options & (UP | REVERSE)](self,filter_method, options & SELF)
 
     def iter_family_items(self, order_last=False):
         """
         Call via: **iTree().deep.iter_family_items()**
 
-        This is a special iterator that iterates over the families in `iTree`. It iters over the items of each family
-        the ordered by the first or the last items of the families.
+        This is a special iterator that iterates over the families in `iTree`-class. It iters over the items of each
+        family the ordered by the first or the last items of the families.
 
         .. note:: As an exception this in-depth iteration-method does not support level-filtering because in an
                   iteration based on tag-family items we do not see any sense in hierarchical filtering. Only
@@ -974,13 +1064,13 @@ class _iTreeIndepthTree():
         :return: iterator over all families delivers tuples of (family-tag, family-item-list)
         """
         if order_last:
-            o_idx=-1
+            o_idx = -1
         else:
             o_idx = 0
         if self._itree:
-            none_tuple=NONE_TUPLE
-            items=iter_list((self._itree,))
-            family_iters=iter_list(none_tuple)
+            none_tuple = NONE_TUPLE
+            items = iter_list((self._itree,))
+            family_iters = iter_list(none_tuple)
             iterators = iter_list((self._itree.tags(),))
             while iterators:
                 break_main = False
@@ -990,14 +1080,14 @@ class _iTreeIndepthTree():
                         del items[-1]
                         del family_iters[-1]
                     else:
-                        family_iters[-1]=items[-1].get.by_tag(tag)
+                        family_iters[-1] = items[-1].get.by_tag(tag)
                         for item in family_iters[-1]:
                             yield item
                             if item:
-                                iterators.extend((none_tuple,item.tags()))
+                                iterators.extend((none_tuple, item.tags()))
                                 family_iters.append(None)
                                 items.append(item)
-                                break_main=True
+                                break_main = True
                                 break
                     if break_main:
                         break

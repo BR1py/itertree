@@ -126,7 +126,7 @@ class _iTreePrivate():
 
     @staticmethod
     def _raise_read_only_exception(itree_item):
-        raise PermissionError('The iTree item (%s) is read_only (linked or read_only flag)!' % repr(itree_item))
+        raise PermissionError('The item (%s) is read_only (linked or read_only flag)!' % repr(itree_item))
 
     @staticmethod
     def _raise_exception(exception):

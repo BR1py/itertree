@@ -63,7 +63,7 @@ except ImportError:
     Optional = None
 
 from .itree_helpers import itree_list, TagIdx, NoTarget, iTFLAG, iTLink, _iTFLAG, NoTag, \
-    NoValue, INF,BLIST_SWITCH
+    NoValue, INF,BLIST_SWITCH,ITER
 from .itree_serializer.itree_renderer import iTreeRender
 from .itree_serializer.itree_json_serialize import iTStdJSONSerializer2
 from .itree_indepth import _iTreeIndepthTree
@@ -324,6 +324,24 @@ class iTree(_iTreePrivate):
         return self._itree_prt_idx[0] if self._itree_prt_idx else None
 
     @property
+    def ancestors(self):
+        """
+        Property delivers current items parents list up to the oot.
+        In case item has no parent an empty list will be delivered
+
+        :rtype: list
+        :return: list of all ancestors
+        """
+        ancestors = []
+        p = self.parent
+        while p != None:
+            ancestors.append(p)
+            p = p.parent
+        # switch order to root->down
+        ancestors.reverse()
+        return ancestors
+
+    @property
     def is_root(self):
         """
         Is this item a root-item (has no parent)?
@@ -408,7 +426,7 @@ class iTree(_iTreePrivate):
                 # start -> end
                 i = 0
                 for item in siblings:
-                    item._itree_prt_idx.__setitem__(1, i)
+                    item._itree_prt_idx.__setitem__(1, i) # update items idx cache
                     if item is self:
                         return i
                     i = i + 1
@@ -417,7 +435,7 @@ class iTree(_iTreePrivate):
                 # end -> start
                 for i in range((size - 1), -1, -1):
                     item = siblings[i]
-                    item._itree_prt_idx.__setitem__(1, i)
+                    item._itree_prt_idx.__setitem__(1, i) #update item idx cache
                     if item is self:
                         return i
                 raise IndexError('Internal error for this iTree we found no related index in the parent-object!')
@@ -586,6 +604,21 @@ class iTree(_iTreePrivate):
         return sl.__getitem__(idx) if idx < sl.__len__() else None
 
     @property
+    def siblings(self):
+        """
+        Property delivers all siblings of the item. Iterates over all children of the parent and skips the item itself
+            * In case of no siblings an empty list is delivered.
+            * In case of an unique sibling a list with the unique sibling is delivered
+            * In case of multiple siblings a generator (iterator) over all siblings is delivered
+        :rtype Union(list,generator)
+        :return: iterable over the siblings
+        """
+        if self._itree_prt_idx is None:
+            return []
+        parent=self._itree_prt_idx[0]
+        return [i for i in parent if i is not self]
+
+    @property
     def level(self):
         """
         Delivers the distance (number of levels) to the root-item of the tree. Or in other words how
@@ -631,6 +664,92 @@ class iTree(_iTreePrivate):
                 max_depth += 1
             items = new_items
         return max_depth - 1
+
+    @property
+    def negative_levels(self):
+        """
+        The property delivers a list of all bottom->up levels of the item. Because any branch might have
+        different depth
+        each item can have multiple negative levels. If the item has np children an empty list will be delivered.
+
+        ..note:: To check for a specific negative_level it's recommended to use the quicker `has_inverted_level()`
+                 method.
+
+        :rtype: list
+        :return: list of negative levels
+        """
+        self_level = self.level
+        return [(self_level-leave.level) for leave in self.deep.siblings(-1, ITER.INNER)]
+
+    def equal_negative_level(self,target_level):
+        """
+        The method checks if this item matches to the given target_level (bottom->up level).
+        The bottom up level is counted from the bottom of the tree upwards. The sub-tree of the item might
+        have different depths in the different branches. Therefore each item might have multiple inverted_levels.
+
+        :type target_level: int
+        :param target_level: The given level can be a positive or negative number (method considers the
+                             absolute level value)
+        :return: True - The given target-level is a valid bottom->up distance for this item
+                 False - This item has no matching bottom->up distance
+        """
+        target_level=abs(target_level)
+        self_level=self.level
+        for leave in self.deep.siblings(-1,ITER.INNER):
+            if leave.level-self_level==target_level:
+                return True
+        return False
+
+    def in_negative_level(self, target_level,equal=False,any=False):
+        """
+        The method checks if this item is greater or equal to the given target_level (bottom->up level).
+        The bottom up level is counted from the bottom of the tree upwards. The sub-tree of the item might
+        have different depths in the different branches. Therefor each item might have multiple inverted_levels.
+
+        :type target_level: int
+        :param target_level: The given level can be a positive or negative number
+                             (A given zero makes no sense and function will deliver False)
+
+        :type equal: bool
+        :param equal: Flag if the in means upon the given negative level (False) or
+                      upon or equal to given negative level (True) - default is False
+        :param any: Check if the item is upon the given negative level for all containing children (True)
+                    not just one (False - default)
+
+        :return: True - The given target-level is a valid bottom->up distance for this item
+                 False - This item has no matching bottom->up distance
+        """
+        target_level = abs(target_level)
+        if self:
+            if any:
+                if equal:
+                    self_level = self.level
+                    for leave in self.deep.siblings(-1, ITER.INNER):
+                        if leave.level - self_level < target_level:
+                            return False
+                    else:
+                        return True
+                else:
+                    self_level = self.level
+                    for leave in self.deep.siblings(-1, ITER.INNER):
+                        if leave.level - self_level <= target_level:
+                            return False
+                    else:
+                        return True
+            else:
+                if equal:
+                    self_level = self.level
+                    for leave in self.deep.siblings(-1, ITER.INNER):
+                        if leave.level - self_level >= target_level:
+                            return True
+                else:
+                    self_level = self.level
+                    for leave in self.deep.siblings(-1, ITER.INNER):
+                        if leave.level - self_level > target_level:
+                            return True
+        elif equal and target_level==1:
+            return True
+        return False
 
     @property
     def tag_number(self):
@@ -820,7 +939,7 @@ class iTree(_iTreePrivate):
         """
         # Implementation state: ready, tested, doc ok
         if self._flags & self._IS_VALUE_PROTECTED:
-            raise PermissionError('iTree value is read only')
+            raise PermissionError('%s value is read only'%self.__class__.__name__)
         old_value = self._value
         # do we have a model?
         if (
@@ -876,7 +995,7 @@ class iTree(_iTreePrivate):
         """
         # Implementation state: ready, tested, doc ok
         if self._flags & self._IS_VALUE_PROTECTED:
-            raise PermissionError('iTree value is read only')
+            raise PermissionError('%s value is read only'%self.__class__.__name__)
         old_value = self._value
         try:
             old_value = old_value[key]
@@ -959,7 +1078,7 @@ class iTree(_iTreePrivate):
         """
         # Implementation state: ready, tested, doc ok
         if self._flags & self._READ_ONLY_VALUE:
-            raise PermissionError('iTree value is read only')
+            raise PermissionError('%s value is read only'%self.__class__.__name__)
         old_value, self._value = self._value, NoValue
         return old_value
 
@@ -986,7 +1105,7 @@ class iTree(_iTreePrivate):
         """
         # Implementation state: ready, tested, doc ok
         if self._flags & self._READ_ONLY_VALUE:
-            raise PermissionError('iTree value is read only')
+            raise PermissionError('%s value is read only'%self.__class__.__name__)
         return self._value.pop(key)
 
     @property
@@ -1063,11 +1182,11 @@ class iTree(_iTreePrivate):
                 self._raise_read_only_exception(self)
         try:
             if item._itree_prt_idx is not None:
-                raise RecursionError('Given item has already a parent iTree!')
+                raise RecursionError('Given item has already a parent')
             tag = item._tag
         except AttributeError:
             # implicit definition of iTree:
-            item = iTree(value=item)
+            item = self.__class__(value=item)
             tag = NoTag
         # return self._append_item(self,item)
         # Just for performance we keep the code for append here and do not use the helper
@@ -1162,10 +1281,10 @@ class iTree(_iTreePrivate):
                 self._raise_read_only_exception(self)
         try:
             if item._itree_prt_idx is not None:
-                raise RecursionError('Given item has already a parent iTree!')
+                raise RecursionError('Given item has already a parent')
         except AttributeError:
             # implicit definition of iTree:
-            item = iTree(value=item)
+            item = self.__class__(value=item)
         if self:
             return self._append_item_left(self, item)
         else:
@@ -1222,21 +1341,21 @@ class iTree(_iTreePrivate):
                 self._raise_read_only_exception(self)
         try:
             if item._itree_prt_idx is not None:
-                raise RecursionError('Given item has already a parent iTree!')
+                raise RecursionError('Given item has already a parent')
         except AttributeError:
             # implicit definition of iTree:
-            item = iTree(value=item)
+            item = self.__class__(value=item)
         if self:
             sl = self._items
             size = sl.__len__()
             if size == 0 and target != 0:
-                raise KeyError('iTree is empty no valid target given!')
+                raise KeyError('%s is empty no valid target given!'%self.__class__.__name__)
             # absolute index of the target
             if type(target) is int:  # is already the absolute index!
                 abs_idx = size + target if target < 0 else target
             elif hasattr(target, '_itree_prt_idx'):
                 if target._itree_prt_idx is not self:
-                    raise ValueError('Given target is not part of the iTree')
+                    raise ValueError('Given target is not part of the %s'%self.__class__.__name__)
                 abs_idx = target.idx
             else:
                 abs_idx = self.__getitem__(target).idx
@@ -1300,7 +1419,7 @@ class iTree(_iTreePrivate):
                     )
                     if error:
                         raise PermissionError(
-                            'It is not allowed to append linked items in an already linked item iTree')
+                            'It is not allowed to append linked items in an already linked item')
             else:
                 self._raise_read_only_exception(self)
         return self._items.extend(_iTreePrivate._iter_extend(self, items))
@@ -1445,12 +1564,12 @@ class iTree(_iTreePrivate):
             if parent_list is not None:
                 if parent_list[0] == self:
                     # reorder operation!
-                    value = self._iter_copy(value, iTree._get_args_skip_subtree)
+                    value = self._iter_copy(value, self.__class__._get_args_skip_subtree)
                 else:
-                    raise RecursionError('Given item has already a parent iTree!')
+                    raise RecursionError('Given item has already a parent')
         else:
             # implicit iTree definition
-            value = iTree(value=value)
+            value = self.__class__(value=value)
 
         if target is ...:  # Ellipsis is used for single append
             if self:
@@ -1533,7 +1652,7 @@ class iTree(_iTreePrivate):
         :return: self (with updated indexes)
         """
         if self._itree_prt_idx is None:
-            raise LookupError('This item is not a children of a iTree!')
+            raise LookupError('This item is not a children of a %s'%self.__class__.__name__)
         parent = self._itree_prt_idx[0]
         flags = parent._flags
         if flags & self._IS_TREE_PROTECTED:
@@ -1897,7 +2016,7 @@ class iTree(_iTreePrivate):
             if item._itree_prt_idx is not None and item._itree_prt_idx[0] is self:
                 return self.__delitem__(item.idx)
             else:
-                raise ValueError('Given iTree object is not a child of this iTree-object')
+                raise ValueError('Given item object is not a child of this %s-object'%self.__class__.__name__)
         try:
             is_link_root = self.is_link_root and self.is_link_loaded
             item_list = list(
@@ -1911,8 +2030,8 @@ class iTree(_iTreePrivate):
                     continue
                 except AttributeError as e:
                     raise ValueError(
-                        'The object %r is not a child of this iTree-object'
-                        % repr(i)
+                        'The object %r is not a child of this %s-object'
+                        % (repr(i),self.__class__.__name__)
                     ) from e
             for i in reversed(item_list):  # we see advantage for most cases if we remove in reversed order
                 self.__delitem__(i.idx)
@@ -1920,7 +2039,7 @@ class iTree(_iTreePrivate):
         except (PermissionError, ValueError):
             raise
         except:
-            raise TypeError('As item parameter we expect an iTree child or a Iterable of children')
+            raise TypeError('As item parameter we expect a tree child or an iterable of children')
 
     # *** getters: *****************************************************************************************************
 
@@ -1989,14 +2108,14 @@ class iTree(_iTreePrivate):
                         return list(self._getitem_fam(target))
                     except:
                         raise IndexError(
-                            'Given family-idx of target {} not found in iTree'.format(repr(target)))  # from e
+                            'Given family-idx of target {} not found'.format(repr(target)))  # from e
                 except:
                     try:
                         return list(self._getitem_fam(target))
                     except:
                         if 'fam_idx' in locals():
                             raise KeyError(
-                                'Given target {} invalid or not found in iTree'.format(repr(target)))  # from e
+                                'Given target {} invalid or not found'.format(repr(target)))  # from e
                         else:
                             raise ValueError('Given target {} is invalid'.format(repr(target)))  # from e
             elif t is int or t is slice:
@@ -2055,16 +2174,11 @@ class iTree(_iTreePrivate):
             result= self._get_fam(target)
             if result is not None:
                 return result[:] # slice is quicker then copy
-        raise KeyError('Given target: %s not found in iTree!' % repr(target))
+        raise KeyError('Given target: %s not found' % repr(target))
 
     # *** math operations and operations creating new/copied representations *******************************************
 
-    def __reversed__(self):
-        return self.__class__(self._tag,
-                              value=copy.copy(self._value),
-                              subtree=[i.__copy__() for i in reversed(list(self._items.__iter__()))],
-                              # here we create a recursion -> subtree is copied!!
-                              )
+    #use def __reverse__() from super class
 
     def __mul__(self, factor):
         """
@@ -2093,7 +2207,7 @@ class iTree(_iTreePrivate):
                 product((i.copy() for i in self), (i.copy() for i in factor)))
         else:
             subtree = repeat(self.copy(), factor)
-        return iTree(self._tag, copy.copy(self._value), subtree, None, self._flags)
+        return self.__class__(self._tag, copy.copy(self._value), subtree, None, self._flags)
 
     def __rmul__(self, other):
         if hasattr(other, '_itree_prt_idx'):
@@ -2101,7 +2215,7 @@ class iTree(_iTreePrivate):
                 product((i.copy() for i in self), (i.copy() for i in other)))
         else:
             subtree = repeat(self.copy(), other)
-        return iTree(NoTag, NoValue, subtree)
+        return self.__class__(NoTag, NoValue, subtree)
 
     def __sub__(self, other):
         """
@@ -2161,11 +2275,11 @@ class iTree(_iTreePrivate):
         if hasattr(other, '_itree_prt_idx'):
             if self.is_link_root:
                 raise TypeError('__add__() on link-root items is not supported')
-            return iTree(copy.copy(self._tag), copy.copy(self._value),
+            return self.__class__(copy.copy(self._tag), copy.copy(self._value),
                          subtree=chain((item.__copy__() for item in self),
                                        (item.__copy__() for item in other)), flags=self._flags)
         else:
-            raise TypeError('Added item is not of type iTree')
+            raise TypeError('Added item is not an instance of iTree')
 
     def __copy__(self):
         """
@@ -2183,7 +2297,7 @@ class iTree(_iTreePrivate):
 
         :return: copied iTree object
         """
-        return self._iter_copy(self, iTree._get_copy_args)
+        return self._iter_copy(self, self.__class__._get_copy_args)
 
     def copy_keep_value(self):
         """
@@ -2195,7 +2309,7 @@ class iTree(_iTreePrivate):
 
         :return: copied iTree object
         """
-        return self._iter_copy(self, iTree._get_args_skip_subtree)
+        return self._iter_copy(self, self.__class__._get_args_skip_subtree)
 
     def copy(self, *args, **kwargs):
         """
@@ -2207,7 +2321,7 @@ class iTree(_iTreePrivate):
 
         :return: copied iTree object
         """
-        return self._iter_copy(self, iTree._get_copy_args)
+        return self._iter_copy(self, self.__class__._get_copy_args)
 
     def __deepcopy__(self, *args, **kwargs):
         """
@@ -2219,7 +2333,7 @@ class iTree(_iTreePrivate):
 
         :return: deep copied new iTree object
         """
-        return self._iter_copy(self, iTree._get_deepcopy_args)
+        return self._iter_copy(self, self.__class__._get_deepcopy_args)
 
     def deepcopy(self, *args, **kwargs):
         """
@@ -2231,7 +2345,7 @@ class iTree(_iTreePrivate):
 
         :return: deep copied new iTree object
         """
-        return self._iter_copy(self, iTree._get_deepcopy_args)
+        return self._iter_copy(self, self.__class__._get_deepcopy_args)
 
     # *** size & comparisons *******************************************************************************************
 
@@ -2312,7 +2426,7 @@ class iTree(_iTreePrivate):
             p = item._itree_prt_idx
             return p is not None and p[0] is self
         else:
-            raise TypeError('Given item is not of type iTree')
+            raise TypeError('Given item is not an instance of iTree')
 
     def __eq__(self, other):
 
@@ -2500,7 +2614,7 @@ class iTree(_iTreePrivate):
                     if first_item == item:
                         return first_item.idx
                 except StopIteration:
-                    raise IndexError('No matching item found in iTree')
+                    raise IndexError('No matching item found')
             if stop is not None:
                 if not hasattr(stop, '_itree_prt_idx'):
                     stop = self.get.single(stop)
@@ -2510,13 +2624,13 @@ class iTree(_iTreePrivate):
                         return item.idx
                     raise StopIteration
                 except StopIteration:
-                    raise IndexError('No matching item found in iTree')
+                    raise IndexError('No matching item found')
             else:
                 try:
                     item = next(dropwhile(lambda i: i != item, iterator))
                     return item.idx
                 except StopIteration:
-                    raise IndexError('No matching item found in iTree')
+                    raise IndexError('No matching item found')
 
     def __hash__(self):
         """
@@ -2587,12 +2701,10 @@ class iTree(_iTreePrivate):
         :rtype: Iterator
         :return: iterator over the values stored in the children
         """
-        if filter_method:
-            for item in filter(filter_method, self):
-                yield item._value
+        if filter_method is None:
+            return (i._value for i in self)
         else:
-            for item in self:
-                yield item.value
+            return (i._value for i in filter(filter_method,self))
 
     def items(self, filter_method=None, values_only=False):
         """
@@ -2751,7 +2863,7 @@ class iTree(_iTreePrivate):
         :rtype: str
         :return: representation string
         """
-        out = ['iTree(']
+        out = ['%s('%self.__class__.__name__]
         if self._tag is not NoTag:
             out.append(repr(self._tag))
             out.append(', ')
@@ -2799,7 +2911,7 @@ class iTree(_iTreePrivate):
 
         :return: shorten representation string
         """
-        out = ['iTree(']
+        out = ['%s('%self.__class__.__name__]
         if self._tag is not NoTag:
             out.append(repr(self._tag))
             out.append(', ')
@@ -2899,7 +3011,7 @@ class iTree(_iTreePrivate):
 
     # for pickle
     def __reduce__(self):
-        return iTree, tuple(self.get_init_args())
+        return self.__class__, tuple(self.get_init_args())
 
     def get_init_args(self, filter_method=None, _subtree_not_none=True):
         """
@@ -2964,7 +3076,7 @@ class iTree(_iTreePrivate):
         """
         serializer_obj = getattr(self, '__itree_serializer', None)
         if serializer_obj is None or type(serializer_obj) != itree_serializer:
-            self.__itree_serializer = serializer_obj = itree_serializer(iTree)
+            self.__itree_serializer = serializer_obj = itree_serializer(self.__class__)
 
         return serializer_obj.loads(data_str, check_hash=check_hash, load_links=load_links)
 
@@ -2989,7 +3101,7 @@ class iTree(_iTreePrivate):
         """
         serializer_obj = getattr(self, '__itree_serializer', None)
         if serializer_obj is None or type(serializer_obj) != itree_serializer:
-            self.__itree_serializer = serializer_obj = itree_serializer(iTree)
+            self.__itree_serializer = serializer_obj = itree_serializer(self.__class__)
 
         return serializer_obj.load(file_path, check_hash=check_hash, load_links=load_links)
 
@@ -3007,7 +3119,7 @@ class iTree(_iTreePrivate):
         """
         serializer_obj = getattr(self, '__itree_serializer', None)
         if serializer_obj is None or type(serializer_obj) != itree_serializer:
-            self.__itree_serializer = serializer_obj = itree_serializer(iTree)
+            self.__itree_serializer = serializer_obj = itree_serializer(self.__class__)
         return serializer_obj.dumps(self, calc_hash=calc_hash, filter_method=filter_method)
 
     def dump(self, target_path, pack=True, calc_hash=True, overwrite=False,
@@ -3027,7 +3139,7 @@ class iTree(_iTreePrivate):
         """
         serializer_obj = getattr(self, '__itree_serializer', None)
         if serializer_obj is None or type(serializer_obj) != itree_serializer:
-            self.__itree_serializer = serializer_obj = itree_serializer(iTree)
+            self.__itree_serializer = serializer_obj = itree_serializer(self.__class__)
         return serializer_obj.dump(self,
                                    target_path,
                                    pack=pack,
@@ -3061,7 +3173,7 @@ class iTree(_iTreePrivate):
         :return: True/False
 
         """
-        return hasattr(self, '_link') and self._link and (type(self._link._link_item) is iTree)
+        return hasattr(self, '_link') and self._link and (hasattr(self._link._link_item,'_itree_prt_idx'))
 
     @property
     def is_linked(self):
@@ -3081,7 +3193,7 @@ class iTree(_iTreePrivate):
         else:
             # we return False in case we have no link_roots inside the subtree
             return any(
-                i.is_link_loaded for i in filter(iTree._filter_linked_roots, self.deep))
+                i.is_link_loaded for i in filter(self.__class__._filter_linked_roots, self.deep))
 
     @property
     def link_root(self):
@@ -3251,7 +3363,7 @@ class iTree(_iTreePrivate):
                     return False
         else:
             loaded = False
-            for i in filter(iTree._filter_linked_roots, self.deep):
+            for i in filter(self.__class__._filter_linked_roots, self.deep):
                 if i.load_links(force=force, delete_invalid_items=delete_invalid_items, _depth=(_depth + 1)):
                     loaded = True
             return loaded
@@ -3283,10 +3395,10 @@ class iTree(_iTreePrivate):
     # *** unsupported methode (overload super() methods with exceptions ************************************************
 
     def __isub__(self, other):
-        raise TypeError('iTree: unsupported operand or function')
+        raise TypeError('Unsupported operand or function')
 
     def __imul__(self, other):
-        raise TypeError('iTree: unsupported operand or function')
+        raise TypeError('Unsupported operand or function')
 
     # *** helpers ******************************************************************************************************
 

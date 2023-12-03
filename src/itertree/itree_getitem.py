@@ -115,14 +115,14 @@ class _iTreeGetitem():
                         return False,itree._getitem_fam(target)
                     except:
                         raise IndexError(
-                            'Given family-idx of target {} not found in iTree'.format(repr(target)))  # from e
+                            'Given family-idx of target {} not found'.format(repr(target)))  # from e
                 except:
                     try:
                         return False,itree._getitem_fam(target)
                     except:
                         if 'fam_idx' in locals():
                             raise KeyError(
-                                'Given target {} invalid or not found in iTree'.format(repr(target)))  # from e
+                                'Given target {} invalid or not found'.format(repr(target)))  # from e
                         else:
                             raise ValueError('Given target {} is invalid'.format(repr(target)))  # from e
             elif t is int:
@@ -191,7 +191,7 @@ class _iTreeGetitem():
             result=itree._get_fam(target)
             if result is not None:
                 return False, result[:]
-        raise KeyError('Given target: %s not found in iTree!' % repr(target))
+        raise KeyError('Given target: %s not found' % repr(target))
 
     def __call__(self, target=NoTarget, *target_path, default=Exception,target_type=None):
         """
@@ -572,7 +572,7 @@ class _iTreeGetitem():
             else:
                 return self.getitem_by_idx(idx)
         except AttributeError:
-            return self._raise_exception(IndexError('No child in iTree %s' % (self._itree))) if default is Exception else default
+            return self._raise_exception(IndexError('Empty item, no child in %s' % str(self._itree))) if default is Exception else default
         except Exception as e:
             return self._raise_exception(e) if default is Exception else default
 
@@ -614,11 +614,11 @@ class _iTreeGetitem():
                     for item in r:
                         r2.extend(item.getitem_by_idx(i_s))
                     if not r2:
-                        raise IndexError(' No matching items found in iTree')
+                        raise IndexError(' No matching items found')
                     r = r2
                 return r
             else:
-                return r if r else self._raise_exception(IndexError(' No matching items found in iTree'))
+                return r if r else self._raise_exception(IndexError(' No matching items found'))
         except Exception as e:
              return self._raise_exception(e) if default is Exception else default
 
@@ -666,13 +666,13 @@ class _iTreeGetitem():
                         else:
                             r2 = [item.getitem_by_idx(i) for item in r for i in i_l if i < len(item)]
                         if not r2:
-                            raise KeyError(' No matching items found in iTree')
+                            raise KeyError(' No matching items found')
                         r = r2
                     return r
                 else:
                     return r
             else:
-                raise IndexError('No child in iTree %s' % (itree))
+                raise IndexError('No child in %s' % str(itree))
         except Exception as e:
             return self._raise_exception(e) if default is Exception else default
 
@@ -714,7 +714,7 @@ class _iTreeGetitem():
                 return self._getitem_fam(tag)[fam_idx]
         except AttributeError:
             if default is Exception:
-                raise KeyError('No child in iTree %s' % (self._itree))
+                raise KeyError('No child in %s' % str(self._itree))
             else:
                 return default
         except Exception as e:
@@ -760,11 +760,11 @@ class _iTreeGetitem():
                                     result = [result]
                                 r2.extend(result)
                     if not r2:
-                        raise KeyError(' No matching items found in iTree')
+                        raise KeyError(' No matching items found')
                     r = r2
                 return r
             else:
-                return r if r else self._raise_exception(KeyError(' No matching items found in iTree'))
+                return r if r else self._raise_exception(KeyError(' No matching items found'))
         except Exception as e:
             return self._raise_exception(e) if default is Exception else default
 
@@ -813,7 +813,7 @@ class _iTreeGetitem():
                                 if len(family) > il:
                                     r2.append(family[il])
                     if not r2:
-                        raise KeyError(' No matching items found in iTree')
+                        raise KeyError(' No matching items found')
                     r = r2
                 return r
             else:
@@ -855,13 +855,13 @@ class _iTreeGetitem():
                         if item._contains_fam(t):
                             r2.extend(item._getitem_fam(t))
                 if not r2:
-                    raise KeyError('Given tag_path %s has no match in iTree' % repr([tag] + tag_path))
+                    raise KeyError('Given tag_path %s has no match' % repr([tag] + tag_path))
                 return r2
             else:
                 return self._getitem_fam(tag)[:]
         except AttributeError:
             if default is Exception:
-                raise KeyError('No child in targeted iTree?')
+                raise KeyError('No child in targeted item?')
             else:
                 return default
         except Exception as e:
@@ -919,12 +919,12 @@ class _iTreeGetitem():
                                 if item._contains_fam(t):
                                     r2.extend(item._getitem_fam(t))
                     if not r2:
-                        raise KeyError('Given tag_path *%s has no match in iTree' % repr((tags,) + tuple(tags_path)))
+                        raise KeyError('Given tag_path *%s has no match' % repr((tags,) + tuple(tags_path)))
                     return r2
                 else:
                     return r
             else:
-                raise KeyError('No child in iTree %s' % (itree))
+                raise KeyError('No child in %s' % str(itree))
         except Exception as e:
             return self._raise_exception(e) if default is Exception else default
 
@@ -965,14 +965,43 @@ class _iTreeGetitem():
                         for item in r:
                             r2.extend(filter(f,item))
                     if not r2:
-                        raise KeyError('Given filter_method_path has no match in iTree')
+                        raise KeyError('Given filter_method_path has no match')
                     return r2
                 else:
                     return list(r)
             else:
-                raise KeyError('No child in iTree %s' % (itree))
+                raise KeyError('No child in %s' % str(itree))
         except Exception as e:
             return self._raise_exception(e) if default is Exception else default
 
     def _raise_exception(self,exception):
         raise exception
+
+    def same_index_children(self,idx,incl_self=False):
+        """
+        method delivers the deepest item in the tree targeted by the given index.
+        E.g. if 0 is given the method extracts from the given item the first child,
+        from the child the first sub-child,...until the first item has no more child (empty item).
+        The chain of children with the index will be delivered as result.
+
+        In case the calling item (self has no children an empty list will be delivered.
+
+        :type idx: int
+        :param idx: index of chain of children to be extracted from the tree (negative values are accepted too)
+        :type incl_self: bool
+        :param incl_self: True - the calling item will be included as firat element in the list of children
+                          False - only children not the calling item is included in the return list
+        :return: chain of children with the given index
+        """
+        item=self._itree
+        if incl_self:
+            items = [item]
+        else:
+            items=[]
+        while item:
+            try:
+                item=item.getitem_by_idx(idx)
+            except IndexError:
+                break
+            items.append(item)
+        return items
