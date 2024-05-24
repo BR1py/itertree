@@ -36,8 +36,6 @@ For more information see: https://en.wikipedia.org/wiki/MIT_License
 The main goal of this test is that the examples run without any exception
 """
 
-IGNORE=True
-
 import os
 import sys
 import shutil
@@ -107,23 +105,18 @@ class Test_iTree_Examples:
 
 
     def test_example0(self,out_file):
-        if not IGNORE:
-            self._examples_base(0,out_file)
+        self._examples_base(0,out_file)
 
     def test_example1(self,out_file):
-        if not IGNORE:
-            self._examples_base(1,out_file)
+        self._examples_base(1,out_file)
 
     def test_example2(self,out_file):
-        if not IGNORE:
-            self._examples_base(2,out_file)
+        self._examples_base(2,out_file)
 
     def test_example3(self,out_file):
-        if not IGNORE:
-            self._examples_base(3,out_file)
+        self._examples_base(3,out_file)
 
     def test_example4(self,out_file):
-        if not IGNORE:
-            self._examples_base(4,out_file)
+        self._examples_base(4,out_file)
 
 

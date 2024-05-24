@@ -1,7 +1,30 @@
 .. _changelog:
 
-Changelog
-=============
+************************************
+Version 1.1.2
+************************************
+
+New iteration features:
+
+The iteration features are havily imporved. The user can now iterate in diffrent directions and over diffrent levels in the itertree.
+
+Beside this the inheritence of the iTree class as a super class of another object should now work without any issues.
+
+The test suite is enlarged.
+
+************************************
+Version 1.0.3
+************************************
+
+This version contains minor changes related to comments and the test setup.
+
+Deleting of items targeted via `slice` are improved. E.g.: `del mytree[10:100]` 
+
+
+We appended a new version of blist which can be used in python 3.10 and 3.11 environments.
+
+Issues #21,#22 solved.
+
 ************************************
 Version 1.0.5
 ************************************
