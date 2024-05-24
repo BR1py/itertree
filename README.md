@@ -105,6 +105,12 @@ Here is very simple example of itertree usage:
      > iTree('sub', value={'mykey': 1})
      > iTree('sub', value={'mykey': 2})
      > iTree('sub', value={'mykey': 3})
+    >>> # Address item via tag-index-pair (key):
+    >>> root['sub', 1]
+    iTree('sub', value={'mykey': 2})
+    >>> # Address item via absolute-index and check stored value:
+    >>> root[1].value
+    {'mykey': 2}
    
 
 ## First steps
@@ -297,50 +303,3 @@ for small trees the example operations are equivalent):
   
 
     
-## iterators vs. lists
-
-We named the package itertree because when ever a iTree operation delivers multiple items the result will be an
-iterator (and not a list what the user might expect).
-
-Iterators are very powerful objects especially if you have a huge number of items to be iterated over.
-Iterators can be created very fast and they can be combined. So you can create very effective filter functions. It's
-recommended to have a look in the powerful itertools and more_itertools packages to combine it with itertree
-
-The main idea is to combine all the filtering and iterator options together before you start the final iteration
-(consume the iterator), which might at least end up in the expected list. By this mechanism we do at least only one
-unique iteration over the items and we must not do multiple typecasts and re-iterations in between even when we
-combine multiple filters.
-
-If the user really wants to create a list he can easy cast the iterator by using the `list()` statement:
-
-    >>> myresultlist=list(root.iter_all()) #  this is quick even for huge number of items
-    >>> first_item=list(root.iter_all())[0] # Anyway this is much slower than:
-    >>> first_item=next(root.iter_all())
-    >>> fifth_item=list(root.iter_all())[4] # and this is much slower than:
-    >>> import itertools
-    >>> fifth_item=next(itertools.isslice(root.iter_all(),4,None))
-    
-
-As it is shown in the performance test the operation `list()` is very quick (less then 0.5 s on 1 million items
-(depending on you PC)). And using the index access afterwards is a very good readable code. But as shown here there
-are quicker solutions available on iterators only.
-
-But we see also two downsides related to iterators:
-
-* The StopIteration exception must be handled in case of empty iterators. To make the handling a bit easier iTree
-  delivers in most cases an empty list if we have no match. But in some cases (e.g. filter operations) the user
-  will get an empty iterator and not the empty list. In itree_helpers the user can find a check
-  function for empty iterators that might help in this case: `is_iterator_empty(my_iterator)`.
-
-* The user must also consider that an iterator can be consumed only one time. To reuse an iterator multiple times
-  you may have a look on `itertools.tee()`.
-
-To summarize this chapter: 
-
-We decided that the iTree methods should deliver only iterators (and not lists). This is made to give the user
-the possibility to utilize the whole iterator power afterwards. If he really needs a list (in most cases for
-index access) he can cast the iterator easy and quick via the `list()` statement. But if iTree would directly
-deliver lists by default we would have a performance drop in all itertree filter functions which is not
-acceptable from our point of view.
-
-
