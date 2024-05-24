@@ -155,7 +155,7 @@ class iTLink(object):
         else:
             return (self._file_path, self._target_path, self._link_item)
 
-    def get_target_tree(self, self_itree, source_dir=None):
+    def get_target_tree(self, ABSOLUTE, source_dir=None):
         if self._file_path:
             if os.path.isabs(self._file_path) or not source_dir:
                 file_path = self._file_path
@@ -163,10 +163,10 @@ class iTLink(object):
                 file_path = os.path.join(source_dir, self._file_path)
             if not os.path.exists(file_path):
                 raise FileNotFoundError('Related source-file %s of the iTLink object not found!' % file_path)
-            result_tree = self_itree.load(file_path, load_links=True)
+            result_tree = ABSOLUTE.load(file_path, load_links=True)
             self._file_crc = self._get_file_crc(file_path)
         else:
-            result_tree = self_itree.root
+            result_tree = ABSOLUTE.root
         if self._target_path:
             if type(self._target_path) is str:
                 self._target_path=[self._target_path]
@@ -264,6 +264,9 @@ class iTLink(object):
         return 'iTLink(file_path=%s, target_path=%s)' % (
             repr(self._file_path), repr(self._target_path),)
 
+ORDER_PRE=1
+ORDER_POST=0
+ORDER_LEVEL=2
 
 class iTFLAG():
     """
@@ -389,3 +392,54 @@ def getter_to_list(get_result):
         return [get_result]
     else:
         return list(get_result)
+
+class ITER():
+    """
+    iter options for deep iterators
+    """
+    DOWN=0b1 #gives iteration direction top-> down (default)
+    UP=DOWN <<1 # gives iteration direction bottom-> up
+    # in case DOWN adn UP is in we use UP;
+    # Both flags are just in because of downward compatibility
+    REVERSE=UP<<1 # switches item iteration direction to high index -> low index
+    SELF=REVERSE<<1 # include the calling object in the iteration (only if target matches)
+    FILTER_ANY= SELF<<1 # Use build in filtering instead of hierarchical filtering (only in iter())
+    MULTIPLE=FILTER_ANY<<1 # allows multiple matches of items in an iteration
+
+    @staticmethod
+    def get_option_str(option):
+        """
+        calculates a string representing the options used in given option
+        :para option: integer containing the option-bits
+        :return:
+        """
+        options=[]
+        if option & ITER.DOWN:
+            options.append('DOWN')
+        if option&ITER.UP:
+            options.append('UP')
+        if option&ITER.REVERSE:
+            options.append('REVERSE')
+        if option&ITER.SELF:
+            options.append('SELF')
+        if option&ITER.FILTER_ANY:
+            options.append('FILTER_ANY')
+        if option & ITER.MULTIPLE:
+            options.append('MULTIPLE')
+
+        invalid=option&~(ITER.UP | ITER.REVERSE | ITER.SELF |ITER.FILTER_ANY |ITER.MULTIPLE)
+        if invalid:
+            options.append('%s'%bin(invalid))
+        return ' | '.join(options)
+
+    @staticmethod
+    def valid_option(option,expected_option=DOWN |UP | REVERSE | SELF |FILTER_ANY  |MULTIPLE):
+        """
+        checks if given option is valid
+        :para option: integer containing the options-bits
+        :para expected_option: integer containing the full set of possible option-bits
+        :return: None or string for exception containing the invalid flags used
+        """
+        invalid=option&(~expected_option)
+        if invalid:
+            return 'Invalid iteration option(s) given: %s'%ITER.get_option_str(invalid)

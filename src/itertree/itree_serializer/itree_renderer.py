@@ -74,7 +74,7 @@ class iTreeRender(object):
         return self._render_main(itree_object,filter_method,enumerate,False)
 
     def _build_item_str(self,itree_object,enum_cnt=None):
-        out = ['iTree(']
+        out = ['%s('%itree_object.__class__.__name__]
         if itree_object._tag != NoTag:
             out.append(repr(itree_object._tag))
             out.append(', ')

@@ -27,7 +27,7 @@ SUB_EXEC_CONTROL = [1,  # append
 CREATE_DOCS = [1]
 # EXEC_CONTROL = ['Ln_100','Ln_500','Ln_1000']
 EXEC_CONTROL = ['L1_500000','Ln_1000']
-SUB_EXEC_CONTROL = [1,2,6,7]
+SUB_EXEC_CONTROL = [1]
 
 # EXEC_CONTROL = ['L1_5000', 'L1_50000', 'L1_500000','Ln_100','Ln_500','Ln_1000']
 # SUB_EXEC_CONTROL = [1,6]
@@ -110,6 +110,13 @@ try:
     import anytree as AT
 
     TEST_OBJECTS['AT.Node'] = {'str': 'anytree.Node', 'module': AT, 'class': AT.Node, 'init': 'Node'}
+except ImportError:
+    pass
+
+try:
+    import bigtree as BT
+
+    TEST_OBJECTS['BT.Node'] = {'str': 'bigtree.Node', 'module': BT, 'class': BT.Node, 'init': 'Node'}
 except ImportError:
     pass
 

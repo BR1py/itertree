@@ -26,6 +26,7 @@ class TestBuildByAppendL1(BasePerformance):
             'llDict': (self.lldict_append, 'tree[key] = %s(data=value)'),
             'TL.Tree': (self.tl_append, '%s.create_node(key,key, parent="root",value=value)'),
             'AT.Node': (self.at_append, '%s(key, parent=tree,value=value)',5000),
+            'BT.Node': (self.at_append, '%s(key, parent=tree,value=value)'),
         }
 
     def it_append(self,key,obj_class):

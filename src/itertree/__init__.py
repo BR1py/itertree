@@ -38,16 +38,18 @@ This part of code contains the initialization and publishing of the iTree relate
 from __future__ import absolute_import
 
 __package__ = 'itertree'
-__version__ = '1.0.5'
+__version__ = '1.1.0'
 __licence__ = 'MIT incl. human protect patch'
 __author__ = 'B.R.'
 __url__ = 'https://github.com/BR1py/itertree'
 __description__ = 'Python tree structure for data storage and iterations'
 
-from .itree_helpers import iTLink, NoTag, NoKey, NoValue, Tag, iTFLAG, getter_to_list,INF,INF_PLUS,INF_MINUS,Any,TagIdx
+from .itree_helpers import iTLink, NoTag, NoKey, NoValue, Tag, \
+    iTFLAG, getter_to_list, INF, INF_PLUS, INF_MINUS, Any, TagIdx, ITER
 from .itree_main import iTree
 
 from . import itree_data as Data
 from . import itree_filters as Filters
 from .itree_serializer.itree_render_dot import _iTreeRenderDot
-iTreeRenderDot=_iTreeRenderDot().renders
+
+iTreeRenderDot = _iTreeRenderDot().renders

@@ -17,11 +17,32 @@
    docs/examples
    docs/comparison
    docs/background
+   docs/licence
 
 .. _intro:
 
+.. image:: https://img.shields.io/badge/itertree-https%3A%2F%2Fgithub.com%2FBR1py%2Fitertree-blue?logo=github
+     :alt: GITHUB: https://github.com/BR1py/itertree
+     :target: https://github.com/BR1py/itertree
 
-itertree - Introduction 
+.. image:: https://img.shields.io/pypi/v/itertree
+      :alt: PyPI - Version
+     :target: https://pypi.org/project/itertree
+
+.. image:: https://img.shields.io/github/release-date/Br1py/itertree
+    :alt: GitHub Release Date - Published_At
+
+.. image:: https://img.shields.io/badge/Python-%3E%3D3.4-green
+   :alt: Python Version: =>3.4
+
+.. image:: https://img.shields.io/badge/licence-MIT(hpp)-green
+     :alt: Licence MIT(hpp)
+     :target: https://github.com/BR1py/itertree/blob/main/LICENSE
+
+|
+|
+
+itertree - Introduction
 ========================
 
 | Do you have to store data in a tree like structure?
@@ -67,7 +88,7 @@ Status and compatibility information
    Please use the `github issues <https://github.com/BR1py/itertree/issues>`_
    to ask questions report problems.
 
-.. |release| replace:: Version | 1.0.5|
+.. |release| replace:: Version | 1.1.0|
 .. _release: https://pypi.python.org/pypi/itertree/
 
 The original implementation is done in Python 3.9 and it is tested under Python 3.5, 3.6 and 3.9. The package
