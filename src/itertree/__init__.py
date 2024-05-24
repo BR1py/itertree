@@ -38,7 +38,7 @@ This part of code contains the initialization and publishing of the iTree relate
 from __future__ import absolute_import
 
 __package__ = 'itertree'
-__version__ = '1.1.0'
+__version__ = '1.1.2'
 __licence__ = 'MIT incl. human protect patch'
 __author__ = 'B.R.'
 __url__ = 'https://github.com/BR1py/itertree'
