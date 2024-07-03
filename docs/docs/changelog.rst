@@ -4,6 +4,12 @@
 Version 1.1.2
 ************************************
 
+Bugfix added missing folder in package
+
+************************************
+Version 1.1.2
+************************************
+
 New iteration features:
 
 The iteration features are havily imporved. The user can now iterate in diffrent directions and over diffrent levels in the itertree.
