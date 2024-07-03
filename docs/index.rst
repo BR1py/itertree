@@ -11,14 +11,14 @@
    :hidden: 
 
    docs/docs
-   docs/changelog
    docs/tutorial
    docs/API
    docs/examples
    docs/comparison
    docs/background
    docs/licence
-
+   docs/changelog
+   
 .. _intro:
 
 .. image:: https://img.shields.io/badge/itertree-https%3A%2F%2Fgithub.com%2FBR1py%2Fitertree-blue?logo=github
