@@ -1,7 +1,7 @@
 .. _changelog:
 
 ************************************
-Version 1.1.2
+Version 1.1.3
 ************************************
 
 Bugfix added missing folder in package
