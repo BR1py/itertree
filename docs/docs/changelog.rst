@@ -12,7 +12,7 @@ Version 1.1.2
 
 New iteration features:
 
-The iteration features are havily imporved. The user can now iterate in diffrent directions and over diffrent levels in the itertree.
+The iteration features are improved. The user can now iterate in different directions and over different levels in the itertree.
 
 Beside this the inheritence of the iTree class as a super class of another object should now work without any issues.
 
