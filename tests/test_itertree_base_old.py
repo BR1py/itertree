@@ -825,6 +825,19 @@ class Test_iTreeBase:
         target_path = root_data_path + '/out.itz'
         target_path2 = root_data_path + '/out.itr'
         target_path3 = root_data_path + '/out2.itz'
+        # to find a valid dir for GITHUB action we search a bit:
+        if not os.path.exists(root_data_path):
+            os.makedirs(root_data_path)
+            time.sleep(1)
+            if not os.path.exists(root_data_path):
+                root_data_path=os.path.dirname(root_data_path)
+                if not os.path.exists(root_data_path):
+                    os.makedirs(root_data_path)
+                    time.sleep(1)
+                    if not os.path.exists(root_data_path):
+                        root_data_path = os.path.dirname(root_data_path)
+                        if not os.path.exists(root_data_path):
+                            os.makedirs(root_data_path)
 
         print('Outputfile: %s' % os.path.abspath(target_path))
 
@@ -832,6 +845,7 @@ class Test_iTreeBase:
         if np is not None:
             root += iTree('NUMPY', value={'myarray': np.array([1.5, 4, 3.6, 467])})
         root += iTree('OD', value={'od': collections.OrderedDict([('C', 'c'), ('A', 'a'), ('B', 'b')])})
+
         root.dump(target_path, overwrite=True)
 
         root.dump(target_path2, pack=False, overwrite=True)

@@ -11,12 +11,12 @@
    :hidden: 
 
    docs/docs
-   docs/changelog
    docs/tutorial
    docs/API
    docs/examples
    docs/comparison
    docs/background
+   docs/changelog
    docs/licence
 
 .. _intro:

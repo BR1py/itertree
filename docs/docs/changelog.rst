@@ -1,14 +1,17 @@
 .. _changelog:
+************************************
+Change Log
+************************************
 
-************************************
+
+
 Version 1.1.3
-************************************
+===============
 
 Bugfix added missing folder in package
 
-************************************
 Version 1.1.2
-************************************
+===============
 
 New iteration features:
 
@@ -18,9 +21,8 @@ Beside this the inheritence of the iTree class as a super class of another objec
 
 The test suite is enlarged.
 
-************************************
 Version 1.0.3
-************************************
+===============
 
 This version contains minor changes related to comments and the test setup.
 
@@ -31,16 +33,15 @@ We appended a new version of blist which can be used in python 3.10 and 3.11 env
 
 Issues #21,#22 solved.
 
-************************************
 Version 1.0.5
-************************************
+===============
+
 Minor bugfix (escapes).
 
 And correct issues related wrong commit in 1.0.3
 
-************************************
 Version 1.0.3
-************************************
+===============
 
 This version contains minor changes related to comments and the test setup.
 
@@ -51,9 +52,8 @@ We appended a new version of blist which can be used in python 3.10 and 3.11 env
 
 Issues #21,#22 solved.
 
-************************************
 Version 1.0.1
-************************************
+===============
 
 Full released
 
@@ -108,9 +108,8 @@ The MIT licence was extended by a "human protect patch".
 To symbolize the stability and also the final fix of the interface we decided to create the first full released version.
 The testsuite is largely expanded for this step.
 
-************************************
 Version 0.8.2
-************************************
+===============
 
 We reworked the itertree data module so that iData class behaves much better like a dict. All overloaded methods
 are improved to match the dict interface. Also `iTDataModel` is changed and is now a class that must be overloaded.
@@ -139,9 +138,8 @@ official 1.0.0 release.
 Still Beta SW -> but release candidate!
 
 
-************************************
 Version 0.7.3
-************************************
+===============
 
 Bugfixes in repr() and render()
 
@@ -149,9 +147,8 @@ Extended examples
 
 Still Beta SW -> but release candidate!
 
-************************************
 Version 0.7.2
-************************************
+===============
 
 Improved Interval class (dynamic limits in all levels)
 
@@ -159,17 +156,15 @@ Adapted some tests and the documentation
 
 Still Beta SW -> but release candidate!
 
-************************************
 Version 0.7.1
-************************************
+===============
 
 Bigger bugfix on 0.7.0 which was really not well tested!
 
 Still Beta SW -> but release candidate!
 
-************************************
 Version 0.7.0
-************************************
+===============
 
 Recursive functions are rewritten to use an iterative approach (recursion limit exception should be avoided)
 
@@ -183,9 +178,8 @@ Examples regarding data models added
 
 Still Beta SW -> but release candidate!
 
-************************************
 Version 0.6.0
-************************************
+===============
 
 Improved interface and performance
 
@@ -198,9 +192,8 @@ Examples still missing
 Beta SW!
 
 
-************************************
 Version 0.5.0
-************************************
+===============
 
 First released version
 
