@@ -1,12 +1,9 @@
 """
 This code is taken from the itertree package:
-
-  ___ _____ _____ ____ _____ ____  _____ _____
- |_ _|_   _| ____|  _ \_   _|  _ \| ____| ____|
-  | |  | | |  _| | |_) || | | |_) |  _| |  _|
-  | |  | | | |___|  _ < | | |  _ <| |___| |___
- |___| |_| |_____|_| \_\|_| |_| \_\_____|_____|
-
+  _ _____ _____ _____ _____ _____ _____ _____
+ | |_   _|   __| __  |_   _| __  |   __|   __|
+ |-| | | |   __|    -| | | |    -|   __|   __|
+ |_| |_| |_____|__|__| |_| |__|__|_____|_____|
 
 https://pypi.org/project/itertree/
 GIT Home:
@@ -26,6 +23,7 @@ from __future__ import absolute_import
 
 import gzip
 import hashlib
+import traceback
 from collections import OrderedDict, deque
 
 # For serializing we (try) to import some modules:
@@ -70,8 +68,9 @@ except ImportError:
     np_loaded = False
 
 from ..itree_helpers import *
+import itertree
 
-DT_SERIALIZE_VERSION = "2.0.0"
+DT_SERIALIZE_VERSION = "2.0.1"
 DT_SERIALIZE_MAJOR_VERSION = "2.0"
 
 
@@ -196,6 +195,7 @@ class iTStdJSONSerializer2(object):
             module_name = o[3]
             if module_name.endswith('itree_data'):
                 try:
+                    Data=itertree.Data
                     object_class = eval('Data.%s' % class_name)
                 except:
                     pass

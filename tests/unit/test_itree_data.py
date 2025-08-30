@@ -1,12 +1,9 @@
 """
 This code is taken from the itertree package:
-
-  ___ _____ _____ ____ _____ ____  _____ _____
- |_ _|_   _| ____|  _ \_   _|  _ \| ____| ____|
-  | |  | | |  _| | |_) || | | |_) |  _| |  _|
-  | |  | | | |___|  _ < | | |  _ <| |___| |___
- |___| |_| |_____|_| \_\|_| |_| \_\_____|_____|
-
+  _ _____ _____ _____ _____ _____ _____ _____
+ | |_   _|   __| __  |_   _| __  |   __|   __|
+ |-| | | |   __|    -| | | |    -|   __|   __|
+ |_| |_| |_____|__|__| |_| |__|__|_____|_____|
 
 https://pypi.org/project/itertree/
 GIT Home:
@@ -23,6 +20,7 @@ Unit tests related to the itertree data types
 """
 
 import pytest
+import sys
 from itertree import *
 
 __argument__ = 'FAKE'
@@ -91,7 +89,7 @@ class TestiTDataModelProperties:
 
     def test_value_property(self, setup_no_argument, setup_fake_argument):
         assert setup_no_argument.value is NoValue
-        assert setup_fake_argument.value is __argument__
+        assert setup_fake_argument.value == __argument__
 
 
 class TestiTDataModelMethods:
@@ -99,7 +97,7 @@ class TestiTDataModelMethods:
                   (False, None)]
 
     def test_clear_value(self, setup_fake_argument):
-        assert setup_fake_argument.clear() is __argument__
+        assert setup_fake_argument.clear() == __argument__
         assert setup_fake_argument.value is NoValue
 
     def test_clear_value_empty_value(self, setup_no_argument):
@@ -110,14 +108,14 @@ class TestiTDataModelMethods:
         assert setup_no_argument.formatter() == 'None'
 
     def test_emptyformatter_not_empty(self, setup_fake_argument):
-        assert setup_fake_argument.formatter() is 'FAKE'
+        assert setup_fake_argument.formatter() == 'FAKE'
 
     def test_formatter_empty(self, setup_no_argument):
-        assert setup_no_argument.formatter('Kraftfahrzeug-Haftpflichtversicherung') is \
+        assert setup_no_argument.formatter('Kraftfahrzeug-Haftpflichtversicherung') == \
                'Kraftfahrzeug-Haftpflichtversicherung'
 
     def test_formatter_empty_not_empty(self, setup_fake_argument):
-        assert setup_fake_argument.formatter('Massenkommunikationsdienstleistungsunternehmen') is \
+        assert setup_fake_argument.formatter('Massenkommunikationsdienstleistungsunternehmen') == \
                'Massenkommunikationsdienstleistungsunternehmen'
 
     @pytest.mark.parametrize("state, expected", state_data)
@@ -147,10 +145,10 @@ class TestiTDataModelMethods:
        assert __argument__ not in setup_no_argument
 
     def test_format_empty_no_format_spec(self, setup_no_argument):
-        assert format(setup_no_argument) is 'None'
+        assert format(setup_no_argument) == 'None'
 
     def test_no_format_spec(self, setup_fake_argument):
-        assert format(setup_fake_argument) is __argument__
+        assert format(setup_fake_argument) == __argument__
 
     def test_inequality(self, setup_no_argument, setup_fake_argument):
         assert setup_no_argument != setup_fake_argument
@@ -170,7 +168,7 @@ class TestiTDataModelMethods:
     @pytest.mark.xfail(reason='Issue in formatter')
     def test_format_spec(self):
         # Failing here.
-        assert format(ObservableiDataModel(10), 'x') is 'a'
+        assert format(ObservableiDataModel(10), 'x') == 'a'
 
     def test_repr_empty(self, setup_no_argument):
         assert str(setup_no_argument) == 'ObservableiDataModel()'
@@ -319,9 +317,11 @@ class TestiTDataSetItemMethod:
         assert object_under_test[__raw_data__] == 10
 
     def test_setitem_key_exception(self, iTData_setup_no_argument):
-        with pytest.raises(TypeError):
-            object_under_test = iTData_setup_no_argument
-            object_under_test.__setitem__(key=slice(6), value=10)
+        if int(sys.version.split('.')[1])<12:
+            # This exception comes only in python versions < 3.12
+            with pytest.raises(TypeError):
+                object_under_test = iTData_setup_no_argument
+                object_under_test.__setitem__(key=slice(6), value=10)
 
 
 class TestiTDataGetItemMethod:
@@ -627,15 +627,15 @@ class TestiTDataDictionaryConsistency:
         assert (values == {5})
 
     def test_method_get(self, iTData_as_dict):
-        assert iTData_as_dict.get('two', 3) is 2
-        assert iTData_as_dict.get('ten', 3) is 3
+        assert iTData_as_dict.get('two', 3) == 2
+        assert iTData_as_dict.get('ten', 3) == 3
 
     def test_method___get_item__exception(self, iTData_as_dict):
         with pytest.raises(KeyError):
             iTData_as_dict.__getitem__('ten')
 
     def test_method___get_item__(self, iTData_as_dict):
-        assert iTData_as_dict.__getitem__('two') is 2
+        assert iTData_as_dict.__getitem__('two') == 2
 
     def test_method_items(self, iTData_as_dict):
         view = iTData_as_dict.items()

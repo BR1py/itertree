@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 This code is taken from the itertree package:
-
-  ___ _____ _____ ____ _____ ____  _____ _____
- |_ _|_   _| ____|  _ \_   _|  _ \| ____| ____|
-  | |  | | |  _| | |_) || | | |_) |  _| |  _|
-  | |  | | | |___|  _ < | | |  _ <| |___| |___
- |___| |_| |_____|_| \_\|_| |_| \_\_____|_____|
-
+  _ _____ _____ _____ _____ _____ _____ _____
+ | |_   _|   __| __  |_   _| __  |   __|   __|
+ |-| | | |   __|    -| | | |    -|   __|   __|
+ |_| |_| |_____|__|__| |_| |__|__|_____|_____|
 
 https://pypi.org/project/itertree/
 GIT Home:
@@ -34,6 +31,8 @@ import collections
 # import timeit
 import pytest
 
+from manualtest.test_itertree_examples import root_path
+
 try:
     import numpy as np
     # only needed in case of numpy arrays in data
@@ -45,12 +44,15 @@ import pickle
 import timeit
 from types import GeneratorType
 from collections import OrderedDict
+from test_lib import import_from_path
 from itertree import *
 from itertree.itree_helpers import BLIST_ACTIVE
-
+from test_lib import import_from_path
 
 root_path = os.path.dirname(__file__)
 print('ROOT_PATH', root_path)
+
+#itertree.itree_data=import('itree_data',root_path+'../src/')
 
 def get_relpath_to_root(item_path):
     new_path = item_path.replace(root_path, '')

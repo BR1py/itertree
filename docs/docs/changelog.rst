@@ -5,6 +5,10 @@ Version 1.1.4
 
 Changed the modified MIT licence back to standard MIT
 
+Fix missing import in one of the test scripts
+
+Removed parameter "up_to_low" in iterators (no more depreciation warning generated).
+
 Version 1.1.3
 ===============
 

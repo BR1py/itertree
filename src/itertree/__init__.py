@@ -1,12 +1,9 @@
 """
 This code is taken from the itertree package:
-
-  ___ _____ _____ ____ _____ ____  _____ _____
- |_ _|_   _| ____|  _ \_   _|  _ \| ____| ____|
-  | |  | | |  _| | |_) || | | |_) |  _| |  _|
-  | |  | | | |___|  _ < | | |  _ <| |___| |___
- |___| |_| |_____|_| \_\|_| |_| \_\_____|_____|
-
+  _ _____ _____ _____ _____ _____ _____ _____
+ | |_   _|   __| __  |_   _| __  |   __|   __|
+ |-| | | |   __|    -| | | |    -|   __|   __|
+ |_| |_| |_____|__|__| |_| |__|__|_____|_____|
 
 https://pypi.org/project/itertree/
 GIT Home:
@@ -36,6 +33,7 @@ from .itree_helpers import iTLink, NoTag, NoKey, NoValue, Tag, \
 from .itree_main import iTree
 
 from . import itree_data as Data
+itree_data=Data
 from . import itree_filters as Filters
 from .itree_serializer.itree_render_dot import _iTreeRenderDot
 
