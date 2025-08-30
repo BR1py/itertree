@@ -186,7 +186,7 @@ print('\n\nThe given operations are not in all cases executable (shorten string)
 trees = {}
 trees2 = {}
 
-from itertree.examples.performance_analysis.test_append import TestBuildByAppendL1, TestBuildByAppendLn
+from itertree.examples.performance_analysis.check_append import AnalyseBuildByAppendL1, TestBuildByAppendLn
 from itertree.examples.performance_analysis.test_extend import TestBuildByExtendL1
 from itertree.examples.performance_analysis.test_insert import TestBuildByInsertL1
 from itertree.examples.performance_analysis.test_copy import TestCopyL1, TestCopyLn
@@ -239,7 +239,7 @@ class Test_level1_tree():
         )
 
     def test1_append_level1_tree(self):
-        test_item = self.instance_test_item(TestBuildByAppendL1)
+        test_item = self.instance_test_item(AnalyseBuildByAppendL1)
         if self.exec_test(1):
             self.trees, self.trees2 = test_item.test_exec()
         else:

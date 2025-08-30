@@ -20,7 +20,6 @@ CONTENT DESCRIPTION:
 Appends other packages to the performance tests.
 """
 
-import pytest
 import os
 import sys
 
@@ -32,7 +31,7 @@ if root_path not in sys.path:
 import itertree.examples.performance_analysis.base_performance
 BasePerformance=itertree.examples.performance_analysis.base_performance.BasePerformance
 
-class TestBuildByAppendL1(BasePerformance):
+class AnalyseBuildByAppendL1(BasePerformance):
 
     def get_header(self):
         out = 'Build tree via append operation'
