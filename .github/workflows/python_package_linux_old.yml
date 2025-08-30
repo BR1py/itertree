@@ -2,11 +2,11 @@ name: Pytest Package Linux with standard installation
 on: [push]
 jobs:
   Explore-Pytest-Action:
-      runs-on: ubuntu-latest
+      runs-on: ubuntu-18.04
       strategy:
         fail-fast: false
         matrix:
-          python-version: ["3.6","3.7","3.8", "3.9","3.10","3.11","3.12","3.13"] 
+          python-version: ["3.4.4","3.5.4"] 
       steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
