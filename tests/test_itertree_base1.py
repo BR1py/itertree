@@ -39,14 +39,23 @@ except Exception:
 import pickle
 import sys
 import timeit
+import importlib
 from types import GeneratorType
 from collections import OrderedDict
-
-root_path = os.path.dirname(os.path.dirname(__file__))
+import pathlib
+root_path = os.path.dirname(os.path.dirname(__file__))+'/src'
 print('ROOT_PATH', root_path)
 if root_path not in sys.path:
     sys.path.append(root_path)
 
+def import_from_path(module_name, file_path):
+    spec = importlib.util.spec_from_file_location(module_name, file_path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = module
+    spec.loader.exec_module(module)
+    return module
+
+#itertree=import_from_path('itertree',root_path+'/itertree/.__init__.py')
 import itertree
 from itertree import *
 from itertree.itree_helpers import itree_list, BLIST_ACTIVE
