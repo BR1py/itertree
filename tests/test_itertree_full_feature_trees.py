@@ -47,7 +47,6 @@ from collections import OrderedDict
 from itertree import *
 from itertree.itree_helpers import BLIST_ACTIVE
 
-from manualtest.test_itertree_examples import root_path
 root_path = os.path.dirname(__file__)
 print('ROOT_PATH', root_path)
 
