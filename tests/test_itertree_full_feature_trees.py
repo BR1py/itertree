@@ -31,7 +31,6 @@ import collections
 # import timeit
 import pytest
 
-from manualtest.test_itertree_examples import root_path
 
 try:
     import numpy as np
@@ -44,11 +43,11 @@ import pickle
 import timeit
 from types import GeneratorType
 from collections import OrderedDict
-from test_lib import import_from_path
+
 from itertree import *
 from itertree.itree_helpers import BLIST_ACTIVE
-from test_lib import import_from_path
 
+from manualtest.test_itertree_examples import root_path
 root_path = os.path.dirname(__file__)
 print('ROOT_PATH', root_path)
 
