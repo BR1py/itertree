@@ -32,7 +32,7 @@ import pytest
 root_path = os.path.dirname(os.path.dirname(__file__))
 print('ROOT_PATH', root_path)
 if root_path not in sys.path:
-    sys.path.append(root_path)
+    sys.path.append(root_path+'/..')
 
 tmp_dir=os.path.join(os.path.dirname(__file__),'tmp')
 if os.path.exists(tmp_dir):

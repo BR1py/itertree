@@ -37,9 +37,17 @@ except Exception:
     np = None
 
 import pickle
+import sys
 import timeit
 from types import GeneratorType
 from collections import OrderedDict
+
+root_path = os.path.dirname(os.path.dirname(__file__))
+print('ROOT_PATH', root_path)
+if root_path not in sys.path:
+    sys.path.append(root_path+'/..')
+
+import itertree
 from itertree import *
 from itertree.itree_helpers import itree_list, BLIST_ACTIVE
 
