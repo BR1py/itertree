@@ -18,7 +18,8 @@
    docs/background
    docs/changelog
    docs/licence
-
+   docs/changelog
+   
 .. _intro:
 
 .. image:: https://img.shields.io/badge/itertree-https%3A%2F%2Fgithub.com%2FBR1py%2Fitertree-blue?logo=github
@@ -88,7 +89,7 @@ Status and compatibility information
    Please use the `github issues <https://github.com/BR1py/itertree/issues>`_
    to ask questions report problems.
 
-.. |release| replace:: Version | 1.1.3|
+.. |release| replace:: Version | 1.1.4|
 .. _release: https://pypi.python.org/pypi/itertree/
 
 The original implementation is done in Python 3.9 and it is tested under Python 3.5, 3.6 and 3.9. The package
@@ -96,8 +97,8 @@ should work for all Python >= 3.4 environments.
 
 The actual development status is "*released*" and stable.
 
-The Software and all related documents are published under MIT license extended by a human protect patch
-(see :ref:`Background Licence <background_licence>`).
+The Software and all related documents are published under MIT license
+(for some additional remarks related to the usage of the package see :ref:`Licence+Human Protection <background_licence>`).
 
 ************************************
 Feature Overview

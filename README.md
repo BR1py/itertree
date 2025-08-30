@@ -3,7 +3,7 @@
 ![Static Badge](https://img.shields.io/badge/python-%3E%3D3.4-green)
 [![Static Badge](https://img.shields.io/badge/licence-MIT(hpp)-green)](https://github.com/BR1py/itertree/blob/main/LICENSE)
 [![Static Badge](https://img.shields.io/badge/documenation-https%3A%2F%2Fitertree.readthedocs.io%2Fen%2Flatest%2F-yellow?logo=readthedocs)](https://itertree.readthedocs.io/en/latest/)
-![GitHub Release 1.1.3 - Published_At](https://img.shields.io/github/release-date/Br1py/itertree)
+![GitHub Release 1.1.4 - Published_At](https://img.shields.io/github/release-date/Br1py/itertree)
 
 
 # itertree python package
