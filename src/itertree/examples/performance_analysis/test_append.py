@@ -21,8 +21,16 @@ Appends other packages to the performance tests.
 """
 
 import pytest
+import os
+import sys
 
-from itertree.examples.performance_analysis.base_performance import BasePerformance
+root_path = os.path.dirname(os.path.dirname(__file__))
+print('ROOT_PATH', root_path)
+if root_path not in sys.path:
+    sys.path.append(root_path)
+
+import itertree.examples.performance_analysis.base_performance
+BasePerformance=itertree.examples.performance_analysis.base_performance.BasePerformance
 
 class TestBuildByAppendL1(BasePerformance):
 
