@@ -22,14 +22,17 @@ The main goal of this test is that the examples run without any exception
 import os
 import sys
 import shutil
+import importlib
+import sys
+
 import collections
 # import timeit
 import pytest
 
-from itertree import *
-
 root_path = os.path.dirname(os.path.dirname(__file__))
 print('ROOT_PATH', root_path)
+if root_path not in sys.path:
+    sys.path.append(root_path)
 
 tmp_dir=os.path.join(os.path.dirname(__file__),'tmp')
 if os.path.exists(tmp_dir):
@@ -37,6 +40,15 @@ if os.path.exists(tmp_dir):
 os.makedirs(tmp_dir)
 print('TMP_DIR', tmp_dir)
 
+
+def import_from_path(module_name, file_path):
+    spec = importlib.util.spec_from_file_location(module_name, file_path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = module
+    spec.loader.exec_module(module)
+    return module
+
+from itertree import *
 
 print('Test start')
 
