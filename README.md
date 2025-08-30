@@ -11,7 +11,7 @@
 
 ## Welcome to itertree python package
 
-Release 1.1.3  -  released
+Release 1.2.0  -  released
 
 * Do you have to store data in a tree like structure?
 * Do you need good performance and a reach feature set in the tree object?
@@ -53,14 +53,14 @@ are obviously only possible if the other packages are available.
 
 But we have two recommendations which give the package additional performance:
 
-* blist  -  *Highly recommended!* This will speedup the iTree performance in huge trees especially for inserting and lefthandside operations
+* blist  -  *Highly recommended!* This will speed up the iTree performance in huge trees especially for inserting and lefthandside operations
 
     * package link: https://pypi.org/project/blist/
     * documentation: http://stutzbachenterprises.com/blist/.
 
     -> in case the package is not found normal list object will be used instead
 
-    -> If you like to utilize blist under Python 3.10 and 3.11 read the installation hints in the
+    -> If you like to utilize blist under Python >3.10 read the installation hints in the
        Introduction of the itertree documentation.
 
 
@@ -146,7 +146,7 @@ of the parent sub-tree (like `append()` in lists).
 Each `iTree`-object has a tag which is the main part of the identifier of the object. For tags you can use any
 type of hashable objects.
 
-Different than the keys in dictionaries the given tags must not be unique! The user should understand that in general
+Different as the keys in dictionaries the given tags must not be unique! The user should understand that in general
 `iTree`-objects behave more like nested lists than nested dicts:
  
     >>> root.append(iTree('child', 5))

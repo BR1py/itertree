@@ -13,8 +13,13 @@ It's recommended to have a look on the related examples too (stored in the examp
 
 **Status and compatibility information:**
 
-The original implementation is done in python 3.9 and it is tested under python 3.5, 3.9 and 3.11. It should work for
-all Python-versions  >= 3.4.
+The original implementation is done in Python 3.9.
+
+This release is tested in different OS for the Python versions:
+
+3.6, 3.7, 3.8, 3.9, 3.11, 3.12, 3.13
+
+It should work for all Python versions  >= 3.4.
 
 From version 1.0.0 on we see the package as released and stable. The unit and integration test suite should target a
 huge amount of functionalities and use cases. We will try to keep the interface stable too.
@@ -28,7 +33,7 @@ Quick start - the basics
 We really hope that the usage of the itertree package is intuitive. If the user is familiar with `list` and
 `dict` objects the basic functionality should be easy to understand. If you extend the functions to nested lists or
 dicts you already get a tree like structure. What is really a bit complex are the functions related to tree iterations
-and filterings but of course the "simple" iteration like in the other objects are available too.
+and filtering but of course the "simple" iteration like in the other objects are available too.
 
 Build the object
 ++++++++++++++++
