@@ -1,8 +1,8 @@
-name: Pytest Package UBUNTU with standard installation
+name: Pytest Package Linux with standard installation
 on: [push]
 jobs:
   Explore-Pytest-Action:
-      runs-on: ubuntu-latest
+      runs-on: linux-latest
       strategy:
         fail-fast: false
         matrix:
