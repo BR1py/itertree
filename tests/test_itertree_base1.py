@@ -45,7 +45,7 @@ from collections import OrderedDict
 root_path = os.path.dirname(os.path.dirname(__file__))
 print('ROOT_PATH', root_path)
 if root_path not in sys.path:
-    sys.path.append(root_path+'/..')
+    sys.path.append(root_path)
 
 import itertree
 from itertree import *
