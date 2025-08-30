@@ -208,7 +208,7 @@ tutorial_QS1 = [
     "len(root.deep)",
     "# flatten iterators over all in-depth items:",
     "[i for i in root.deep] # up-down order",
-    "[i for i in root.deep.tag_idx_paths(up_to_low=False)] # tag_idx related iterator; down-up order",
+    "[i for i in root.deep.tag_idx_paths(options=ITER.UP)] # tag_idx related iterator; down-up order",
 
     "",
     '# .. start: tutorial-code QS6',
@@ -630,7 +630,7 @@ tutorial_13 = [
     "",
     "# deep iterators:",
     "list(root.deep)  # deep counterpart of level1 __iter__() iterator",
-    "list(root.deep.iter(up_to_low=False))  # changed iteration order bottom-> up",
+    "list(root.deep.iter(options=ITER.UP))  # changed iteration order bottom-> up",
     "list(root.deep.tag_idx_paths()) # deep counterpart of level1 items() iterator",
     "[(k,i.value) for k,i in root.deep.tag_idx_paths()]  # deep counterpart of level1 items(values_only=True) iterator",
     "[k for k,_ in root.deep.tag_idx_paths()]  # deep counterpart level1 to keys() iterator",
@@ -802,8 +802,8 @@ tutorial_20 = [
     "        subitem = item.append(iTree('%i_%i' % (i,ii), i*10+ii))\n"
     "        for iii in range(2):\n"
     "            subitem.append(iTree('%i_%i_%i' % (i, ii,iii), i * 100 + ii*10+iii))",
-    "[i for i in root.deep.iter(up_to_low=True)][0:5] # show just a part",
-    "[i for i in root.deep.iter(up_to_low=False)][0:5] # show just a part",
+    "[i for i in root.deep.iter(options=ITER.DOWN)][0:5] # show just a part",
+    "[i for i in root.deep.iter(options=ITER.UP)][0:5] # show just a part",
 ]
 exec_and_print(tutorial_20, 'tutorial_20')
 

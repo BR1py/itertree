@@ -35,7 +35,7 @@ Human protection
 ****************
 
 In older versions we added the human protect patch to the MIT licence.
-The patch was removed from the licence from version 1.1.4 on.
+The patch was removed from the licence from version 1.2.0 on.
 
 This is just made for compatibility reasons related to other software projects using this package.
 For the authors the human protect patch would still make sense. But we believe that a wider usage

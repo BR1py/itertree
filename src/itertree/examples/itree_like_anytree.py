@@ -57,7 +57,7 @@ class NodeITDeep(_iTreeIndepthTree):
         return self.iter(add_self=True)
 
     def postorder(self):
-        return self.iter(up_to_low=False,add_self=True)
+        return self.iter(options=ITER.UP,add_self=True)
 
     def levelorder(self):
         return self.iter_levels(start_levels=0)
@@ -200,7 +200,7 @@ assert len(result_at)==len(result_it2), '%i!=%i'%(len(result_at),len(result_it2)
 
 print('Get postorder iterator')
 result_at=[n.name for n in PostOrderIter(root_at)]
-result_it=[n.tag for n in chain(root_it.deep.iter(up_to_low=False),[root_it])]
+result_it=[n.tag for n in chain(root_it.deep.iter(options=ITER.UP),[root_it])]
 result_it2=[n.name for n in root_it2.deep.postorder()]
 
 

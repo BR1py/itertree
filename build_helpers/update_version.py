@@ -22,7 +22,7 @@ CONTENT DESCRIPTION:
 This helper script is used to replace the version information in the whole source package
 """
 import os
-VERSION='1.1.4'
+VERSION='1.2.0'
 
 def replacer(filename,pre_tag,post_tag):
     print('Update version in %s' % filepath)

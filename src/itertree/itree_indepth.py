@@ -561,7 +561,7 @@ class _iTreeIndepthTree(_iTreeIndepthIter):
                     del iterators[-1]
 
 
-    def iter(self, filter_method=None, options=DOWN, up_to_low=None):
+    def iter(self, filter_method=None, options=DOWN):
         """
 
         In-depth iterator that iterates over all items in the nested `iTree`-structure. The iterator flattens the
@@ -606,14 +606,6 @@ class _iTreeIndepthTree(_iTreeIndepthIter):
         # ITER.DOWN exists only for downward compatibility
         if options == 0:
             options = options | UP
-        if up_to_low is not None:
-            if not up_to_low:
-                options = options | UP
-            warnings.warn(
-                "The parameter up_to_low will be removed soon. Use options=ITER.UP instead.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
         if ITER.valid_option(UP | DOWN | REVERSE | SELF | FILTER_ANY):
             raise AttributeError(ITER.valid_option(options))
         if options & FILTER_ANY:
@@ -897,7 +889,7 @@ class _iTreeIndepthTree(_iTreeIndepthIter):
                         yielded_items.add(id(i))
 
 
-    def idx_paths(self, filter_method=None, options=DOWN, up_to_low=None):
+    def idx_paths(self, filter_method=None, options=DOWN):
         """
         Call via: **iTree().deep.idx_paths()**
 
@@ -942,14 +934,6 @@ class _iTreeIndepthTree(_iTreeIndepthIter):
         # ITER.DOWN exists only for downward compatibility
         if options == 0:
             options = options | UP
-        if up_to_low is not None:
-            if not up_to_low:
-                options = options | UP
-            warnings.warn(
-                "The parameter up_to_low will be removed soon. Use options=ITER.UP instead.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
         if ITER.valid_option(UP | DOWN | REVERSE | SELF | FILTER_ANY):
             raise AttributeError(ITER.valid_option(options))
         if options & FILTER_ANY:
@@ -964,7 +948,7 @@ class _iTreeIndepthTree(_iTreeIndepthIter):
 
     # ToDo:
 
-    def tag_idx_paths(self, filter_method=None, options=DOWN, up_to_low=None):
+    def tag_idx_paths(self, filter_method=None, options=DOWN):
         """
         Call via: **iTree().deep.tag_idx_paths()**
 
@@ -1009,14 +993,6 @@ class _iTreeIndepthTree(_iTreeIndepthIter):
         # ITER.DOWN exists only for downward compatibility
         if options == 0:
             options = options | UP
-        if up_to_low is not None:
-            if not up_to_low:
-                options = options | UP
-            warnings.warn(
-                "The parameter up_to_low will be removed soon. Use options=ITER.UP instead.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
         if ITER.valid_option(UP | DOWN | REVERSE | SELF | FILTER_ANY):
             raise AttributeError(ITER.valid_option(options))
         if options & FILTER_ANY:

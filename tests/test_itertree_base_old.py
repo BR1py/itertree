@@ -202,7 +202,7 @@ class Test_iTreeBase:
 
         # down->top iter
         lookup = [0, 1, 2, 3, -1, -1, 0, 1, 2, 3, 4, -1, 0, 1, 2, -1]
-        for i, item in enumerate(root.deep.iter(up_to_low=False)):
+        for i, item in enumerate(root.deep.iter(options=ITER.UP)):
             # print(item,i,lookup[i])
             if i < len(lookup):
                 assert item.value['level'][1] == lookup[i]

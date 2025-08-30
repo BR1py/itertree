@@ -89,7 +89,7 @@ Status and compatibility information
    Please use the `github issues <https://github.com/BR1py/itertree/issues>`_
    to ask questions report problems.
 
-.. |release| replace:: Version | 1.1.4|
+.. |release| replace:: Version | 1.2.0|
 .. _release: https://pypi.python.org/pypi/itertree/
 
 The original implementation is done in Python 3.9 and it is tested under Python 3.5, 3.6 and 3.9. The package

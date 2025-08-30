@@ -1,6 +1,6 @@
 .. _changelog:
 
-Version 1.1.4
+Version 1.2.0
 ===============
 
 Changed the modified MIT licence back to standard MIT

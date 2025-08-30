@@ -26,7 +26,7 @@ from setuptools import setup
 
 setup(
     name='itertree',
-    version='1.1.4',
+    version='1.2.0',
     packages=['itertree', 'itertree.examples', 'itertree.itree_serializer','itertree.itree_indepth_helpers'],
     package_dir={'': 'src'},
     url='https://github.com/BR1py/itertree',

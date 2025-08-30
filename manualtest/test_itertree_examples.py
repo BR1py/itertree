@@ -48,6 +48,7 @@ def import_from_path(module_name, file_path):
     spec.loader.exec_module(module)
     return module
 
+import itertree
 from itertree import *
 
 print('Test start')

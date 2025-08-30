@@ -196,7 +196,7 @@ Additional in-depth functionalities (especially deep-iterators) can be found in 
   >>> # flatten iterators over all in-depth items:
   >>> [i for i in root.deep] # up-down order
   [iTree('item0', value=0), iTree('item1', value=1, subtree=[iTree('sub_item0', value=0.1)]), iTree('sub_item0', value=0.1), iTree((1, 2), value=3), iTree('item1', value={'value1': 2, 'value2': 3}, subtree=[iTree('sub_item0', value=4.1)]), iTree('sub_item0', value=4.1)]
-  >>> [i for i in root.deep.tag_idx_paths(up_to_low=False)] # tag_idx related iterator; down-up order
+  >>> [i for i in root.deep.tag_idx_paths(options=ITER.UP)] # tag_idx related iterator; down-up order
   [((('item0', 0),), iTree('item0', value=0)), ((('item1', 0), ('sub_item0', 0)), iTree('sub_item0', value=0.1)), ((('item1', 0),), iTree('item1', value=1, subtree=[iTree('sub_item0', value=0.1)])), ((((1, 2), 0),), iTree((1, 2), value=3)), ((('item1', 1), ('sub_item0', 0)), iTree('sub_item0', value=4.1)), ((('item1', 1),), iTree('item1', value={'value1': 2, 'value2': 3}, subtree=[iTree('sub_item0', value=4.1)]))]
   
 
@@ -1994,8 +1994,24 @@ Most in-depth iteration-methods have additional parameters:
    * `filter_method` filter parameter which allows
      the hierarchical-filtering inside the iteration loops.
 
-   * `up_to_low` allows to select the
-     direction of the iteration top->down or bottom-> up (default: `up_to_low=True`).
+   * `options` allows to select the
+     direction of the iteration via flags:
+
+     * ITER.DOWN - top to down level iteration (default)
+
+     * ITER.UP - down to top level iteration
+
+     * ITER.REVERSE -
+       The children of a item are iterated in the reversed direction (high index to zero index).
+       The default iteration direction for the children is zero index to highest index)
+
+     * ITER.SELF -
+       In the iteration the calling object (self) will be included.
+       The default is that the calling object is not part of the iteration
+
+     * ITER.FILTER_ANY -
+       This flag has effect if a filter_method is given. It enables the pythons
+       build_in `filter()` on any iterated object. The default is a hierarchical filtering.
 
 
 All the **in-depth** iteration-methods are reached via the helper class `iTree.deep`:
@@ -2026,11 +2042,6 @@ We have several options which influences the way we iterate over the tree they c
       build_in `filter()` on any iterated object (non hierarchical filtering).
       The default is a hierarchical filtering.
 
-    .. note:: Only for downward compatibility with the depreciated positional `up_to_low`-parameter the option
-               `ITER.DOWN` and 0 (~ ITER.UP) exists too. If `ITER.DOWN | ITER.UP` is combined the option
-               `ITER.DOWN` will be ignored. In general we can say that using ITER.DOWN is not recommended.
-
-               The named argument `up_to_low` still exists too. But if used a depreciation warning will be given.
 
 .. start: tutorial-code 20
 
@@ -2043,9 +2054,9 @@ We have several options which influences the way we iterate over the tree they c
           subitem = item.append(iTree('%i_%i' % (i,ii), i*10+ii))
           for iii in range(2):
               subitem.append(iTree('%i_%i_%i' % (i, ii,iii), i * 100 + ii*10+iii))
-  >>> [i for i in root.deep.iter(up_to_low=True)][0:5] # show just a part
+  >>> [i for i in root.deep.iter(options=ITER.DOWN)][0:5] # show just a part
   [iTree('0', value=0, subtree=[iTree('0_0', value=0, subtree=[iTree('0_0_0', value=0), iTree('0_0_1', value=1)]), iTree('0_1', value=1, subtree=[iTree('0_1_0', value=10), iTree('0_1_1', value=11)])]), iTree('0_0', value=0, subtree=[iTree('0_0_0', value=0), iTree('0_0_1', value=1)]), iTree('0_0_0', value=0), iTree('0_0_1', value=1), iTree('0_1', value=1, subtree=[iTree('0_1_0', value=10), iTree('0_1_1', value=11)])]
-  >>> [i for i in root.deep.iter(up_to_low=False)][0:5] # show just a part
+  >>> [i for i in root.deep.iter(options=ITER.UP)][0:5] # show just a part
   [iTree('0_0_0', value=0), iTree('0_0_1', value=1), iTree('0_0', value=0, subtree=[iTree('0_0_0', value=0), iTree('0_0_1', value=1)]), iTree('0_1_0', value=10), iTree('0_1_1', value=11)]
 
 .. end - entry created: 2023-06-22T21:38:27
@@ -2371,7 +2382,7 @@ In the following example we create based on the in-depth generators lists and di
   >>> # deep iterators:
   >>> list(root.deep)  # deep counterpart of level1 __iter__() iterator
   [iTree('one', value=1, subtree=[iTree('subone', value=1.1), iTree('subtwo', value=1.2)]), iTree('subone', value=1.1), iTree('subtwo', value=1.2), iTree('two', value=2), iTree('three', value=3)]
-  >>> list(root.deep.iter(up_to_low=False))  # changed iteration order bottom-> up
+  >>> list(root.deep.iter(options=ITER.UP))  # changed iteration order bottom-> up
   [iTree('subone', value=1.1), iTree('subtwo', value=1.2), iTree('one', value=1, subtree=[iTree('subone', value=1.1), iTree('subtwo', value=1.2)]), iTree('two', value=2), iTree('three', value=3)]
   >>> list(root.deep.tag_idx_paths()) # deep counterpart of level1 items() iterator
   [((('one', 0),), iTree('one', value=1, subtree=[iTree('subone', value=1.1), iTree('subtwo', value=1.2)])), ((('one', 0), ('subone', 0)), iTree('subone', value=1.1)), ((('one', 0), ('subtwo', 0)), iTree('subtwo', value=1.2)), ((('two', 0),), iTree('two', value=2)), ((('three', 0),), iTree('three', value=3))]
