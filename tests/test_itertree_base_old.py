@@ -30,6 +30,7 @@ import sys
 import collections
 import timeit
 import pytest
+import time
 
 try:
     import numpy as np
