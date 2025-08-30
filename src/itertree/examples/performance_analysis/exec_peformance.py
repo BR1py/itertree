@@ -188,15 +188,15 @@ trees2 = {}
 
 from itertree.examples.performance_analysis.check_append import AnalyseBuildByAppendL1, TestBuildByAppendLn
 from itertree.examples.performance_analysis.check_extend import TestBuildByExtendL1
-from itertree.examples.performance_analysis.test_insert import TestBuildByInsertL1
+from itertree.examples.performance_analysis.check_insert import TestBuildByInsertL1
 from itertree.examples.performance_analysis.check_copy import TestCopyL1, TestCopyLn
 from itertree.examples.performance_analysis.check_compare import TestCompareL1
-from itertree.examples.performance_analysis.test_get_by_idx import TestGetByIdxL1, TestGetByIdxLn
-from itertree.examples.performance_analysis.test_get_by_key import TestGetByKeyL1, TestGetByKeyLn
-from itertree.examples.performance_analysis.test_get_by_idx_slice import TestGetByIdxSliceL1
-from itertree.examples.performance_analysis.test_iter import TestIterL1, TestIterLn
-from itertree.examples.performance_analysis.test_save_load import TestSaveLoadL1
-from itertree.examples.performance_analysis.test_itree_specific import TestiTreeSpecificL1, TestiTreeSpecificLn
+from itertree.examples.performance_analysis.check_get_by_idx import TestGetByIdxL1, TestGetByIdxLn
+from itertree.examples.performance_analysis.check_get_by_key import TestGetByKeyL1, TestGetByKeyLn
+from itertree.examples.performance_analysis.check_get_by_idx_slice import TestGetByIdxSliceL1
+from itertree.examples.performance_analysis.check_iter import TestIterL1, TestIterLn
+from itertree.examples.performance_analysis.check_save_load import TestSaveLoadL1
+from itertree.examples.performance_analysis.check_itree_specific import TestiTreeSpecificL1, TestiTreeSpecificLn
 from itertree.examples.performance_analysis.check_delete import TestDeleteL1
 
 
