@@ -1,3 +1,25 @@
+# -*- coding: utf-8 -*-
+"""
+This code is taken from the itertree package:
+  _ _____ _____ _____ _____ _____ _____ _____
+ | |_   _|   __| __  |_   _| __  |   __|   __|
+ |-| | | |   __|    -| | | |    -|   __|   __|
+ |_| |_| |_____|__|__| |_| |__|__|_____|_____|
+
+https://pypi.org/project/itertree/
+GIT Home:
+https://github.com/BR1py/itertree
+The documentation can be found here:
+https://itertree.readthedocs.io/en/latest/index.html
+
+The code is published under MIT license
+For more information see: https://en.wikipedia.org/wiki/MIT_License
+
+CONTENT DESCRIPTION:
+
+Execution code for the performance analysis.
+"""
+
 from __future__ import absolute_import
 
 import pickle
@@ -26,8 +48,8 @@ SUB_EXEC_CONTROL = [1,  # append
                     ]
 CREATE_DOCS = [1]
 # EXEC_CONTROL = ['Ln_100','Ln_500','Ln_1000']
-EXEC_CONTROL = ['L1_500000','Ln_1000']
-SUB_EXEC_CONTROL = [1]
+#EXEC_CONTROL = ['L1_500000','Ln_1000']
+#SUB_EXEC_CONTROL = [1]
 
 # EXEC_CONTROL = ['L1_5000', 'L1_50000', 'L1_500000','Ln_100','Ln_500','Ln_1000']
 # SUB_EXEC_CONTROL = [1,6]
@@ -164,18 +186,18 @@ print('\n\nThe given operations are not in all cases executable (shorten string)
 trees = {}
 trees2 = {}
 
-from itertree.examples.performance_analysis.test_append import TestBuildByAppendL1, TestBuildByAppendLn
-from itertree.examples.performance_analysis.test_extend import TestBuildByExtendL1
-from itertree.examples.performance_analysis.test_insert import TestBuildByInsertL1
-from itertree.examples.performance_analysis.test_copy import TestCopyL1, TestCopyLn
-from itertree.examples.performance_analysis.test_compare import TestCompareL1
-from itertree.examples.performance_analysis.test_get_by_idx import TestGetByIdxL1, TestGetByIdxLn
-from itertree.examples.performance_analysis.test_get_by_key import TestGetByKeyL1, TestGetByKeyLn
-from itertree.examples.performance_analysis.test_get_by_idx_slice import TestGetByIdxSliceL1
-from itertree.examples.performance_analysis.test_iter import TestIterL1, TestIterLn
-from itertree.examples.performance_analysis.test_save_load import TestSaveLoadL1
-from itertree.examples.performance_analysis.test_itree_specific import TestiTreeSpecificL1, TestiTreeSpecificLn
-from itertree.examples.performance_analysis.test_delete import TestDeleteL1
+from itertree.examples.performance_analysis.check_append import AnalyseBuildByAppendL1, TestBuildByAppendLn
+from itertree.examples.performance_analysis.check_extend import TestBuildByExtendL1
+from itertree.examples.performance_analysis.check_insert import TestBuildByInsertL1
+from itertree.examples.performance_analysis.check_copy import TestCopyL1, TestCopyLn
+from itertree.examples.performance_analysis.check_compare import TestCompareL1
+from itertree.examples.performance_analysis.check_get_by_idx import TestGetByIdxL1, TestGetByIdxLn
+from itertree.examples.performance_analysis.check_get_by_key import TestGetByKeyL1, TestGetByKeyLn
+from itertree.examples.performance_analysis.check_get_by_idx_slice import TestGetByIdxSliceL1
+from itertree.examples.performance_analysis.check_iter import TestIterL1, TestIterLn
+from itertree.examples.performance_analysis.check_save_load import TestSaveLoadL1
+from itertree.examples.performance_analysis.check_itree_specific import TestiTreeSpecificL1, TestiTreeSpecificLn
+from itertree.examples.performance_analysis.check_delete import TestDeleteL1
 
 
 class Test_level1_tree():
@@ -217,7 +239,7 @@ class Test_level1_tree():
         )
 
     def test1_append_level1_tree(self):
-        test_item = self.instance_test_item(TestBuildByAppendL1)
+        test_item = self.instance_test_item(AnalyseBuildByAppendL1)
         if self.exec_test(1):
             self.trees, self.trees2 = test_item.test_exec()
         else:

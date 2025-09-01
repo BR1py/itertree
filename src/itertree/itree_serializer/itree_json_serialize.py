@@ -1,36 +1,20 @@
-# -*- coding: utf-8 -*-
 """
 This code is taken from the itertree package:
+  _ _____ _____ _____ _____ _____ _____ _____
+ | |_   _|   __| __  |_   _| __  |   __|   __|
+ |-| | | |   __|    -| | | |    -|   __|   __|
+ |_| |_| |_____|__|__| |_| |__|__|_____|_____|
+
 https://pypi.org/project/itertree/
 GIT Home:
 https://github.com/BR1py/itertree
 The documentation can be found here:
 https://itertree.readthedocs.io/en/latest/index.html
 
-The code is published under MIT license incl. human protect patch:
-
-The MIT License (MIT) incl. human protect patch
-Copyright © 2022 <copyright holders>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-documentation files (the “Software”), to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
-to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-Human protect patch:
-The program and its derivative work will neither be modified or executed to harm any human being nor through
-inaction permit any human being to be harmed.
-
-The above copyright notice and this permission notice shall be included in all copies or substantial
-portions of the Software.
-
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
-THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
-OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT
-OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
+The code is published under MIT license
 For more information see: https://en.wikipedia.org/wiki/MIT_License
 
+CONTENT DESCRIPTION:
 
 This part of code contains the standard iTree serializers (JSON and rendering)
 """
@@ -39,6 +23,7 @@ from __future__ import absolute_import
 
 import gzip
 import hashlib
+import traceback
 from collections import OrderedDict, deque
 
 # For serializing we (try) to import some modules:
@@ -83,8 +68,9 @@ except ImportError:
     np_loaded = False
 
 from ..itree_helpers import *
+import itertree
 
-DT_SERIALIZE_VERSION = "2.0.0"
+DT_SERIALIZE_VERSION = "2.0.1"
 DT_SERIALIZE_MAJOR_VERSION = "2.0"
 
 
@@ -209,6 +195,7 @@ class iTStdJSONSerializer2(object):
             module_name = o[3]
             if module_name.endswith('itree_data'):
                 try:
+                    Data=itertree.Data
                     object_class = eval('Data.%s' % class_name)
                 except:
                     pass

@@ -1,3 +1,26 @@
+# -*- coding: utf-8 -*-
+"""
+This code is taken from the itertree package:
+  _ _____ _____ _____ _____ _____ _____ _____
+ | |_   _|   __| __  |_   _| __  |   __|   __|
+ |-| | | |   __|    -| | | |    -|   __|   __|
+ |_| |_| |_____|__|__| |_| |__|__|_____|_____|
+
+https://pypi.org/project/itertree/
+GIT Home:
+https://github.com/BR1py/itertree
+The documentation can be found here:
+https://itertree.readthedocs.io/en/latest/index.html
+
+The code is published under MIT license
+For more information see: https://en.wikipedia.org/wiki/MIT_License
+
+CONTENT DESCRIPTION:
+
+This part of code contains
+the integration tests related to "full featured" trees
+"""
+
 import os
 import sys
 import timeit
@@ -7,6 +30,7 @@ import shutil
 import collections
 # import timeit
 import pytest
+
 
 try:
     import numpy as np
@@ -19,12 +43,14 @@ import pickle
 import timeit
 from types import GeneratorType
 from collections import OrderedDict
+
 from itertree import *
 from itertree.itree_helpers import BLIST_ACTIVE
 
-
 root_path = os.path.dirname(__file__)
 print('ROOT_PATH', root_path)
+
+#itertree.itree_data=import('itree_data',root_path+'../src/')
 
 def get_relpath_to_root(item_path):
     new_path = item_path.replace(root_path, '')

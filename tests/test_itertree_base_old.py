@@ -1,36 +1,21 @@
 # -*- coding: utf-8 -*-
 """
 This code is taken from the itertree package:
+  _ _____ _____ _____ _____ _____ _____ _____
+ | |_   _|   __| __  |_   _| __  |   __|   __|
+ |-| | | |   __|    -| | | |    -|   __|   __|
+ |_| |_| |_____|__|__| |_| |__|__|_____|_____|
+
 https://pypi.org/project/itertree/
 GIT Home:
 https://github.com/BR1py/itertree
 The documentation can be found here:
 https://itertree.readthedocs.io/en/latest/index.html
 
-The code is published under MIT license incl. human protect patch:
-
-The MIT License (MIT) incl. human protect patch
-Copyright © 2022 <copyright holders>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-documentation files (the “Software”), to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
-to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-Human protect patch:
-The program and its derivative work will neither be modified or executed to harm any human being nor through
-inaction permit any human being to be harmed.
-
-The above copyright notice and this permission notice shall be included in all copies or substantial
-portions of the Software.
-
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
-THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
-OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT
-OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
+The code is published under MIT license
 For more information see: https://en.wikipedia.org/wiki/MIT_License
 
+CONTENT DESCRIPTION:
 
 This part of code contains
 the integration tests related to the base iTree functionalities
@@ -42,6 +27,7 @@ import sys
 import collections
 import timeit
 import pytest
+import time
 
 try:
     import numpy as np
@@ -216,7 +202,7 @@ class Test_iTreeBase:
 
         # down->top iter
         lookup = [0, 1, 2, 3, -1, -1, 0, 1, 2, 3, 4, -1, 0, 1, 2, -1]
-        for i, item in enumerate(root.deep.iter(up_to_low=False)):
+        for i, item in enumerate(root.deep.iter(options=ITER.UP)):
             # print(item,i,lookup[i])
             if i < len(lookup):
                 assert item.value['level'][1] == lookup[i]
@@ -825,6 +811,19 @@ class Test_iTreeBase:
         target_path = root_data_path + '/out.itz'
         target_path2 = root_data_path + '/out.itr'
         target_path3 = root_data_path + '/out2.itz'
+        # to find a valid dir for GITHUB action we search a bit:
+        if not os.path.exists(root_data_path):
+            os.makedirs(root_data_path)
+            time.sleep(1)
+            if not os.path.exists(root_data_path):
+                root_data_path=os.path.dirname(root_data_path)
+                if not os.path.exists(root_data_path):
+                    os.makedirs(root_data_path)
+                    time.sleep(1)
+                    if not os.path.exists(root_data_path):
+                        root_data_path = os.path.dirname(root_data_path)
+                        if not os.path.exists(root_data_path):
+                            os.makedirs(root_data_path)
 
         print('Outputfile: %s' % os.path.abspath(target_path))
 
@@ -832,6 +831,7 @@ class Test_iTreeBase:
         if np is not None:
             root += iTree('NUMPY', value={'myarray': np.array([1.5, 4, 3.6, 467])})
         root += iTree('OD', value={'od': collections.OrderedDict([('C', 'c'), ('A', 'a'), ('B', 'b')])})
+
         root.dump(target_path, overwrite=True)
 
         root.dump(target_path2, pack=False, overwrite=True)

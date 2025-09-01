@@ -1,39 +1,25 @@
 # -*- coding: utf-8 -*-
 """
 This code is taken from the itertree package:
+  _ _____ _____ _____ _____ _____ _____ _____
+ | |_   _|   __| __  |_   _| __  |   __|   __|
+ |-| | | |   __|    -| | | |    -|   __|   __|
+ |_| |_| |_____|__|__| |_| |__|__|_____|_____|
+
 https://pypi.org/project/itertree/
 GIT Home:
 https://github.com/BR1py/itertree
 The documentation can be found here:
 https://itertree.readthedocs.io/en/latest/index.html
 
-The code is published under MIT license incl. human protect patch:
-
-The MIT License (MIT) incl. human protect patch
-Copyright © 2022 <copyright holders>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-documentation files (the “Software”), to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
-to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-Human protect patch:
-The program and its derivative work will neither be modified or executed to harm any human being nor through
-inaction permit any human being to be harmed.
-
-The above copyright notice and this permission notice shall be included in all copies or substantial
-portions of the Software.
-
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
-THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
-OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT
-OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
+The code is published under MIT license
 For more information see: https://en.wikipedia.org/wiki/MIT_License
 
+CONTENT DESCRIPTION:
 
 This part of code contains
 the integration tests related to the base iTree functionalities
+
 """
 
 import os
@@ -51,9 +37,26 @@ except Exception:
     np = None
 
 import pickle
+import sys
 import timeit
+import importlib
 from types import GeneratorType
 from collections import OrderedDict
+import pathlib
+root_path = os.path.dirname(os.path.dirname(__file__))+'/src'
+print('ROOT_PATH', root_path)
+if root_path not in sys.path:
+    sys.path.append(root_path)
+
+def import_from_path(module_name, file_path):
+    spec = importlib.util.spec_from_file_location(module_name, file_path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = module
+    spec.loader.exec_module(module)
+    return module
+
+#itertree=import_from_path('itertree',root_path+'/itertree/.__init__.py')
+import itertree
 from itertree import *
 from itertree.itree_helpers import itree_list, BLIST_ACTIVE
 

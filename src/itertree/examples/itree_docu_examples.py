@@ -1,40 +1,25 @@
-"""# -*- coding: utf-8 -*-#"""
-from __future__ import absolute_import
-
+# -*- coding: utf-8 -*-
 """
 This code is taken from the itertree package:
+  _ _____ _____ _____ _____ _____ _____ _____
+ | |_   _|   __| __  |_   _| __  |   __|   __|
+ |-| | | |   __|    -| | | |    -|   __|   __|
+ |_| |_| |_____|__|__| |_| |__|__|_____|_____|
+
 https://pypi.org/project/itertree/
 GIT Home:
 https://github.com/BR1py/itertree
 The documentation can be found here:
 https://itertree.readthedocs.io/en/latest/index.html
 
-The code is published under MIT license incl. human protect patch:
-
-The MIT License (MIT) incl. human protect patch
-Copyright © 2022 <copyright holders>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-documentation files (the “Software”), to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
-to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-Human protect patch:
-The program and its derivative work will neither be modified or executed to harm any human being nor through
-inaction permit any human being to be harmed.
-
-The above copyright notice and this permission notice shall be included in all copies or substantial
-portions of the Software.
-
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
-THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
-OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT
-OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
+The code is published under MIT license
 For more information see: https://en.wikipedia.org/wiki/MIT_License
+
+CONTENT DESCRIPTION:
 
 This file contains teh examples presented in the itertree related documentation
 """
+from __future__ import absolute_import
 
 import os
 import sys
@@ -223,7 +208,7 @@ tutorial_QS1 = [
     "len(root.deep)",
     "# flatten iterators over all in-depth items:",
     "[i for i in root.deep] # up-down order",
-    "[i for i in root.deep.tag_idx_paths(up_to_low=False)] # tag_idx related iterator; down-up order",
+    "[i for i in root.deep.tag_idx_paths(options=ITER.UP)] # tag_idx related iterator; down-up order",
 
     "",
     '# .. start: tutorial-code QS6',
@@ -645,7 +630,7 @@ tutorial_13 = [
     "",
     "# deep iterators:",
     "list(root.deep)  # deep counterpart of level1 __iter__() iterator",
-    "list(root.deep.iter(up_to_low=False))  # changed iteration order bottom-> up",
+    "list(root.deep.iter(options=ITER.UP))  # changed iteration order bottom-> up",
     "list(root.deep.tag_idx_paths()) # deep counterpart of level1 items() iterator",
     "[(k,i.value) for k,i in root.deep.tag_idx_paths()]  # deep counterpart of level1 items(values_only=True) iterator",
     "[k for k,_ in root.deep.tag_idx_paths()]  # deep counterpart level1 to keys() iterator",
@@ -817,8 +802,8 @@ tutorial_20 = [
     "        subitem = item.append(iTree('%i_%i' % (i,ii), i*10+ii))\n"
     "        for iii in range(2):\n"
     "            subitem.append(iTree('%i_%i_%i' % (i, ii,iii), i * 100 + ii*10+iii))",
-    "[i for i in root.deep.iter(up_to_low=True)][0:5] # show just a part",
-    "[i for i in root.deep.iter(up_to_low=False)][0:5] # show just a part",
+    "[i for i in root.deep.iter(options=ITER.DOWN)][0:5] # show just a part",
+    "[i for i in root.deep.iter(options=ITER.UP)][0:5] # show just a part",
 ]
 exec_and_print(tutorial_20, 'tutorial_20')
 

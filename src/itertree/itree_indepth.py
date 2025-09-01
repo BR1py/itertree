@@ -1,36 +1,20 @@
-# -*- coding: utf-8 -*-
 """
 This code is taken from the itertree package:
+  _ _____ _____ _____ _____ _____ _____ _____
+ | |_   _|   __| __  |_   _| __  |   __|   __|
+ |-| | | |   __|    -| | | |    -|   __|   __|
+ |_| |_| |_____|__|__| |_| |__|__|_____|_____|
+
 https://pypi.org/project/itertree/
 GIT Home:
 https://github.com/BR1py/itertree
 The documentation can be found here:
 https://itertree.readthedocs.io/en/latest/index.html
 
-The code is published under MIT license incl. human protect patch:
-
-The MIT License (MIT) incl. human protect patch
-Copyright © 2022 <copyright holders>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-documentation files (the “Software”), to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
-to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-Human protect patch:
-The program and its derivative work will neither be modified or executed to harm any human being nor through
-inaction permit any human being to be harmed.
-
-The above copyright notice and this permission notice shall be included in all copies or substantial
-portions of the Software.
-
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
-THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
-OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT
-OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
+The code is published under MIT license
 For more information see: https://en.wikipedia.org/wiki/MIT_License
 
+CONTENT DESCRIPTION:
 
 This part of code contains the main iTree object
 """
@@ -577,7 +561,7 @@ class _iTreeIndepthTree(_iTreeIndepthIter):
                     del iterators[-1]
 
 
-    def iter(self, filter_method=None, options=DOWN, up_to_low=None):
+    def iter(self, filter_method=None, options=DOWN):
         """
 
         In-depth iterator that iterates over all items in the nested `iTree`-structure. The iterator flattens the
@@ -622,14 +606,6 @@ class _iTreeIndepthTree(_iTreeIndepthIter):
         # ITER.DOWN exists only for downward compatibility
         if options == 0:
             options = options | UP
-        if up_to_low is not None:
-            if not up_to_low:
-                options = options | UP
-            warnings.warn(
-                "The parameter up_to_low will be removed soon. Use options=ITER.UP instead.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
         if ITER.valid_option(UP | DOWN | REVERSE | SELF | FILTER_ANY):
             raise AttributeError(ITER.valid_option(options))
         if options & FILTER_ANY:
@@ -913,7 +889,7 @@ class _iTreeIndepthTree(_iTreeIndepthIter):
                         yielded_items.add(id(i))
 
 
-    def idx_paths(self, filter_method=None, options=DOWN, up_to_low=None):
+    def idx_paths(self, filter_method=None, options=DOWN):
         """
         Call via: **iTree().deep.idx_paths()**
 
@@ -958,14 +934,6 @@ class _iTreeIndepthTree(_iTreeIndepthIter):
         # ITER.DOWN exists only for downward compatibility
         if options == 0:
             options = options | UP
-        if up_to_low is not None:
-            if not up_to_low:
-                options = options | UP
-            warnings.warn(
-                "The parameter up_to_low will be removed soon. Use options=ITER.UP instead.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
         if ITER.valid_option(UP | DOWN | REVERSE | SELF | FILTER_ANY):
             raise AttributeError(ITER.valid_option(options))
         if options & FILTER_ANY:
@@ -980,7 +948,7 @@ class _iTreeIndepthTree(_iTreeIndepthIter):
 
     # ToDo:
 
-    def tag_idx_paths(self, filter_method=None, options=DOWN, up_to_low=None):
+    def tag_idx_paths(self, filter_method=None, options=DOWN):
         """
         Call via: **iTree().deep.tag_idx_paths()**
 
@@ -1025,14 +993,6 @@ class _iTreeIndepthTree(_iTreeIndepthIter):
         # ITER.DOWN exists only for downward compatibility
         if options == 0:
             options = options | UP
-        if up_to_low is not None:
-            if not up_to_low:
-                options = options | UP
-            warnings.warn(
-                "The parameter up_to_low will be removed soon. Use options=ITER.UP instead.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
         if ITER.valid_option(UP | DOWN | REVERSE | SELF | FILTER_ANY):
             raise AttributeError(ITER.valid_option(options))
         if options & FILTER_ANY:

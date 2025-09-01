@@ -1,8 +1,37 @@
-import pytest
+# -*- coding: utf-8 -*-
+"""
+This code is taken from the itertree package:
+  _ _____ _____ _____ _____ _____ _____ _____
+ | |_   _|   __| __  |_   _| __  |   __|   __|
+ |-| | | |   __|    -| | | |    -|   __|   __|
+ |_| |_| |_____|__|__| |_| |__|__|_____|_____|
 
-from itertree.examples.performance_analysis.base_performance import BasePerformance
+https://pypi.org/project/itertree/
+GIT Home:
+https://github.com/BR1py/itertree
+The documentation can be found here:
+https://itertree.readthedocs.io/en/latest/index.html
 
-class TestBuildByAppendL1(BasePerformance):
+The code is published under MIT license
+For more information see: https://en.wikipedia.org/wiki/MIT_License
+
+CONTENT DESCRIPTION:
+
+Appends other packages to the performance tests.
+"""
+
+import os
+import sys
+
+root_path = os.path.dirname(os.path.dirname(__file__))
+print('ROOT_PATH', root_path)
+if root_path not in sys.path:
+    sys.path.append(root_path)
+
+import itertree.examples.performance_analysis.base_performance
+BasePerformance=itertree.examples.performance_analysis.base_performance.BasePerformance
+
+class AnalyseBuildByAppendL1(BasePerformance):
 
     def get_header(self):
         out = 'Build tree via append operation'

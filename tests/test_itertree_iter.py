@@ -1,36 +1,21 @@
 # -*- coding: utf-8 -*-
 """
 This code is taken from the itertree package:
+  _ _____ _____ _____ _____ _____ _____ _____
+ | |_   _|   __| __  |_   _| __  |   __|   __|
+ |-| | | |   __|    -| | | |    -|   __|   __|
+ |_| |_| |_____|__|__| |_| |__|__|_____|_____|
+
 https://pypi.org/project/itertree/
 GIT Home:
 https://github.com/BR1py/itertree
 The documentation can be found here:
 https://itertree.readthedocs.io/en/latest/index.html
 
-The code is published under MIT license incl. human protect patch:
-
-The MIT License (MIT) incl. human protect patch
-Copyright © 2022 <copyright holders>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-documentation files (the “Software”), to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
-to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-Human protect patch:
-The program and its derivative work will neither be modified or executed to harm any human being nor through
-inaction permit any human being to be harmed.
-
-The above copyright notice and this permission notice shall be included in all copies or substantial
-portions of the Software.
-
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
-THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
-OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT
-OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
+The code is published under MIT license
 For more information see: https://en.wikipedia.org/wiki/MIT_License
 
+CONTENT DESCRIPTION:
 
 This part of code contains
 the integration tests related to the base iTree functionalities
@@ -696,7 +681,7 @@ class Test1_iTreeInstance:
 
         # standard iter_deep
         i = 1
-        item_list = list(tree.deep.iter(up_to_low=False))
+        item_list = list(tree.deep.iter(options=ITER.UP))
         #for i in item_list:
         #    print(i)
         assert len(item_list) == size
@@ -711,24 +696,24 @@ class Test1_iTreeInstance:
         iter_method = tree.deep.iter
         method_name = 'tree.deep.iter'
 
-        s = len(list(i for i in iter_method(up_to_low=False)))
-        t = calc_timeit(lambda: list(i for i in iter_method(up_to_low=False)), number=timeit_number)
+        s = len(list(i for i in iter_method(options=ITER.UP)))
+        t = calc_timeit(lambda: list(i for i in iter_method(options=ITER.UP)), number=timeit_number)
         print('%s(top_down=False) -> iteration-time over %s items: %es' % (method_name, s, t))
 
-        s = len(list(i for i in iter_method(lambda i: True,up_to_low=False)))
-        t = calc_timeit(lambda: list(i for i in iter_method(lambda i: True,up_to_low=False)), number=timeit_number)
+        s = len(list(i for i in iter_method(lambda i: True,options=ITER.UP)))
+        t = calc_timeit(lambda: list(i for i in iter_method(lambda i: True,options=ITER.UP)), number=timeit_number)
         print('%s(lambda i: True) -> iteration-time over %s items: %es' % (method_name, s, t))
 
-        s = len(list(i for i in filter(lambda i: True, iter_method(up_to_low=False))))
-        t = calc_timeit(lambda: list(i for i in filter(lambda i: True, iter_method(up_to_low=False))), number=timeit_number)
+        s = len(list(i for i in filter(lambda i: True, iter_method(options=ITER.UP))))
+        t = calc_timeit(lambda: list(i for i in filter(lambda i: True, iter_method(options=ITER.UP))), number=timeit_number)
         print('filter(lambda i: True,%s()) -> iteration-time over %s items: %es' % (method_name, s, t))
 
-        s = len(list(i for i in iter_method(test_filter,up_to_low=False)))
-        t = calc_timeit(lambda: list(i for i in iter_method(test_filter,up_to_low=False)), number=timeit_number)
+        s = len(list(i for i in iter_method(test_filter,options=ITER.UP)))
+        t = calc_timeit(lambda: list(i for i in iter_method(test_filter,options=ITER.UP)), number=timeit_number)
         print('%s(test_filter) -> iteration-time over %s items: %es' % (method_name, s, t))
 
-        s = len(list(i for i in filter(test_filter,iter_method(up_to_low=False))))
-        t = calc_timeit(lambda: list(i for i in filter(test_filter,iter_method(up_to_low=False))), number=timeit_number)
+        s = len(list(i for i in filter(test_filter,iter_method(options=ITER.UP))))
+        t = calc_timeit(lambda: list(i for i in filter(test_filter,iter_method(options=ITER.UP))), number=timeit_number)
         print('filter(test_filter,%s()) -> iteration-time over %s items: %es' % (method_name, s, t))
 
 
@@ -774,12 +759,12 @@ class Test1_iTreeInstance:
         for (idx_path,_), item in zip(filter(lambda i: test_filter(i[1]), tree.deep.idx_paths()),
                                       filter(test_filter, tree.deep.iter())):
             assert idx_path == item.idx_path, 'Issue in item %s' % (item)
-        for (idx_path,_), item in zip(tree.deep.idx_paths(up_to_low=False), tree.deep.iter(up_to_low=False)):
+        for (idx_path,_), item in zip(tree.deep.idx_paths(options=ITER.UP), tree.deep.iter(options=ITER.UP)):
             assert idx_path == item.idx_path, 'Issue in item %s' % (item)
-        for (idx_path,_), item in zip(tree.deep.idx_paths(test_filter, up_to_low=False), tree.deep.iter(test_filter, up_to_low=False)):
+        for (idx_path,_), item in zip(tree.deep.idx_paths(test_filter, options=ITER.UP), tree.deep.iter(test_filter, options=ITER.UP)):
             assert idx_path == item.idx_path, 'Issue in item %s' % (item)
-        for (idx_path,_), item in zip(filter(lambda i: test_filter(i[1]), tree.deep.idx_paths(up_to_low=False)),
-                                      filter(test_filter, tree.deep.iter(up_to_low=False))):
+        for (idx_path,_), item in zip(filter(lambda i: test_filter(i[1]), tree.deep.idx_paths(options=ITER.UP)),
+                                      filter(test_filter, tree.deep.iter(options=ITER.UP))):
             assert idx_path == item.idx_path, 'Issue in item %s' % (item)
 
         print('.deep.idx_paths() -> all parameter combinations check with success!')
@@ -818,23 +803,23 @@ class Test1_iTreeInstance:
 
         s = len(list(i for i in iter_method()))
         # manipulate last item to get in update path!
-        t1 = t = calc_timeit(lambda: list(i for i in iter_method(up_to_low=True)), number=timeit_number)
+        t1 = t = calc_timeit(lambda: list(i for i in iter_method(options=ITER.DOWN)), number=timeit_number)
         print('%s()-> iteration-time over %s items: %es' % (method_name, s, t))
 
-        s = len(list(i for i in iter_method(lambda i: True,up_to_low=True)))
-        t = calc_timeit(lambda: list(i for i in iter_method(lambda i: True,up_to_low=True)), number=timeit_number)
+        s = len(list(i for i in iter_method(lambda i: True,options=ITER.DOWN)))
+        t = calc_timeit(lambda: list(i for i in iter_method(lambda i: True,options=ITER.DOWN)), number=timeit_number)
         print('%s(lambda i: True) -> iteration-time over %s items: %es' % (method_name, s, t))
 
-        s = len(list(i for i in filter(lambda i: True, iter_method(up_to_low=True))))
-        t = calc_timeit(lambda: list(i for i in filter(lambda i: True, iter_method(up_to_low=True))), number=timeit_number)
+        s = len(list(i for i in filter(lambda i: True, iter_method(options=ITER.DOWN))))
+        t = calc_timeit(lambda: list(i for i in filter(lambda i: True, iter_method(options=ITER.DOWN))), number=timeit_number)
         print('filter(lambda i: True,%s()) -> iteration-time over %s items: %es' % (method_name, s, t))
 
-        s = len(list(i for i in iter_method(test_filter,up_to_low=True)))
-        t = calc_timeit(lambda: list(i for i in iter_method(test_filter,up_to_low=True)), number=timeit_number)
+        s = len(list(i for i in iter_method(test_filter,options=ITER.DOWN)))
+        t = calc_timeit(lambda: list(i for i in iter_method(test_filter,options=ITER.DOWN)), number=timeit_number)
         print('%s(test_filter) -> iteration-time over %s items: %es' % (method_name, s, t))
 
-        s = len(list(i for i in filter(test_filter_outside,iter_method(up_to_low=True))))
-        t = calc_timeit(lambda: list(i for i in filter(test_filter_outside,iter_method(up_to_low=True))), number=timeit_number)
+        s = len(list(i for i in filter(test_filter_outside,iter_method(options=ITER.DOWN))))
+        t = calc_timeit(lambda: list(i for i in filter(test_filter_outside,iter_method(options=ITER.DOWN))), number=timeit_number)
         print('filter(test_filter,%s()) -> iteration-time over %s items: %es' % (method_name, s, t))
 
 
@@ -870,12 +855,12 @@ class Test1_iTreeInstance:
         for (key_path,_), item in zip(filter(lambda i: test_filter(i[1]), tree.deep.tag_idx_paths()),
                                       filter(test_filter, tree.deep.iter())):
             assert key_path == item.tag_idx_path, 'Issue in item %s' % (item)
-        for (key_path,_), item in zip(tree.deep.tag_idx_paths(up_to_low=False), tree.deep.iter(up_to_low=False)):
+        for (key_path,_), item in zip(tree.deep.tag_idx_paths(options=ITER.UP), tree.deep.iter(options=ITER.UP)):
             assert key_path == item.tag_idx_path, 'Issue in item %s' % (item)
-        for (key_path,_), item in zip(tree.deep.tag_idx_paths(test_filter, up_to_low=False), tree.deep.iter(test_filter, up_to_low=False)):
+        for (key_path,_), item in zip(tree.deep.tag_idx_paths(test_filter, options=ITER.UP), tree.deep.iter(test_filter, options=ITER.UP)):
             assert key_path == item.tag_idx_path, 'Issue in item %s' % (item)
-        for (key_path,_), item in zip(filter(lambda i: test_filter(i[1]), tree.deep.tag_idx_paths(up_to_low=False)),
-                                      filter(test_filter, tree.deep.iter(up_to_low=False))):
+        for (key_path,_), item in zip(filter(lambda i: test_filter(i[1]), tree.deep.tag_idx_paths(options=ITER.UP)),
+                                      filter(test_filter, tree.deep.iter(options=ITER.UP))):
             assert key_path == item.tag_idx_path, 'Issue in item %s' % (item)
 
         print('.deep.key_paths() -> all parameter combinations check with success!')
@@ -914,23 +899,23 @@ class Test1_iTreeInstance:
 
         s = len(list(i for i in iter_method()))
         # manipulate last item to get in update path!
-        t1 = t = calc_timeit(lambda: list(i for i in iter_method(up_to_low=True)), number=timeit_number)
+        t1 = t = calc_timeit(lambda: list(i for i in iter_method(options=ITER.DOWN)), number=timeit_number)
         print('%s()-> iteration-time over %s items: %es' % (method_name, s, t))
 
-        s = len(list(i for i in iter_method(lambda i: True,up_to_low=True)))
-        t = calc_timeit(lambda: list(i for i in iter_method(lambda i: True,up_to_low=True)), number=timeit_number)
+        s = len(list(i for i in iter_method(lambda i: True,options=ITER.DOWN)))
+        t = calc_timeit(lambda: list(i for i in iter_method(lambda i: True,options=ITER.DOWN)), number=timeit_number)
         print('%s(lambda i: True) -> iteration-time over %s items: %es' % (method_name, s, t))
 
-        s = len(list(i for i in filter(lambda i: True, iter_method(up_to_low=True))))
-        t = calc_timeit(lambda: list(i for i in filter(lambda i: True, iter_method(up_to_low=True))), number=timeit_number)
+        s = len(list(i for i in filter(lambda i: True, iter_method(options=ITER.DOWN))))
+        t = calc_timeit(lambda: list(i for i in filter(lambda i: True, iter_method(options=ITER.DOWN))), number=timeit_number)
         print('filter(lambda i: True,%s()) -> iteration-time over %s items: %es' % (method_name, s, t))
 
-        s = len(list(i for i in iter_method(test_filter,up_to_low=True)))
-        t = calc_timeit(lambda: list(i for i in iter_method(test_filter,up_to_low=True)), number=timeit_number)
+        s = len(list(i for i in iter_method(test_filter,options=ITER.DOWN)))
+        t = calc_timeit(lambda: list(i for i in iter_method(test_filter,options=ITER.DOWN)), number=timeit_number)
         print('%s(test_filter) -> iteration-time over %s items: %es' % (method_name, s, t))
 
-        s = len(list(i for i in filter(test_filter_outside,iter_method(up_to_low=True))))
-        t = calc_timeit(lambda: list(i for i in filter(test_filter_outside,iter_method(up_to_low=True))), number=timeit_number)
+        s = len(list(i for i in filter(test_filter_outside,iter_method(options=ITER.DOWN))))
+        t = calc_timeit(lambda: list(i for i in filter(test_filter_outside,iter_method(options=ITER.DOWN))), number=timeit_number)
         print('filter(test_filter,%s()) -> iteration-time over %s items: %es' % (method_name, s, t))
 
         print('\nRESULT OF TEST: iTree deep key_paths iterators -> PASS')

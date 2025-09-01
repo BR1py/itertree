@@ -1,10 +1,11 @@
 workflow
 
-1. ensure that all version informations in th epackage are updated properly
+1. ensure that all version information in the package are updated properly
 1b. Check especially in README.md!
 2. build the wheel via build_wheel.cmd
 3. PyPi upload:
-c:\tools\python\python35\python -m twine upload dist/*
+temporary remove the blist package
+c:\tools\python\python311\python -m twine upload dist/*
 4. push dev to main on git
 5. recheck if readthedocs was properly updated
 6. Create the release on GIT and tag it
